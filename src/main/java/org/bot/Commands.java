@@ -65,6 +65,5 @@ public class Commands {
     public static void kill() {
         System.out.println("...");
         System.exit(0);
-        botWait();
     }
 }
