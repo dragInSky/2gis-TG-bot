@@ -5,7 +5,6 @@ public class Main {
         Commands.help();
         while (true) {
             Dialog.dialog(LineReader.line());
-            int a = 5;
         }
     }
 }
