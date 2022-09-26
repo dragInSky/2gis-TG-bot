@@ -5,14 +5,11 @@ public class Dialog {
         switch (str) {
             case "\\help" -> Commands.help();
             case "\\anecdote" -> Commands.anecdote();
-            case "\\question" -> Commands.questionGenerator();
-            case "\\time" -> Commands.data();
+            //case "\\question" -> Commands.question();
+            case "\\data" -> Commands.data();
             case "\\random" -> Commands.random();
             case "\\kill" -> Commands.kill();
-            default -> {
-                System.out.println("This command doesn't exist, help below");
-                Commands.help();
-            }
+            default -> Commands.wrong();
         }
     }
 }
