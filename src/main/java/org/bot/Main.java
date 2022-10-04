@@ -3,7 +3,7 @@ package org.bot;
 public class Main {
     static boolean bFlag = true;
     public static void main(String[] args) {
-        Commands.help();
+        Initialize.start();
         while (bFlag) {
             Dialog.dialog(LineReader.line());
         }

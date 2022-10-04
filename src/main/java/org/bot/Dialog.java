@@ -5,7 +5,6 @@ public class Dialog {
         switch (str) {
             case "\\help" -> Commands.help();
             case "\\anecdote" -> Commands.anecdote();
-            //case "\\question" -> Commands.question();
             case "\\data" -> Commands.data();
             case "\\random" -> Commands.random();
             case "\\kill" -> Commands.kill();

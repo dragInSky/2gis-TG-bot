@@ -1,7 +1,6 @@
 package org.bot;
 
 import java.text.SimpleDateFormat;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Commands {
@@ -21,7 +20,6 @@ public class Commands {
                 "\n(type one of these commands to interact with bot)" +
                 "\n\t\\help - to read about bot" +
                 "\n\t\\anecdote - to generate anecdote" +
-                //"\n\t\\question - to generate question" +
                 "\n\t\\data - to out current data and time" +
                 "\n\t\\random - to generate random digit" +
                 "\n\t\\kill - to kill the bot" +
@@ -33,30 +31,6 @@ public class Commands {
         System.out.println("AHAHAH");
         botWait();
     }
-
-    /*public static void question() {
-        questionGenerator("rightAnswer", "question");
-    }
-
-    public static void questionGenerator(String rightAnswer, String question) {
-        while (true) {
-            System.out.println(question);
-            String userAnswer = LineReader.line();
-            if (Objects.equals(userAnswer, rightAnswer)) {
-                System.out.println("Congrats, u're right!");
-                break;
-            } else {
-                System.out.println("Nope" +
-                        "\ntype yes - to try again" +
-                        "\ntype no - to forget question");
-                String userRespond = LineReader.line();
-                if (!Objects.equals(userRespond, "yes")) {
-                    break;
-                }
-            }
-        }
-        botWait();
-    }*/
 
     public static void data() {
         System.out.println(new SimpleDateFormat("dd.MM.yyyy\nHH:mm:ss").format(new java.util.Date()));
