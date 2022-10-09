@@ -1,15 +1,15 @@
 package org.bot;
 
-public class Struct {
+public class Response {
     private final String m_data;
     private final boolean m_exit;
 
-    Struct(String data) {
+    Response(String data) {
         m_data = data;
         m_exit = false;
     }
 
-    Struct(String data, boolean exit) {
+    Response(String data, boolean exit) {
         m_data = data;
         m_exit = exit;
     }

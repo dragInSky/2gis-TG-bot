@@ -14,7 +14,7 @@ public class Commands {
                 "\n" + botWait();
     }
 
-    public String end() {
+    public String finish() {
         return "See u";
     }
 

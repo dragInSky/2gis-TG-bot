@@ -1,20 +1,20 @@
 package org.bot;
 
 public class Main {
-    private static final String START = "\\start", END = "\\end";
+    private static final String START = "\\start", FINISH = "\\end";
     private static final Dialog DIALOG = new Dialog();
-    private static final DataWriter DATA_WRITER = new DataWriter();
-    private static Struct data;
+    private static final DataReader DATA_READER = new DataReader();
+    private static Response response;
     public static void main(String[] args) {
         commandProcessing(START);
         do {
-            commandProcessing(DATA_WRITER.write());
-        } while (!data.getExit());
-        commandProcessing(END);
+            commandProcessing(DATA_READER.read());
+        } while (!response.getExit());
+        commandProcessing(FINISH);
     }
 
     private static void commandProcessing(String userInput) {
-        data = DIALOG.dialog(userInput);
-        //передаю строку m_struct.getData() Паше
+        response = DIALOG.dialog(userInput);
+        //передаю строку response.getData() Паше
     }
 }
