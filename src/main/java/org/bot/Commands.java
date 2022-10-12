@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Commands {
     private static String botWait() {
-        return "\nbot is waiting for the command";
+        return "\nBot is waiting for the command";
     }
 
     public String start() {
