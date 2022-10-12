@@ -2,7 +2,7 @@ package org.bot;
 
 public class Response {
     private final String m_data;
-    private final boolean m_exit;
+    private boolean m_exit;
 
     Response(String data) {
         m_data = data;
@@ -18,7 +18,7 @@ public class Response {
         return m_data;
     }
 
-    public boolean getExit() {
-        return m_exit;
-    }
+    public boolean getExit() {return m_exit;}
+
+    public void change_m_exit(){m_exit = true;}
 }

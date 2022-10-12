@@ -1,20 +1,29 @@
 package org.bot;
 
 public class Main {
-    private static final String START = "\\start", FINISH = "\\end";
+    private static final String START = "\\start", FINISH = "\\finish";
     private static final Dialog DIALOG = new Dialog();
-    private static final DataReader DATA_READER = new DataReader();
+
+    private static final Transport Data_Reader = new Transport();
+
+    private static final Transport Data_Writer = new Transport();
     private static Response response;
+
+    private static String userInput = "";
     public static void main(String[] args) {
-        commandProcessing(START);
+        Data_Writer.write(commandProcessing(START));
         do {
-            commandProcessing(DATA_READER.read());
+            userInput = Data_Reader.read();
+            if (userInput.equals("\\kill")) {response.change_m_exit();}
+
+            Data_Writer.write(commandProcessing(userInput));
+
         } while (!response.getExit());
-        commandProcessing(FINISH);
+        Data_Writer.write(commandProcessing(FINISH));
     }
 
-    private static void commandProcessing(String userInput) {
+    private static String commandProcessing(String userInput) {
         response = DIALOG.dialog(userInput);
-        //передаю строку response.getData() Паше
+        return response.getData();
     }
 }
