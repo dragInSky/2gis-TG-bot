@@ -18,7 +18,8 @@ public class Response {
         return m_data;
     }
 
-    public boolean getExit() {return m_exit;}
+    public boolean getExit() {
+        return m_exit;
+    }
 
-    public void change_m_exit(){m_exit = true;}
 }
