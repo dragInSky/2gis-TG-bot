@@ -2,7 +2,7 @@ package org.bot;
 
 public class Response {
     private final String m_data;
-    private boolean m_exit;
+    private final boolean m_exit;
 
     Response(String data) {
         m_data = data;

@@ -3,24 +3,27 @@ package org.bot;
 public class Main {
     private static final String START = "\\start", FINISH = "\\finish";
     private static final Dialog DIALOG = new Dialog();
-
     private static final Transport TRANSPORT = new Transport();
-    private static Response response;
 
     public static void main(String[] args) {
-        String userInput;
-        TRANSPORT.write(commandProcessing(START));
-        do {
-            userInput = TRANSPORT.read();
+        Response startResponse = commandProcessing(START);
+        TRANSPORT.write(startResponse.getData());
 
-            TRANSPORT.write(commandProcessing(userInput));
+        while (true) {
+            String userInput = TRANSPORT.read();
+            Response userResponse = commandProcessing(userInput);
+            TRANSPORT.write(userResponse.getData());
 
-        } while (!response.getExit());
-        TRANSPORT.write(commandProcessing(FINISH));
+            if (userResponse.getExit()) {
+                break;
+            }
+        }
+
+        Response endResponse = commandProcessing(FINISH);
+        TRANSPORT.write(endResponse.getData());
     }
 
-    private static String commandProcessing(String userInput) {
-        response = DIALOG.dialog(userInput);
-        return response.getData();
+    private static Response commandProcessing(String userInput) {
+        return DIALOG.dialog(userInput);
     }
 }

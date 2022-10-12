@@ -7,6 +7,7 @@ public class Transport {
 
     public String read()
     {
+        System.out.print("-> ");
         return IN.nextLine();
     }
 
