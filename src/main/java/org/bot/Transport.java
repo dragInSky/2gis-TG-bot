@@ -5,14 +5,12 @@ import java.util.Scanner;
 public class Transport {
     private static final Scanner IN = new Scanner(System.in);
 
-    public String read()
-    {
+    public String read() {
         System.out.print("-> ");
         return IN.nextLine();
     }
 
-    public void write(String output)
-    {
+    public void write(String output) {
         System.out.println(output);
     }
 }
