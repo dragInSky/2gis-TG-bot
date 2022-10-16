@@ -6,7 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandProcessorTest {
     interface Command {
@@ -22,7 +23,7 @@ class CommandProcessorTest {
     }
 
     static final Commands COMMANDS = new Commands();
-    static final CommandProcessor COMMAND_PROCESSOR = new CommandProcessor();
+    final CommandProcessor COMMAND_PROCESSOR = new CommandProcessor();
     static Stream<Arguments> structArrayProvider() {
         return Stream.of(
                 Arguments.of(new StructTest("\\help", COMMANDS::help)),

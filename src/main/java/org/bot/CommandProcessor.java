@@ -1,7 +1,7 @@
 package org.bot;
 
 public class CommandProcessor {
-    private static final Commands COMMANDS = new Commands();
+    private final Commands COMMANDS = new Commands();
     public Response commandProcessing(String userInput) {
         return switch (userInput) {
             case "\\help" -> new Response(COMMANDS.help());
