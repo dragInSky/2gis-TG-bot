@@ -1,12 +1,11 @@
 package org.bot;
 
 public class Main {
-    private static final String START = "\\start", FINISH = "\\finish";
     private static final CommandProcessor COMMAND_PROCESSOR = new CommandProcessor();
     private static final Transport TRANSPORT = new Transport();
 
     public static void main(String[] args) {
-        Response startResponse = COMMAND_PROCESSOR.commandProcessing(START);
+        Response startResponse = COMMAND_PROCESSOR.commandProcessing("\\start");
         TRANSPORT.write(startResponse.getData());
 
         while (true) {
@@ -19,7 +18,7 @@ public class Main {
             }
         }
 
-        Response endResponse = COMMAND_PROCESSOR.commandProcessing(FINISH);
+        Response endResponse = COMMAND_PROCESSOR.commandProcessing("\\finish");
         TRANSPORT.write(endResponse.getData());
     }
 }

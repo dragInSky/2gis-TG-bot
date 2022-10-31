@@ -4,14 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Commands {
-    private static String botWait() {
-        return "\nBot is waiting for the command";
-    }
+    private static final String botWait = "\n\nBot is waiting for the command";
 
     public String start() {
         return "Bot grats u" +
-                "\n\t\\help - to read about bot" +
-                "\n" + botWait();
+                "\n\t\\help - to read about bot" + botWait;
     }
 
     public String finish() {
@@ -20,8 +17,7 @@ public class Commands {
 
     public String wrong() {
         return "This command doesn't exist" +
-                "\n\t\\help - to read about bot" +
-                "\n" + botWait();
+                "\n\t\\help - to read about bot" + botWait;
     }
 
     public String help() {
@@ -33,23 +29,19 @@ public class Commands {
                 "\n\t\\data - to out current data and time" +
                 "\n\t\\random - to generate random digit" +
                 "\n\t\\kill - to kill the bot" +
-                "\n-------------------------------------------------" +
-                "\n" + botWait();
+                "\n-------------------------------------------------" + botWait;
     }
 
     public String anecdote() {
-        return "AHAHAH" +
-                "\n" + botWait();
+        return "AHAHAH" + botWait;
     }
 
     public String data() {
-        return new SimpleDateFormat("dd.MM.yyyy\nHH:mm:ss").format(new java.util.Date()) +
-                "\n" + botWait();
+        return new SimpleDateFormat("dd.MM.yyyy\nHH:mm:ss").format(new java.util.Date()) + botWait;
     }
 
     public String random() {
-        return ThreadLocalRandom.current().nextInt(0, 10) +
-                "\n" + botWait();
+        return ThreadLocalRandom.current().nextInt(0, 10) + botWait;
     }
 
     public String kill() {

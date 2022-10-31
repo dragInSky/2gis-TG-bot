@@ -21,5 +21,4 @@ public class Response {
     public boolean getExit() {
         return m_exit;
     }
-
 }

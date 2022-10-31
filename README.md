@@ -1,9 +1,9 @@
 ## Ymaps-TG-bot
 <!-- Let's rename \*oop-console-bot\* to \*Ymaps-TG-bot\*. -->
-**Version:** 0.2 stab
+**Version:** 0.2.0 stab
 > 16.10.2022
 
-**Creators:**
+**Developers:**
 - [@dragInSky](https://github.com/dragInSky)
 - [@san9nelox](https://github.com/san9nelox)
 

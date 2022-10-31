@@ -6,9 +6,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-
 class ResponseTest {
-
     @Test
     void getData() {
         String data = "abc";
@@ -29,5 +27,4 @@ class ResponseTest {
         Response test = new Response("abc", exit);
         assertEquals(exit, test.getExit());
     }
-
 }
