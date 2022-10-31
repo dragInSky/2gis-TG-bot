@@ -1,24 +1,26 @@
 package org.bot;
 
+import java.util.Objects;
+
 public class Main {
-    private static final CommandProcessor COMMAND_PROCESSOR = new CommandProcessor();
-    private static final Transport TRANSPORT = new Transport();
-
     public static void main(String[] args) {
-        Response startResponse = COMMAND_PROCESSOR.commandProcessing("\\start");
-        TRANSPORT.write(startResponse.getData());
+        Transport transport = new Transport();
 
-        while (true) {
-            String userInput = TRANSPORT.read();
-            Response userResponse = COMMAND_PROCESSOR.commandProcessing(userInput);
-            TRANSPORT.write(userResponse.getData());
+        String data = Commands.start.getData();
+        transport.write(data);
 
-            if (userResponse.getExit()) {
-                break;
+        String userInput = null;
+        while (!Objects.equals(userInput, "kill")) {
+            userInput = transport.read();
+            try {
+                data = Commands.valueOf(userInput).getData();
+                transport.write(data);
+            } catch (IllegalArgumentException e) {
+                transport.write(Commands.wrong.getData());
             }
         }
 
-        Response endResponse = COMMAND_PROCESSOR.commandProcessing("\\finish");
-        TRANSPORT.write(endResponse.getData());
+        data = Commands.finish.getData();
+        transport.write(data);
     }
 }

@@ -3,48 +3,31 @@ package org.bot;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Commands {
-    private static final String botWait = "\n\nBot is waiting for the command";
+public enum Commands {
+    start("Bot grats u" +
+            "\n\thelp - to read about bot"),
+    finish("See u"),
+    help("-------------------------------------------------" +
+            "\nHELP" +
+            "\n(type one of these commands to interact with bot)" +
+            "\n\thelp - to read about bot" +
+            "\n\tanecdote - to generate anecdote" +
+            "\n\tdata - to out current data and time" +
+            "\n\trandom - to generate random digit" +
+            "\n\tkill - to kill the bot" +
+            "\n-------------------------------------------------"),
+    wrong("This command doesn't exist" +
+            "\n\thelp - to read about bot"),
+    anecdote("AHAHAH"),
+    data(new SimpleDateFormat("dd.MM.yyyy\nHH:mm:ss").format(new java.util.Date())),
+    random(ThreadLocalRandom.current().nextInt(0, 10) + ""),
+    kill("bot was killed by User");
 
-    public String start() {
-        return "Bot grats u" +
-                "\n\t\\help - to read about bot" + botWait;
+    private final String m_data;
+    Commands(String data) {
+        m_data = data;
     }
-
-    public String finish() {
-        return "See u";
-    }
-
-    public String wrong() {
-        return "This command doesn't exist" +
-                "\n\t\\help - to read about bot" + botWait;
-    }
-
-    public String help() {
-        return "-------------------------------------------------" +
-                "\nHELP" +
-                "\n(type one of these commands to interact with bot)" +
-                "\n\t\\help - to read about bot" +
-                "\n\t\\anecdote - to generate anecdote" +
-                "\n\t\\data - to out current data and time" +
-                "\n\t\\random - to generate random digit" +
-                "\n\t\\kill - to kill the bot" +
-                "\n-------------------------------------------------" + botWait;
-    }
-
-    public String anecdote() {
-        return "AHAHAH" + botWait;
-    }
-
-    public String data() {
-        return new SimpleDateFormat("dd.MM.yyyy\nHH:mm:ss").format(new java.util.Date()) + botWait;
-    }
-
-    public String random() {
-        return ThreadLocalRandom.current().nextInt(0, 10) + botWait;
-    }
-
-    public String kill() {
-        return "...";
+    public String getData() {
+        return m_data;
     }
 }
