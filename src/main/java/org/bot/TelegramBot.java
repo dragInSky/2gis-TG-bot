@@ -28,10 +28,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "5517091899:AAHXVWyYFTN2dc8Uh5ezGUhR36eNcyp1wbE";
+        return System.getenv("TG_TOKEN");
     }
 
     private String proccessMessage(String message) {
+        message = message.charAt(0) != '/' ? message : message.substring(1);
         String data;
         try {
             data = Commands.valueOf(message).getData();
