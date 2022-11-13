@@ -6,8 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public enum Commands {
     start("Bot grats u" +
             "\n\thelp - to read about bot"),
-    help("\nHELP" +
-            "\n(type one of these commands to interact with bot)" +
+    help("(type one of these commands to interact with bot)" +
             "\n\thelp - to read about bot" +
             "\n\tanecdote - to generate anecdote" +
             "\n\tdata - to out current data and time" +

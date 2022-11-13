@@ -1,16 +1,12 @@
-## Ymaps-TG-bot
+# Ymaps-TG-bot
 <!-- Let's rename \*oop-console-bot\* to \*Ymaps-TG-bot\*. -->
-**Version:** 0.2.0-SNAPSHOT
-> 16.10.2022
-
-**Developers:**
-- [@dragInSky](https://github.com/dragInSky)
-- [@san9nelox](https://github.com/san9nelox)
+**Version:** 0.1.1
 
 **Description:**
 
 Боту даются на вход координаты (адрес) двух человек, бот по этим координатам выбирает подходящее место для обоих встречи в соответствии со стандартными и дополнительными (входными) параметрами
 
 **To do:**
-- [ ] *Telegram* integration
-- [ ] *Yandex Maps* integration
+- [x] Telegram integration
+- [ ] Deploy on server
+- [ ] Yandex Maps integration
