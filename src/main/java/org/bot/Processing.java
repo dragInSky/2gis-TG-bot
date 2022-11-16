@@ -5,8 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.MessageFormat;
 
-public class Proccessing {
-    public Response proccessMessage(String message) {
+public class Processing {
+    public Response processMessage(String message) {
         return switch (message) {
             case "/help" ->  new Response("/help - info about bot" +
                     "\n/location - place current location on map");

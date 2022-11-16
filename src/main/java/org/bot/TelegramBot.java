@@ -8,18 +8,18 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
-        Proccessing proccessing = new Proccessing();
+        Processing processing = new Processing();
         if (update.hasMessage() && update.getMessage().hasText()) {
             SendMessage message = new SendMessage(); // Create a SendMessage object with mandatory fields
             String id = update.getMessage().getChatId().toString();
             message.setChatId(id);
             String text = update.getMessage().getText();
-            Response response = proccessing.proccessMessage(text);
+            Response response = processing.processMessage(text);
             message.setText(response.getData());
 
             try {
                 if (response.getFlag()) {
-                    proccessing.request(getBotToken(), id, 0d, 0d);
+                    processing.request(getBotToken(), id, 0d, 0d);
                 } else {
                     execute(message); // Call method to send the message
                 }
