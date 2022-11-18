@@ -20,7 +20,7 @@ public class Processing {
     }
 
     public String coordinates(String addr) throws Exception {
-        HttpGetRequest request = new HttpGetRequest();
+        HttpRequest request = new HttpRequest();
         return request.sendGetGeo(addr);
     }
 

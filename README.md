@@ -1,6 +1,6 @@
-# Maps-TG-bot
-<!-- Let's rename \*oop-console-bot\* to \*Maps-TG-bot\*. -->
-**Version:** 0.1.2
+# 2Gis-TG-bot
+<!-- Let's rename \*oop-console-bot\* to \*2Gis-TG-bot\*. -->
+**Version:** 0.1.3
 
 **Description:**
 
