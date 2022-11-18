@@ -19,12 +19,14 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             try {
                 if (response.getFlag()) {
-                    processing.request(getBotToken(), id, 0d, 0d);
+                    processing.request(getBotToken(), id, text);
                 } else {
                     execute(message); // Call method to send the message
                 }
             } catch (TelegramApiException e) {
                 e.printStackTrace();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
     }

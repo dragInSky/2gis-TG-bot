@@ -5,11 +5,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
 
-public class HttpURLConnection {
-    public static void main(String[] args) throws Exception {
-        System.out.println(new HttpURLConnection().sendGetGeo("Москва, Садовническая, 25"));
-    }
-
+public class HttpGetRequest {
     public String sendGetGeo(String addr) throws Exception {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
@@ -28,10 +24,6 @@ public class HttpURLConnection {
         //add request header
         String USER_AGENT = "Mozilla/5.0";
         con.setRequestProperty("User-Agent", USER_AGENT);
-
-        int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'GET' request to URL : " + url);
-        System.out.println("Response Code : " + responseCode);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
