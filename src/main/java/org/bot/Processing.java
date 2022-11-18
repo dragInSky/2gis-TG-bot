@@ -15,16 +15,17 @@ public class Processing {
                     "\n/help - info about bot" +
                     "\n/map - place current location on map");
             case "/map" -> new Response("Enter address, you want to display on map:");
+            case "/route" -> new Response(new HttpRequest().sendPostRoute().substring(0, 100));
             default ->  new Response("", true);
         };
     }
 
-    public String coordinates(String addr) throws Exception {
+    public String coordinates(String addr) {
         HttpRequest request = new HttpRequest();
         return request.sendGetGeo(addr);
     }
 
-    public void request(String token, String id, String addr) throws Exception {
+    public void request(String token, String id, String addr) {
         String data = coordinates(addr);
         try {
             String[] coordinates = data.split(" ");
