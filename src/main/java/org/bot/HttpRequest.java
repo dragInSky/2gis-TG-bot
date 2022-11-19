@@ -102,7 +102,6 @@ public class HttpRequest {
                 response.append(inputLine);
             }
             in.close();
-
             return response.toString();
         } catch (Exception e) {
             return null;
@@ -115,5 +114,13 @@ public class HttpRequest {
 
     public String get2GisGetKey() {
         return System.getenv("2GIS_GET_KEY");
+    }
+
+    private String findInformation(StringBuilder response)
+    {
+        int start = response.indexOf("total_distance");
+        int finish = response.indexOf("type", start - 3);
+        String information = response.substring(start - 1, finish);
+        return information;
     }
 }
