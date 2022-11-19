@@ -15,7 +15,7 @@ public class Processing {
                     "\n/help - info about bot" +
                     "\n/map - place current location on map");
             case "/map" -> new Response("Enter address, you want to display on map:");
-            case "/route" -> new Response(new HttpRequest().sendPostRoute().substring(0, 100));
+            case "/route" -> new Response(new HttpRequest().sendPostRoute());
             default ->  new Response("", true);
         };
     }

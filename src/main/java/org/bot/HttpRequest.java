@@ -4,6 +4,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.text.MessageFormat;
 
@@ -102,7 +103,7 @@ public class HttpRequest {
                 response.append(inputLine);
             }
             in.close();
-            return response.toString();
+            return findInformation(response);
         } catch (Exception e) {
             return null;
         }
@@ -119,8 +120,8 @@ public class HttpRequest {
     private String findInformation(StringBuilder response)
     {
         int start = response.indexOf("total_distance");
-        int finish = response.indexOf("type", start - 3);
-        String information = response.substring(start - 1, finish);
-        return information;
+        int finish = response.indexOf("type", start);
+
+        return response.substring(start - 1, finish - 2);
     }
 }
