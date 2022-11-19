@@ -18,11 +18,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             message.setText(response.getData());
 
             try {
-                if (response.getFlag()) {
-                    processing.request(getBotToken(), id, text);
-                } else {
-                    execute(message); // Call method to send the message
-                }
+                //if (response.getFlag()) {
+                //    processing.request(getBotToken(), id, text);
+                //} else {
+                execute(message); // Call method to send the message
+                //}
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
