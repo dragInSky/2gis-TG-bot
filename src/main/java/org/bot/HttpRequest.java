@@ -6,6 +6,7 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 
 public class HttpRequest {
     private final String USER_AGENT = "Mozilla/5.0";
@@ -121,5 +122,32 @@ public class HttpRequest {
         int finish = response.indexOf("type", start);
 
         return response.substring(start - 1, finish - 2);
+    }
+
+    private ArrayList<Coordinates> coordinatesArray(String route) {
+        System.out.println(route);
+        ArrayList<Coordinates> coordinates = new ArrayList<>();
+        int idx = 0;
+        while (true) {
+            int startIdx = route.indexOf("LINESTRING(", idx);
+            int endIdx = route.indexOf(")", startIdx);
+            if (startIdx == -1 || endIdx == -1) {
+                break;
+            }
+            String substr = route.substring(startIdx, endIdx);
+            String[] strArr = substr.split("[ ,]");
+            for (int i = 0; i + 1 < strArr.length; i += 2) {
+                try {
+                    coordinates.add(new Coordinates(Double.parseDouble(strArr[i + 1]), Double.parseDouble(strArr[i])));
+                } catch (NumberFormatException ignored) {}
+            }
+            idx = endIdx;
+        }
+
+        for (Coordinates tmp : coordinates) {
+            System.out.println("lat = " + tmp.getLat() + '\t' + "lon = " + tmp.getLon());
+        }
+
+        return coordinates;
     }
 }
