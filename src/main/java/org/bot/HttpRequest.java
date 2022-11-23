@@ -1,5 +1,6 @@
 package org.bot;
 
+
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -21,7 +22,8 @@ public class HttpRequest {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
                 get2GisPostKey());
-        return sendPost(url);
+
+        return sendPost(url, "Тургенева 4 Екатеринбург", "Розы Люксембург, 54, Екатеринбург");
     }
 
     // HTTP GET request
@@ -58,7 +60,7 @@ public class HttpRequest {
         }
     }
 
-    private String sendPost(String url) {
+    private String sendPost(String url, String firstAddr, String secondAddr) {
         try {
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -68,22 +70,34 @@ public class HttpRequest {
             con.setRequestProperty("User-Agent", USER_AGENT);
             con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
+            Processing processing = new Processing();
+
+            String[] firstAddrInCoordinate = processing.coordinates(firstAddr).split(" ");
+            String[] secondAddrInCoordinate = processing.coordinates(secondAddr).split(" ");
+
+
             String urlParameters = """
                     {
                        "points": [
                            {
                                "type": "walking",
-                               "x": 82.93057,
-                               "y": 54.943207
+                               "x": {0},
+                               "y": {1}
                            },
                            {
                                "type": "walking",
-                               "x": 82.945039,
-                               "y": 55.033879
+                               "x": {2},
+                               "y": {3}
                            }
                        ]
                     }
                     """;
+            urlParameters = urlParameters.replace("{0}", firstAddrInCoordinate[0]);
+            urlParameters = urlParameters.replace("{1}", firstAddrInCoordinate[1]);
+            urlParameters = urlParameters.replace("{2}", secondAddrInCoordinate[0]);
+            urlParameters = urlParameters.replace("{3}", secondAddrInCoordinate[1]);
+
+
 
             // Send post request
             con.setDoOutput(true);
