@@ -11,6 +11,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     private Coordinates userGeolocation = null;
     private final Processing processing = new Processing();
 
+    public static boolean repeatCommand = false;
+    private String command;
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -55,17 +57,28 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage(msg, "");
     }
 
-    private void sendMessage(Message msg, String text) {
+    private void sendMessage(Message msg, String data) {
         String chatId = msg.getChatId().toString();
-        SendMessage message = new SendMessage(chatId, text);
+        SendMessage message = new SendMessage(chatId, data);
         new Button().setUpGeolocation(message);
 
         if (msg.hasLocation()) { //если была запрошена геолокация
             Location location = msg.getLocation();
             userGeolocation = new Coordinates(location);
             message.setText(userGeolocation.toString());
-        } else {
-            message.setText(text);
+        }
+        else if (!repeatCommand)
+        {
+            String text = msg.getText();
+            command = text;
+            String textToSend = processing.processMessage(text);
+            message.setText(textToSend);
+        }
+        else
+        {
+            String text = msg.getText();
+            String textToSend = processing.processMessage(command, text);
+            message.setText(textToSend);
         }
 
         try {

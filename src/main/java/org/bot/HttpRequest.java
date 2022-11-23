@@ -1,5 +1,6 @@
 package org.bot;
 
+
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -9,7 +10,12 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
+
 public class HttpRequest {
+
+    private String firstAddr = "";
+
+    private String secondAddr = "";
     private final String USER_AGENT = "Mozilla/5.0";
 
     //этот метод должен сделать sendGet запрос, получить ответ и преобразовать его
@@ -29,11 +35,26 @@ public class HttpRequest {
     }
 
     //этот метод должен сделать sendGet запрос, получить ответ и преобразовать его
-    public String sendPostRoute() {
+    public String sendPostRoute(String addr) {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
                 get2GisPostKey());
-        return sendPost(url);
+        if (addr == "") {
+            TelegramBot.repeatCommand = true;
+            return "Введите первый адрес";
+        }
+
+        else if (firstAddr == "") {
+            firstAddr = addr;
+            return "Введите второй адрес";
+        }
+
+        else if (secondAddr == "") {
+            secondAddr = addr;
+            TelegramBot.repeatCommand = false;
+        }
+
+        return sendPost(url, firstAddr, secondAddr);
     }
 
     //этот метод должен сделать sendGet запрос, без возвращаемого значения
@@ -71,6 +92,8 @@ public class HttpRequest {
             String substr = response.substring(firstIdx, lastIdx);
             String[] coordinates = substr.split(",");
 
+            Processing.http = new HttpRequest();
+
             return coordinates[0].substring(coordinates[0].indexOf(":") + 1) +
                     " " + coordinates[1].substring(coordinates[1].indexOf(":") + 1);
         } catch (Exception e) {
@@ -78,7 +101,7 @@ public class HttpRequest {
         }
     }
 
-    private String sendPost(String url) {
+    private String sendPost(String url, String firstAddr, String secondAddr) {
         try {
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -87,6 +110,12 @@ public class HttpRequest {
             con.setRequestMethod("POST");
             con.setRequestProperty("User-Agent", USER_AGENT);
             con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+
+            Processing processing = new Processing();
+
+            String[] firstAddrInCoordinate = processing.coordinates(firstAddr).split(" ");
+            String[] secondAddrInCoordinate = processing.coordinates(secondAddr).split(" ");
+
 
             String urlParameters = """
                     {
@@ -104,6 +133,12 @@ public class HttpRequest {
                        ]
                     }
                     """;
+            urlParameters = urlParameters.replace("{0}", firstAddrInCoordinate[0]);
+            urlParameters = urlParameters.replace("{1}", firstAddrInCoordinate[1]);
+            urlParameters = urlParameters.replace("{2}", secondAddrInCoordinate[0]);
+            urlParameters = urlParameters.replace("{3}", secondAddrInCoordinate[1]);
+
+
 
             // Send post request
             con.setDoOutput(true);
@@ -125,14 +160,6 @@ public class HttpRequest {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private String findInformation(StringBuilder response)
-    {
-        int start = response.indexOf("total_distance");
-        int finish = response.indexOf("type", start);
-
-        return response.substring(start - 1, finish - 2);
     }
 
     private ArrayList<Coordinates> coordinatesArray(String route) {
@@ -164,5 +191,13 @@ public class HttpRequest {
 
     public String get2GisGetKey() {
         return System.getenv("2GIS_GET_KEY");
+    }
+
+    private String findInformation(StringBuilder response)
+    {
+        int start = response.indexOf("total_distance");
+        int finish = response.indexOf("type", start);
+
+        return response.substring(start - 1, finish - 2);
     }
 }
