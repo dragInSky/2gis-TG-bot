@@ -1,4 +1,4 @@
-## Second task (in progress)
+## Second task
 
 ### 0.2.0
 - Можно строить маршрут по 2-м адресам

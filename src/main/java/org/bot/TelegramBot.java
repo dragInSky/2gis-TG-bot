@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class TelegramBot extends TelegramLongPollingBot {
     private Coordinates userGeolocation = null;
-    private final Processing processing = new Processing();
+    private final HttpRequest httpRequest = new HttpRequest();
     public static boolean repeatCommand = false;
     private String command;
 
@@ -78,11 +78,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void mapDisplayProcess(String id, String address) {
-        processing.mapDisplay(getBotToken(), id, address);
+        httpRequest.mapDisplay(getBotToken(), id, address);
     }
 
     private void routeProcess(Message msg, String addr) {
-        sendMessage(msg, Processing.http.sendPostRoute(addr));
+        sendMessage(msg, httpRequest.createRouteWithAddress(addr));
     }
 
     private void buttonProcess(Message msg) {
