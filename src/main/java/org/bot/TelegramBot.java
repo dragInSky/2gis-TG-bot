@@ -10,9 +10,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class TelegramBot extends TelegramLongPollingBot {
     private Coordinates userGeolocation = null;
     private final Processing processing = new Processing();
-
     public static boolean repeatCommand = false;
     private String command;
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -23,8 +23,18 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void commandProcess(Message msg) {
-        String messageText = msg.getText();
-        switch (messageText) {
+        String text = msg.getText();
+        if (!repeatCommand) {
+            command = text;
+            commandProcess(msg, text);
+        }
+        else {
+            commandProcess(msg, command, text);
+        }
+    }
+
+    private void commandProcess(Message msg, String message) {
+        switch (message) {
             case "/start" -> sendMessage(msg,
                                 """
                                 Bot grats you!
@@ -40,7 +50,29 @@ public class TelegramBot extends TelegramLongPollingBot {
                             """);
             //вторым параметром идет адрес дл€ вывода, как его получить - ?
             case "/map" -> mapDisplayProcess(msg.getChatId().toString(),"“урнегева 4, ≈катеринбург");
-            case "/route" -> routeProcess(msg);
+            case "/route" -> routeProcess(msg, "");
+            default ->  sendMessage(msg,"Bot can reply only on commands");
+        }
+    }
+
+    private void commandProcess(Message msg, String message, String addr) {
+        switch (message) {
+            case "/start" -> sendMessage(msg,
+                    """
+                    Bot grats you!
+                    /help - information about bot features
+                    /map - display place on map
+                    /route - display information about route
+                    """);
+            case "/help" ->  sendMessage(msg,
+                    """
+                    /help - information about bot features
+                    /map - display place on map
+                    /route - display information about route
+                    """);
+            //вторым параметром идет адрес дл€ вывода, как его получить - ?
+            case "/map" -> mapDisplayProcess(msg.getChatId().toString(),"“урнегева 4, ≈катеринбург");
+            case "/route" -> routeProcess(msg, addr);
             default ->  sendMessage(msg,"Bot can reply only on commands");
         }
     }
@@ -49,8 +81,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         processing.mapDisplay(getBotToken(), id, address);
     }
 
-    private void routeProcess(Message msg) {
-        sendMessage(msg, new HttpRequest().sendPostRoute());
+    private void routeProcess(Message msg, String addr) {
+        sendMessage(msg, Processing.http.sendPostRoute(addr));
     }
 
     private void buttonProcess(Message msg) {
@@ -66,19 +98,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             Location location = msg.getLocation();
             userGeolocation = new Coordinates(location);
             message.setText(userGeolocation.toString());
-        }
-        else if (!repeatCommand)
-        {
-            String text = msg.getText();
-            command = text;
-            String textToSend = processing.processMessage(text);
-            message.setText(textToSend);
-        }
-        else
-        {
-            String text = msg.getText();
-            String textToSend = processing.processMessage(command, text);
-            message.setText(textToSend);
         }
 
         try {

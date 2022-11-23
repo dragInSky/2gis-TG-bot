@@ -43,12 +43,10 @@ public class HttpRequest {
             TelegramBot.repeatCommand = true;
             return "¬ведите первый адрес";
         }
-
         else if (firstAddr == "") {
             firstAddr = addr;
             return "¬ведите второй адрес";
         }
-
         else if (secondAddr == "") {
             secondAddr = addr;
             TelegramBot.repeatCommand = false;
@@ -113,8 +111,8 @@ public class HttpRequest {
 
             Processing processing = new Processing();
 
-            String[] firstAddrInCoordinate = processing.coordinates(firstAddr).split(" ");
-            String[] secondAddrInCoordinate = processing.coordinates(secondAddr).split(" ");
+            String[] firstAddrInCoordinate = processing.addressToCoordinates(firstAddr).split(" ");
+            String[] secondAddrInCoordinate = processing.addressToCoordinates(secondAddr).split(" ");
 
 
             String urlParameters = """
