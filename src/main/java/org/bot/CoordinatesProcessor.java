@@ -3,7 +3,7 @@ package org.bot;
 import java.util.ArrayList;
 
 public class CoordinatesProcessor {
-    private ArrayList<Coordinates> coordinatesArray;
+    private final ArrayList<Coordinates> coordinatesArray;
 
     CoordinatesProcessor(String route) {
         coordinatesArray = new ArrayList<>();
@@ -26,20 +26,19 @@ public class CoordinatesProcessor {
     }
 
     public Coordinates coordinatesProcess() {
-        HttpRequest httpRequest = new HttpRequest();
+        HttpProcess httpProcess = new HttpProcess();
         int duration, minDur = Integer.MAX_VALUE;
         Coordinates averageCoordinate = null;
         for (Coordinates coordinate : coordinatesArray) {
-            String route = httpRequest.createRouteWithCoordinates(coordinate);
-            System.out.println(route);
+            String route = httpProcess.createRouteWithCoordinates(coordinate);
             try {
                 duration = Integer.parseInt(route.substring(route.lastIndexOf(':') + 1));
             }
             catch (NumberFormatException e) {
                 continue;
             }
-            if (Math.abs(duration - httpRequest.getDuration() / 2) < minDur) {
-                minDur = Math.abs(duration - httpRequest.getDuration() / 2);
+            if (Math.abs(duration - httpProcess.getDuration() / 2) < minDur) {
+                minDur = Math.abs(duration - httpProcess.getDuration() / 2);
                 averageCoordinate = coordinate;
             }
         }
