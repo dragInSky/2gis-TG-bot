@@ -11,10 +11,17 @@ import java.util.ArrayList;
 public class HttpRequest {
     private final String USER_AGENT = "Mozilla/5.0";
 
-    public String sendGetGeo(String addr) {
+    public String sendGetGeo(String addr) { //метод для конвертации адреса к координатам
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
                 addr, get2GisGetKey());
+        return sendGet(url);
+    }
+
+    public String sendGetGeo(Coordinates coordinates) { //перегрузка для конвертации Coordinates к адресу
+        String url = MessageFormat.format(
+                "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
+                coordinates.toString(), get2GisGetKey());
         return sendGet(url);
     }
 
@@ -23,6 +30,14 @@ public class HttpRequest {
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
                 get2GisPostKey());
         return sendPost(url);
+    }
+
+    public void mapDisplay(String token, String id, String coordinates) {
+        String[] splittedCoordinates = coordinates.split(" ");
+        String url = MessageFormat.format(
+                "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
+                token, id, splittedCoordinates[0], splittedCoordinates[1]);
+        sendGet(url);
     }
 
     // HTTP GET request
@@ -142,10 +157,6 @@ public class HttpRequest {
                 } catch (NumberFormatException ignored) {}
             }
             idx = endIdx;
-        }
-
-        for (Coordinates tmp : coordinates) {
-            System.out.println("lat = " + tmp.getLat() + '\t' + "lon = " + tmp.getLon());
         }
 
         return coordinates;

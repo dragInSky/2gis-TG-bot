@@ -1,30 +1,22 @@
 package org.bot;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.MessageFormat;
+import org.telegram.telegrambots.meta.api.objects.Location;
 
 public class Processing {
-    public String coordinates(String addr) {
-        HttpRequest request = new HttpRequest();
+    private final HttpRequest request = new HttpRequest();
+
+    private String addressToCoordinates(String addr) { //метод для конвертации адреса к координатам
         return request.sendGetGeo(addr);
+    }
+    private String coordinatesToAddress(Location location) { //перегрузка для конвертации Location к адресу
+        return coordinatesToAddress(new Coordinates(location));
+    }
+    private String coordinatesToAddress(Coordinates coordinates) { //перегрузка для конвертации Coordinates к адресу
+        return request.sendGetGeo(coordinates);
     }
 
     public void request(String token, String id, String addr) {
-        String data = coordinates(addr);
-        try {
-            String[] coordinates = data.split(" ");
-            final String urlAdress = MessageFormat.format(
-                    "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
-                    token, id, coordinates[0], coordinates[1]);
-            URL url = new URL(urlAdress);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.getResponseCode();
-            con.disconnect();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String coordinates = addressToCoordinates(addr);
+        request.mapDisplay(token, id, coordinates);
     }
 }

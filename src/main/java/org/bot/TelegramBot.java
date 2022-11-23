@@ -7,7 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class TelegramBot extends TelegramLongPollingBot {
-    private Coordinates coordinates;
+    private Coordinates userGeolocation = null;
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -48,8 +49,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         if (update.getMessage().hasLocation()) { //если была запрошена геолокация
             Location location = update.getMessage().getLocation();
-            coordinates = new Coordinates(location);
-            message.setText(coordinates.toString());
+            userGeolocation = new Coordinates(location);
+            message.setText(userGeolocation.toString());
         } else {
             message.setText(text);
         }
@@ -59,6 +60,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    public Coordinates getUserGeolocation() {
+        return userGeolocation;
     }
 
     @Override
