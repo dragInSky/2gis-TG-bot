@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class HttpRequest {
     private final String USER_AGENT = "Mozilla/5.0";
 
+    //этот метод должен сделать sendGet запрос, получить ответ и преобразовать его
     public String sendGetGeo(String addr) { //метод для конвертации адреса к координатам
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
@@ -18,6 +19,7 @@ public class HttpRequest {
         return sendGet(url);
     }
 
+    //этот метод должен сделать sendGet запрос, получить ответ и преобразовать его
     public String sendGetGeo(Coordinates coordinates) { //перегрузка для конвертации Coordinates к адресу
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
@@ -25,6 +27,7 @@ public class HttpRequest {
         return sendGet(url);
     }
 
+    //этот метод должен сделать sendGet запрос, получить ответ и преобразовать его
     public String sendPostRoute() {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
@@ -32,6 +35,7 @@ public class HttpRequest {
         return sendPost(url);
     }
 
+    //этот метод должен сделать sendGet запрос, без возвращаемого значения
     public void mapDisplay(String token, String id, String coordinates) {
         String[] splittedCoordinates = coordinates.split(" ");
         String url = MessageFormat.format(
@@ -123,14 +127,6 @@ public class HttpRequest {
         }
     }
 
-    public String get2GisPostKey() {
-        return System.getenv("2GIS_POST_KEY");
-    }
-
-    public String get2GisGetKey() {
-        return System.getenv("2GIS_GET_KEY");
-    }
-
     private String findInformation(StringBuilder response)
     {
         int start = response.indexOf("total_distance");
@@ -160,5 +156,13 @@ public class HttpRequest {
         }
 
         return coordinates;
+    }
+
+    public String get2GisPostKey() {
+        return System.getenv("2GIS_POST_KEY");
+    }
+
+    public String get2GisGetKey() {
+        return System.getenv("2GIS_GET_KEY");
     }
 }

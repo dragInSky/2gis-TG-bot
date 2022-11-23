@@ -15,7 +15,7 @@ public class Processing {
         return request.sendGetGeo(coordinates);
     }
 
-    public void request(String token, String id, String addr) {
+    public void mapDisplay(String token, String id, String addr) {
         String coordinates = addressToCoordinates(addr);
         request.mapDisplay(token, id, coordinates);
     }
