@@ -4,6 +4,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -48,11 +49,10 @@ public class HttpRequest {
     private String sendGet(String url) {
         try {
             URL obj = new URL(url);
-            java.net.HttpURLConnection con = (java.net.HttpURLConnection) obj.openConnection();
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
             // optional default is GET
             con.setRequestMethod("GET");
-
             //add request header
             con.setRequestProperty("User-Agent", USER_AGENT);
 

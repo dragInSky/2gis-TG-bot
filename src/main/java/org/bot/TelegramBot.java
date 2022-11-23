@@ -3,6 +3,7 @@ package org.bot;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -13,54 +14,54 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            commandProcess(update);
+            commandProcess(update.getMessage());
         } else { //значит нажата кнопка
-            buttonProcess(update);
+            buttonProcess(update.getMessage());
         }
     }
 
-    private void commandProcess(Update update) {
-        String messageText = update.getMessage().getText();
+    private void commandProcess(Message msg) {
+        String messageText = msg.getText();
         switch (messageText) {
-            case "/start" -> sendMessage(update,
+            case "/start" -> sendMessage(msg,
                                 """
                                 Bot grats you!
                                 /help - information about bot features
                                 /map - display place on map
                                 /route - display information about route
                                 """);
-            case "/help" ->  sendMessage(update,
+            case "/help" ->  sendMessage(msg,
                             """
                             /help - information about bot features
                             /map - display place on map
                             /route - display information about route
                             """);
             //вторым параметром идет адрес для вывода, как его получить - ?
-            case "/map" -> mapDisplayProcess(update,"Турнегева 4, Екатеринбург");
-            case "/route" -> routeProcess(update);
-            default ->  sendMessage(update,"Bot can reply only on commands");
+            case "/map" -> mapDisplayProcess(msg.getChatId().toString(),"Турнегева 4, Екатеринбург");
+            case "/route" -> routeProcess(msg);
+            default ->  sendMessage(msg,"Bot can reply only on commands");
         }
     }
 
-    private void mapDisplayProcess(Update update, String address) {
-        processing.mapDisplay(getBotToken(), update.getMessage().getMessageId().toString(), address);
+    private void mapDisplayProcess(String id, String address) {
+        processing.mapDisplay(getBotToken(), id, address);
     }
 
-    private void routeProcess(Update update) {
-        sendMessage(update, new HttpRequest().sendPostRoute());
+    private void routeProcess(Message msg) {
+        sendMessage(msg, new HttpRequest().sendPostRoute());
     }
 
-    private void buttonProcess(Update update) {
-        sendMessage(update, "");
+    private void buttonProcess(Message msg) {
+        sendMessage(msg, "");
     }
 
-    private void sendMessage(Update update, String text) {
-        String chatId = update.getMessage().getChatId().toString();
+    private void sendMessage(Message msg, String text) {
+        String chatId = msg.getChatId().toString();
         SendMessage message = new SendMessage(chatId, text);
         new Button().setUpGeolocation(message);
 
-        if (update.getMessage().hasLocation()) { //если была запрошена геолокация
-            Location location = update.getMessage().getLocation();
+        if (msg.hasLocation()) { //если была запрошена геолокация
+            Location location = msg.getLocation();
             userGeolocation = new Coordinates(location);
             message.setText(userGeolocation.toString());
         } else {
