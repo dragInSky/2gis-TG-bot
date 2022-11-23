@@ -15,9 +15,4 @@ class HttpRequestTest {
         assertEquals(test.sendGetGeo("Villa 516, Jumeirah 3, Dubai"), "25.181257 55.224251");
     }
 
-    @Test
-    void sendPostRoute() {
-        HttpRequest test = new HttpRequest();
-        assertEquals(test.sendPostRoute(), "\"total_distance\":14980,\"total_duration\":1744");
-    }
 }

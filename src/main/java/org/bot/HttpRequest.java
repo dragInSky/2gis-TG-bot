@@ -8,7 +8,12 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
 
+
 public class HttpRequest {
+
+    private String firstAddr = "";
+
+    private String secondAddr = "";
     private final String USER_AGENT = "Mozilla/5.0";
 
     public String sendGetGeo(String addr) {
@@ -18,12 +23,26 @@ public class HttpRequest {
         return sendGet(url);
     }
 
-    public String sendPostRoute() {
+    public String sendPostRoute(String addr) {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
                 get2GisPostKey());
+        if (addr == "") {
+            TelegramBot.repeatCommand = true;
+            return "Введите первый адрес";
+        }
 
-        return sendPost(url, "Тургенева 4 Екатеринбург", "Розы Люксембург, 54, Екатеринбург");
+        else if (firstAddr == "") {
+            firstAddr = addr;
+            return "Введите второй адрес";
+        }
+
+        else if (secondAddr == "") {
+            secondAddr = addr;
+            TelegramBot.repeatCommand = false;
+        }
+
+        return sendPost(url, firstAddr, secondAddr);
     }
 
     // HTTP GET request
@@ -52,6 +71,8 @@ public class HttpRequest {
             int lastIdx = response.indexOf("purpose_name") - 3;
             String substr = response.substring(firstIdx, lastIdx);
             String[] coordinates = substr.split(",");
+
+            Processing.http = new HttpRequest();
 
             return coordinates[0].substring(coordinates[0].indexOf(":") + 1) +
                     " " + coordinates[1].substring(coordinates[1].indexOf(":") + 1);
