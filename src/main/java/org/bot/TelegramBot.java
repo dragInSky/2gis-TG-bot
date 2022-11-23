@@ -14,15 +14,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             String id = update.getMessage().getChatId().toString();
             message.setChatId(id);
             String text = update.getMessage().getText();
-            Response response = processing.processMessage(text);
-            message.setText(response.getData());
+            String textToSend = processing.processMessage(text);
+            message.setText(textToSend);
 
             try {
-                //if (response.getFlag()) {
-                //    processing.request(getBotToken(), id, text);
-                //} else {
                 execute(message); // Call method to send the message
-                //}
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
