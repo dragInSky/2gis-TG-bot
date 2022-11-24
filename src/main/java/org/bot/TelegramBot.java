@@ -10,7 +10,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class TelegramBot extends TelegramLongPollingBot {
     private Coordinates userGeolocation = null;
     private final HttpProcess httpProcess = new HttpProcess();
-    public static boolean repeatCommand = false;
     private String command;
 
     @Override
@@ -24,7 +23,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void commandProcess(Message msg) {
         String text = msg.getText();
-        if (!repeatCommand) {
+        if (!HttpRequest.setRepeatCommand()) {
             command = text;
             commandProcess(msg, text);
         }
