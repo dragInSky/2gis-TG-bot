@@ -43,19 +43,16 @@ public class HttpProcess {
         String[] firstAddrInCoordinate = addressToCoordinates(firstAddr).split(" ");
         String[] secondAddrInCoordinate = addressToCoordinates(secondAddr).split(" ");
         String response = httpRequest.sendPost(url, firstAddrInCoordinate, secondAddrInCoordinate);
-
         String route = findInformation(response);
-        System.out.println(route);
         duration = Integer.parseInt(route.substring(route.lastIndexOf(':') + 1));
-        System.out.println(duration);
 
-        Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
-        System.out.println(middleCoordinate);
+        //штука для поиска средней точки
+        //Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
 
-        return route;
+        return route; //+ "\nMiddle point of route: " + middleCoordinate.toString(); - вывод средней точки
     }
 
-    public String createRouteWithCoordinates(Coordinates coordinates) {
+    public String createRouteWithCoordinates(Coordinates coordinates) { //штука для поиска средней точки
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
                 get2GisPostKey());

@@ -19,10 +19,15 @@ public class CoordinatesProcessor {
             String[] strArr = substr.split(",\s|\s");
             for (int i = 0; i + 1 < strArr.length; i += 2) {
                 try {
-                    coordinatesArray.add(new Coordinates(Double.parseDouble(strArr[i]), Double.parseDouble(strArr[i + 1])));
+                    coordinatesArray.add(
+                            new Coordinates(Double.parseDouble(strArr[i]), Double.parseDouble(strArr[i + 1])));
                 } catch (NumberFormatException ignored) {}
             }
             idx = endIdx;
+        }
+
+        for (Coordinates coord : coordinatesArray) {
+            System.out.println(coord.toString());
         }
     }
 
@@ -32,7 +37,6 @@ public class CoordinatesProcessor {
         Coordinates middleCoordinate = null;
         Boolean bFlag = null;
         for (int i = coordinatesArray.size() / 2; i >= 0 && i < coordinatesArray.size();) {
-            System.out.println(i);
             String route = httpProcess.createRouteWithCoordinates(coordinatesArray.get(i));
             try {
                 duration = Integer.parseInt(route.substring(route.lastIndexOf(':') + 1));
@@ -43,9 +47,9 @@ public class CoordinatesProcessor {
             if (Math.abs(duration - httpProcess.getDuration() / 2) < minDur) {
                 minDur = Math.abs(duration - httpProcess.getDuration() / 2);
                 middleCoordinate = coordinatesArray.get(i);
-                if (bFlag != null && bFlag != duration > httpProcess.getDuration() / 2) {
-                    break;
-                }
+            }
+            if (bFlag != null && bFlag != (duration > httpProcess.getDuration() / 2)) {
+                break;
             }
             bFlag = duration > httpProcess.getDuration() / 2;
             if (bFlag) {
