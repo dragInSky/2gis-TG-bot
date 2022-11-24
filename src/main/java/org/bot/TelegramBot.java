@@ -23,7 +23,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void commandProcess(Message msg) {
         String text = msg.getText();
-        if (!HttpRequest.setRepeatCommand()) {
+        if (!HttpProcess.setRepeatCommand()) {
             command = text;
             commandProcess(msg, text);
         }

@@ -7,7 +7,12 @@ public class HttpProcess {
     private static String firstAddr = "";
     private static String secondAddr = "";
     private static int duration;
+    private static boolean repeatCommand = false;
     private final HttpRequest httpRequest = new HttpRequest();
+
+    public static boolean setRepeatCommand(){
+        return repeatCommand;
+    }
 
     public String addressToCoordinates(String addr) {
         String url = MessageFormat.format(
@@ -28,7 +33,7 @@ public class HttpProcess {
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
                 get2GisPostKey());
         if (Objects.equals(addr, "")) {
-            TelegramBot.repeatCommand = true;
+            repeatCommand = true;
             return "¬ведите первый адрес";
         }
         else if (Objects.equals(firstAddr, "")) {
@@ -37,7 +42,7 @@ public class HttpProcess {
         }
         else if (Objects.equals(secondAddr, "")) {
             secondAddr = addr;
-            TelegramBot.repeatCommand = false;
+            repeatCommand = false;
         }
 
         String[] firstAddrInCoordinate = addressToCoordinates(firstAddr).split(" ");
