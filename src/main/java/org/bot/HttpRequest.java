@@ -9,7 +9,6 @@ import java.net.URL;
 
 public class HttpRequest {
     private final String USER_AGENT = "Mozilla/5.0";
-    private final HttpProcess httpProcess = new HttpProcess();
 
     // HTTP GET request
     public String sendGet(String url) {
@@ -38,7 +37,7 @@ public class HttpRequest {
         }
     }
 
-    public String sendPost(String url, String firstAddr, String secondAddr) {
+    public String sendPost(String url, String[] firstAddrInCoordinate, String[] secondAddrInCoordinate) {
         try {
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -47,10 +46,6 @@ public class HttpRequest {
             con.setRequestMethod("POST");
             con.setRequestProperty("User-Agent", USER_AGENT);
             con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
-            String[] firstAddrInCoordinate = httpProcess.addressToCoordinates(firstAddr).split(" ");
-            String[] secondAddrInCoordinate = httpProcess.addressToCoordinates(secondAddr).split(" ");
-
 
             String urlParameters = """
                     {

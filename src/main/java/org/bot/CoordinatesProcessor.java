@@ -14,11 +14,12 @@ public class CoordinatesProcessor {
             if (startIdx == -1 || endIdx == -1) {
                 break;
             }
+            startIdx += "LINESTRING(".length();
             String substr = route.substring(startIdx, endIdx);
-            String[] strArr = substr.split("[ ,]");
+            String[] strArr = substr.split(",\s|\s");
             for (int i = 0; i + 1 < strArr.length; i += 2) {
                 try {
-                    coordinatesArray.add(new Coordinates(Double.parseDouble(strArr[i + 1]), Double.parseDouble(strArr[i])));
+                    coordinatesArray.add(new Coordinates(Double.parseDouble(strArr[i]), Double.parseDouble(strArr[i + 1])));
                 } catch (NumberFormatException ignored) {}
             }
             idx = endIdx;
@@ -28,9 +29,11 @@ public class CoordinatesProcessor {
     public Coordinates coordinatesProcess() {
         HttpProcess httpProcess = new HttpProcess();
         int duration, minDur = Integer.MAX_VALUE;
-        Coordinates averageCoordinate = null;
-        for (Coordinates coordinate : coordinatesArray) {
-            String route = httpProcess.createRouteWithCoordinates(coordinate);
+        Coordinates middleCoordinate = null;
+        Boolean bFlag = null;
+        for (int i = coordinatesArray.size() / 2; i >= 0 && i < coordinatesArray.size();) {
+            System.out.println(i);
+            String route = httpProcess.createRouteWithCoordinates(coordinatesArray.get(i));
             try {
                 duration = Integer.parseInt(route.substring(route.lastIndexOf(':') + 1));
             }
@@ -39,10 +42,19 @@ public class CoordinatesProcessor {
             }
             if (Math.abs(duration - httpProcess.getDuration() / 2) < minDur) {
                 minDur = Math.abs(duration - httpProcess.getDuration() / 2);
-                averageCoordinate = coordinate;
+                middleCoordinate = coordinatesArray.get(i);
+                if (bFlag != null && bFlag != duration > httpProcess.getDuration() / 2) {
+                    break;
+                }
+            }
+            bFlag = duration > httpProcess.getDuration() / 2;
+            if (bFlag) {
+                i--;
+            } else {
+                i++;
             }
         }
 
-        return averageCoordinate;
+        return middleCoordinate;
     }
 }

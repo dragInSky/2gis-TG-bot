@@ -4,10 +4,9 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public class HttpProcess {
-    private String firstAddr = "";
-    private String secondAddr = "";
-    private int duration;
-    private CoordinatesProcessor coordinatesProcessor;
+    private static String firstAddr = "";
+    private static String secondAddr = "";
+    private static int duration;
     private final HttpRequest httpRequest = new HttpRequest();
 
     public String addressToCoordinates(String addr) {
@@ -19,8 +18,8 @@ public class HttpProcess {
 
     public String coordinatesToAddress(Coordinates coordinates) {
         String url = MessageFormat.format(
-                "https://catalog.api.2gis.com/3.0/items/geocode?{0}&fields=items.point&key={1}",
-                coordinates.toString(), get2GisGetKey());
+                "https://catalog.api.2gis.com/3.0/items/geocode?lat={0}&lon={1}&fields=items.point&key={2}",
+                coordinates.getLat(), coordinates.getLon(), get2GisGetKey());
         return findAddress(httpRequest.sendGet(url));
     }
 
@@ -41,25 +40,30 @@ public class HttpProcess {
             TelegramBot.repeatCommand = false;
         }
 
-        String response = httpRequest.sendPost(url, firstAddr, secondAddr);
-        coordinatesProcessor = new CoordinatesProcessor(response);
+        String[] firstAddrInCoordinate = addressToCoordinates(firstAddr).split(" ");
+        String[] secondAddrInCoordinate = addressToCoordinates(secondAddr).split(" ");
+        String response = httpRequest.sendPost(url, firstAddrInCoordinate, secondAddrInCoordinate);
 
         String route = findInformation(response);
+        System.out.println(route);
         duration = Integer.parseInt(route.substring(route.lastIndexOf(':') + 1));
+        System.out.println(duration);
+
+        Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
+        System.out.println(middleCoordinate);
 
         return route;
     }
 
     public String createRouteWithCoordinates(Coordinates coordinates) {
-        String addr = coordinatesToAddress(coordinates);
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
                 get2GisPostKey());
 
-        String response = httpRequest.sendPost(url, firstAddr, secondAddr);
-        System.out.println(response);
+        String[] firstAddrInCoordinate = addressToCoordinates(firstAddr).split(" ");
+        String response = httpRequest.sendPost(url, firstAddrInCoordinate, coordinates.toString().split(" "));
 
-        return findInformation(httpRequest.sendPost(url, firstAddr, addr));
+        return findInformation(response);
     }
 
     public void mapDisplay(String token, String id, String addr) {
