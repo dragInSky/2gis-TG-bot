@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class TelegramBot extends TelegramLongPollingBot {
-    public static boolean repeatCommand = false;
+
     private String command;
     @Override
     public void onUpdateReceived(Update update) {
@@ -15,7 +15,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             SendMessage message = new SendMessage(); // Create a SendMessage object with mandatory fields
             String id = update.getMessage().getChatId().toString();
             message.setChatId(id);
-            if (!repeatCommand)
+            if (!HttpRequest.setRepeatCommand())
             {
                 String text = update.getMessage().getText();
                 command = text;

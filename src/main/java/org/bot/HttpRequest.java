@@ -14,7 +14,13 @@ public class HttpRequest {
     private String firstAddr = "";
 
     private String secondAddr = "";
+
+    public static boolean repeatCommand = false;
     private final String USER_AGENT = "Mozilla/5.0";
+
+    public static boolean setRepeatCommand(){
+        return repeatCommand;
+    }
 
     public String sendGetGeo(String addr) {
         String url = MessageFormat.format(
@@ -27,19 +33,19 @@ public class HttpRequest {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
                 get2GisPostKey());
-        if (addr == "") {
-            TelegramBot.repeatCommand = true;
+        if (addr.equals("")) {
+            repeatCommand = true;
             return "¬ведите первый адрес";
         }
 
-        else if (firstAddr == "") {
+        else if (firstAddr.equals("")) {
             firstAddr = addr;
             return "¬ведите второй адрес";
         }
 
-        else if (secondAddr == "") {
+        else if (secondAddr.equals("")) {
             secondAddr = addr;
-            TelegramBot.repeatCommand = false;
+            repeatCommand = false;
         }
 
         return sendPost(url, firstAddr, secondAddr);
