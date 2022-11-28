@@ -21,13 +21,6 @@ public class HttpProcess {
         return findCoordinates(httpRequest.sendGet(url));
     }
 
-    public String coordinatesToAddress(Coordinates coordinates) {
-        String url = MessageFormat.format(
-                "https://catalog.api.2gis.com/3.0/items/geocode?lat={0}&lon={1}&fields=items.point&key={2}",
-                coordinates.getLat(), coordinates.getLon(), get2GisGetKey());
-        return findAddress(httpRequest.sendGet(url));
-    }
-
     public String createRouteWithAddress(String addr) {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
@@ -75,6 +68,16 @@ public class HttpProcess {
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
                 token, id, splittedCoordinates[0], splittedCoordinates[1]);
         httpRequest.sendGet(url);
+    }
+
+    public String addrInfo(String addr) {
+        String coordinates = addressToCoordinates(addr);
+        String[] splittedCoordinates = coordinates.split(" ");
+        String url = MessageFormat.format(
+                "https://catalog.api.2gis.com/2.0/catalog/rubric/list?sort_point={0}%2C{1}&key={2}",
+                splittedCoordinates[0], splittedCoordinates[1], get2GisGetKey());
+        String response = httpRequest.sendGet(url);
+        return response;
     }
 
     private String findCoordinates(String response) {

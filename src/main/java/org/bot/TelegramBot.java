@@ -49,6 +49,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             """);
             //вторым параметром идет адрес дл€ вывода, как его получить - ?
             case "/map" -> mapDisplayProcess(msg.getChatId().toString(),"“урнегева 4, ≈катеринбург");
+            case "/info" -> addrInfoProcess(msg,"");
             case "/route" -> routeProcess(msg, "");
             default ->  sendMessage(msg,"Bot can reply only on commands");
         }
@@ -71,6 +72,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     """);
             //вторым параметром идет адрес дл€ вывода, как его получить - ?
             case "/map" -> mapDisplayProcess(msg.getChatId().toString(),"“урнегева 4, ≈катеринбург");
+            case "/info" -> addrInfoProcess(msg, addr);
             case "/route" -> routeProcess(msg, addr);
             default ->  sendMessage(msg,"Bot can reply only on commands");
         }
@@ -78,6 +80,10 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void mapDisplayProcess(String id, String address) {
         httpProcess.mapDisplay(getBotToken(), id, address);
+    }
+
+    private void addrInfoProcess(Message msg, String addr) {
+        sendMessage(msg, httpProcess.addrInfo(addr));
     }
 
     private void routeProcess(Message msg, String addr) {
