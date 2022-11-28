@@ -8,11 +8,15 @@ public class HttpProcess {
     private static String secondAddr = "";
     private static int duration;
     private static boolean repeatCommand = false;
+
+    //private static boolean button = false;
     private final HttpRequest httpRequest = new HttpRequest();
 
-    public static boolean setRepeatCommand(){
+    public static boolean getRepeatCommand(){
         return repeatCommand;
     }
+
+    //public static boolean getButton(){return button;}
 
     public String addressToCoordinates(String addr) {
         String url = MessageFormat.format(
@@ -43,7 +47,8 @@ public class HttpProcess {
         String response = httpRequest.sendPost(url, firstAddrInCoordinate, secondAddrInCoordinate);
         String route = findInformation(response);
         duration = Integer.parseInt(route.substring(route.lastIndexOf(':') + 1));
-
+        firstAddr = "";
+        secondAddr = "";
         //штука дл€ поиска средней точки
         //Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
 
@@ -61,13 +66,22 @@ public class HttpProcess {
         return findInformation(response);
     }
 
-    public void mapDisplay(String token, String id, String addr) {
+    public String mapDisplay(String token, String id, String addr) {
+        if (Objects.equals(addr, "")) {
+            repeatCommand = true;
+            return "¬ведите адрес";
+        }
+        else{
+            repeatCommand = false;
+        }
+
         String coordinates = addressToCoordinates(addr);
         String[] splittedCoordinates = coordinates.split(" ");
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
                 token, id, splittedCoordinates[0], splittedCoordinates[1]);
         httpRequest.sendGet(url);
+        return "";
     }
 
     public String addrInfo(String addr) {

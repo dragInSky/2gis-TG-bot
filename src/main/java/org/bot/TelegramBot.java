@@ -23,7 +23,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void commandProcess(Message msg) {
         String text = msg.getText();
-        if (!HttpProcess.setRepeatCommand()) {
+        if (!HttpProcess.getRepeatCommand()) {
             command = text;
             commandProcess(msg, text);
         }
@@ -48,8 +48,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             /route - display information about route
                             """);
             //вторым параметром идет адрес дл€ вывода, как его получить - ?
-            case "/map" -> mapDisplayProcess(msg.getChatId().toString(),"“урнегева 4, ≈катеринбург");
-            case "/info" -> addrInfoProcess(msg,"");
+            case "/map" -> mapDisplayProcess(msg, msg.getChatId().toString(),"");
             case "/route" -> routeProcess(msg, "");
             default ->  sendMessage(msg,"Bot can reply only on commands");
         }
@@ -71,19 +70,14 @@ public class TelegramBot extends TelegramLongPollingBot {
                     /route - display information about route
                     """);
             //вторым параметром идет адрес дл€ вывода, как его получить - ?
-            case "/map" -> mapDisplayProcess(msg.getChatId().toString(),"“урнегева 4, ≈катеринбург");
-            case "/info" -> addrInfoProcess(msg, addr);
+            case "/map" -> mapDisplayProcess(msg, msg.getChatId().toString(), addr);
             case "/route" -> routeProcess(msg, addr);
             default ->  sendMessage(msg,"Bot can reply only on commands");
         }
     }
 
-    private void mapDisplayProcess(String id, String address) {
-        httpProcess.mapDisplay(getBotToken(), id, address);
-    }
-
-    private void addrInfoProcess(Message msg, String addr) {
-        sendMessage(msg, httpProcess.addrInfo(addr));
+    private void mapDisplayProcess(Message msg, String id, String address) {
+        sendMessage(msg, httpProcess.mapDisplay(getBotToken(), id, address));
     }
 
     private void routeProcess(Message msg, String addr) {
