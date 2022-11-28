@@ -8,11 +8,15 @@ public class HttpProcess {
     private static String secondAddr = "";
     private static int duration;
     private static boolean repeatCommand = false;
+
+    //private static boolean button = false;
     private final HttpRequest httpRequest = new HttpRequest();
 
-    public static boolean setRepeatCommand(){
+    public static boolean getRepeatCommand(){
         return repeatCommand;
     }
+
+    //public static boolean getButton(){return button;}
 
     public String addressToCoordinates(String addr) {
         String url = MessageFormat.format(

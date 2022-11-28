@@ -23,7 +23,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void commandProcess(Message msg) {
         String text = msg.getText();
-        if (!HttpProcess.setRepeatCommand()) {
+        if (!HttpProcess.getRepeatCommand()) {
             command = text;
             commandProcess(msg, text);
         }
@@ -92,6 +92,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         String chatId = msg.getChatId().toString();
         SendMessage message = new SendMessage(chatId, data);
         new Button().setUpGeolocation(message);
+
+
 
         if (msg.hasLocation()) { //если была запрошена геолокация
             Location location = msg.getLocation();
