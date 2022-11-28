@@ -85,13 +85,54 @@ public class HttpProcess {
     }
 
     public String addrInfo(String addr) {
-        String coordinates = addressToCoordinates(addr);
-        String[] splittedCoordinates = coordinates.split(" ");
+        if (Objects.equals(addr, "")) {
+            repeatCommand = true;
+            return "¬ведите адрес";
+        }
+        else{
+            repeatCommand = false;
+        }
         String url = MessageFormat.format(
-                "https://catalog.api.2gis.com/2.0/catalog/rubric/list?sort_point={0}%2C{1}&key={2}",
-                splittedCoordinates[0], splittedCoordinates[1], get2GisGetKey());
+                "https://catalog.api.2gis.com/3.0/items?building_id={0}&key={1}",
+                buildingId(addr), get2GisGetKey());
+
         String response = httpRequest.sendGet(url);
-        return response;
+        return findCompanies(response);
+    }
+
+    private String buildingId(String addr) {
+        String url = MessageFormat.format(
+                "https://catalog.api.2gis.com/3.0/items?q={0}&type=building&key={1}",
+                addr, get2GisGetKey());
+
+        String response = httpRequest.sendGet(url);
+        return findRegionId(response);
+    }
+
+    private String findCompanies(String response) {
+        System.out.println(response);
+        StringBuilder result = new StringBuilder();
+        int idx = 0;
+        while (true) {
+            int firstIdx = response.indexOf("\"name", idx);
+            int lastIdx = response.indexOf("type", firstIdx);
+            if (firstIdx == -1 || lastIdx == -1) {
+                break;
+            }
+            firstIdx += 8;
+            lastIdx -= 3;
+
+            result.append(response, firstIdx, lastIdx);
+            result.append('\n');
+            idx = lastIdx;
+        }
+        return result.toString();
+    }
+
+    private String findRegionId(String response) {
+        int firstIdx = response.indexOf("id") + 5;
+        int lastIdx = response.indexOf(",", firstIdx) - 1;
+        return response.substring(firstIdx, lastIdx);
     }
 
     private String findCoordinates(String response) {
@@ -102,13 +143,6 @@ public class HttpProcess {
 
         return coordinates[0].substring(coordinates[0].indexOf(":") + 1) +
                 " " + coordinates[1].substring(coordinates[1].indexOf(":") + 1);
-    }
-
-    private String findAddress(String response) {
-        int firstIdx = response.indexOf("full_name") + "full_name".length() + 4;
-        int lastIdx = response.indexOf("id") - 3;
-
-        return response.substring(firstIdx, lastIdx);
     }
 
     private String findInformation(String response)
