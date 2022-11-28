@@ -69,13 +69,22 @@ public class HttpProcess {
         return findInformation(response);
     }
 
-    public void mapDisplay(String token, String id, String addr) {
+    public String mapDisplay(String token, String id, String addr) {
+        if (Objects.equals(addr, "")) {
+            repeatCommand = true;
+            return "¬ведите адрес";
+        }
+        else{
+            repeatCommand = false;
+        }
+
         String coordinates = addressToCoordinates(addr);
         String[] splittedCoordinates = coordinates.split(" ");
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
                 token, id, splittedCoordinates[0], splittedCoordinates[1]);
         httpRequest.sendGet(url);
+        return "";
     }
 
     private String findCoordinates(String response) {
