@@ -50,7 +50,8 @@ public class HttpProcess {
         String response = httpRequest.sendPost(url, firstAddrInCoordinate, secondAddrInCoordinate);
         String route = findInformation(response);
         duration = Integer.parseInt(route.substring(route.lastIndexOf(':') + 1));
-
+        firstAddr = "";
+        secondAddr = "";
         //штука для поиска средней точки
         //Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
 
