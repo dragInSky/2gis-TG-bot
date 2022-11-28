@@ -1,6 +1,7 @@
 package org.bot;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class HttpProcess {
@@ -22,7 +23,14 @@ public class HttpProcess {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
                 addr, get2GisGetKey());
-        return findCoordinates(httpRequest.sendGet(url));
+        String response = httpRequest.sendGet(url);
+        if (response == null) {
+            return "error";
+        }
+        if (wrongRequest(response)) {
+            return "¬веден некорректный адрес: " + addr;
+        }
+        return findCoordinates(response);
     }
 
     public String createRouteWithAddress(String addr) {
@@ -42,11 +50,43 @@ public class HttpProcess {
             repeatCommand = false;
         }
 
-        String[] firstAddrInCoordinate = addressToCoordinates(firstAddr).split(" ");
-        String[] secondAddrInCoordinate = addressToCoordinates(secondAddr).split(" ");
+        if (Objects.equals(firstAddr, secondAddr)) {
+            firstAddr = "";
+            secondAddr = "";
+            return "¬ведите разные адреса!";
+        }
+
+        String firstCoordinates = addressToCoordinates(firstAddr);
+        if (firstCoordinates.equals("error")) {
+            return "error";
+        }
+        if (firstCoordinates.equals("¬веден некорректный адрес: " + addr)) {
+            return "¬веден некорректный адрес: " + addr;
+        }
+
+        String secondCoordinates = addressToCoordinates(secondAddr);
+        if (secondCoordinates.equals("error")) {
+            return "error";
+        }
+        if (secondCoordinates.equals("¬веден некорректный адрес: " + addr)) {
+            return "¬веден некорректный адрес: " + addr;
+        }
+
+        String[] firstAddrInCoordinate = firstCoordinates.split(" ");
+        String[] secondAddrInCoordinate = secondCoordinates.split(" ");
+        System.out.println(url);
         String response = httpRequest.sendPost(url, firstAddrInCoordinate, secondAddrInCoordinate);
-        String route = findInformation(response);
-        duration = Integer.parseInt(route.substring(route.lastIndexOf(':') + 1));
+        System.out.println(Arrays.toString(firstAddrInCoordinate));
+        System.out.println(Arrays.toString(secondAddrInCoordinate));
+        if (response == null) {
+            return "error";
+        }
+        if (wrongRequest(response)) {
+            return "¬веден некорректный адрес: " + addr;
+        }
+        String route = findRouteInformation(response);
+
+        duration = Integer.parseInt(route.substring(route.lastIndexOf(':') + 2, route.lastIndexOf(' ')));
         firstAddr = "";
         secondAddr = "";
         //штука дл€ поиска средней точки
@@ -62,8 +102,10 @@ public class HttpProcess {
 
         String[] firstAddrInCoordinate = addressToCoordinates(firstAddr).split(" ");
         String response = httpRequest.sendPost(url, firstAddrInCoordinate, coordinates.toString().split(" "));
-
-        return findInformation(response);
+        if (response == null) {
+            return "error";
+        }
+        return findRouteInformation(response);
     }
 
     public String mapDisplay(String token, String id, String addr) {
@@ -76,11 +118,20 @@ public class HttpProcess {
         }
 
         String coordinates = addressToCoordinates(addr);
+        if (coordinates.equals("error")) {
+            return "error";
+        }
+        if (coordinates.equals("¬веден некорректный адрес: " + addr)) {
+            return "¬веден некорректный адрес: " + addr;
+        }
         String[] splittedCoordinates = coordinates.split(" ");
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
                 token, id, splittedCoordinates[0], splittedCoordinates[1]);
-        httpRequest.sendGet(url);
+        String response = httpRequest.sendGet(url);
+        if (response == null) {
+            return "error";
+        }
         return "";
     }
 
@@ -92,11 +143,24 @@ public class HttpProcess {
         else{
             repeatCommand = false;
         }
+        String buildId = buildingId(addr);
+        if (buildId.equals("error")) {
+            return "error";
+        }
+        if (buildId.equals("¬веден некорректный адрес: " + addr)) {
+            return "¬веден некорректный адрес: " + addr;
+        }
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?building_id={0}&key={1}",
                 buildingId(addr), get2GisGetKey());
 
         String response = httpRequest.sendGet(url);
+        if (response == null) {
+            return "error";
+        }
+        if (wrongRequest(response)) {
+            return "¬веден некорректный адрес: " + addr;
+        }
         return findCompanies(response);
     }
 
@@ -106,11 +170,20 @@ public class HttpProcess {
                 addr, get2GisGetKey());
 
         String response = httpRequest.sendGet(url);
-        return findRegionId(response);
+        if (response == null) {
+            return "error";
+        }
+        if (wrongRequest(response)) {
+            return "¬веден некорректный адрес: " + addr;
+        }
+        return findBuildingId(response);
+    }
+
+    private boolean wrongRequest(String response) {
+        return response.contains("code\":400") || response.contains("code\":404");
     }
 
     private String findCompanies(String response) {
-        System.out.println(response);
         StringBuilder result = new StringBuilder();
         int idx = 0;
         while (true) {
@@ -129,7 +202,7 @@ public class HttpProcess {
         return result.toString();
     }
 
-    private String findRegionId(String response) {
+    private String findBuildingId(String response) {
         int firstIdx = response.indexOf("id") + 5;
         int lastIdx = response.indexOf(",", firstIdx) - 1;
         return response.substring(firstIdx, lastIdx);
@@ -145,12 +218,21 @@ public class HttpProcess {
                 " " + coordinates[1].substring(coordinates[1].indexOf(":") + 1);
     }
 
-    private String findInformation(String response)
+    private String findRouteInformation(String response)
     {
-        int start = response.indexOf("total_distance");
-        int finish = response.indexOf("type", start);
+        int unitFirstIdx = response.indexOf("unit") + "unit".length() + 3;
+        int unitLastIdx = response.indexOf(",", unitFirstIdx) - 1;
+        String unit = response.substring(unitFirstIdx, unitLastIdx);
 
-        return response.substring(start - 1, finish - 2);
+        int distFirstIdx = response.indexOf("value") + "value".length() + 3;
+        int distLastIdx = response.indexOf("}", distFirstIdx) - 1;
+        String dist = response.substring(distFirstIdx, distLastIdx);
+
+        int durFirstIdx = response.indexOf("ui_total_duration") + "ui_total_duration".length() + 3;
+        int durLastIdx = response.indexOf(",", durFirstIdx) - 1;
+        String dur = response.substring(durFirstIdx, durLastIdx);
+
+        return "–ассто€ние маршрута: " + dist + " " + unit + "\nƒлительность маршрута: " + dur;
     }
 
     public String get2GisPostKey() {
