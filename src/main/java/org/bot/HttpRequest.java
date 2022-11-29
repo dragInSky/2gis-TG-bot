@@ -33,12 +33,11 @@ public class HttpRequest {
 
             return response.toString();
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
 
-    public String sendPost(String url, String[] firstAddrInCoordinate, String[] secondAddrInCoordinate) {
+    public String sendPost(String url, Coordinates firstCoordinates, Coordinates secondCoordinates) {
         try {
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -61,13 +60,15 @@ public class HttpRequest {
                                "x": {2},
                                "y": {3}
                            }
-                       ]
+                       ],
+                       "type": "pedestrian",
+                       "output": "full"
                     }
                     """;
-            urlParameters = urlParameters.replace("{0}", firstAddrInCoordinate[0]);
-            urlParameters = urlParameters.replace("{1}", firstAddrInCoordinate[1]);
-            urlParameters = urlParameters.replace("{2}", secondAddrInCoordinate[0]);
-            urlParameters = urlParameters.replace("{3}", secondAddrInCoordinate[1]);
+            urlParameters = urlParameters.replace("{0}", firstCoordinates.getLon() + "");
+            urlParameters = urlParameters.replace("{1}", firstCoordinates.getLat() + "");
+            urlParameters = urlParameters.replace("{2}", secondCoordinates.getLon() + "");
+            urlParameters = urlParameters.replace("{3}", secondCoordinates.getLat() + "");
 
             // Send post request
             con.setDoOutput(true);
@@ -88,7 +89,6 @@ public class HttpRequest {
 
             return response.toString();
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }

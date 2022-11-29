@@ -1,5 +1,6 @@
 package org.bot;
 
+import org.apache.http.HttpException;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
@@ -15,20 +16,16 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            commandProcess(update.getMessage());
+            String text = update.getMessage().getText();
+            if (!httpProcess.getRepeatCommand()) {
+                command = text;
+                commandProcess(update.getMessage(), text);
+            }
+            else {
+                commandProcess(update.getMessage(), command, text);
+            }
         } else { //значит нажата кнопка
             buttonProcess(update.getMessage());
-        }
-    }
-
-    private void commandProcess(Message msg) {
-        String text = msg.getText();
-        if (!HttpProcess.getRepeatCommand()) {
-            command = text;
-            commandProcess(msg, text);
-        }
-        else {
-            commandProcess(msg, command, text);
         }
     }
 
@@ -39,12 +36,14 @@ public class TelegramBot extends TelegramLongPollingBot {
                                 Bot grats you!
                                 /help - information about bot features
                                 /map - display place on map
+                                /info - show information about place
                                 /route - display information about route
                                 """);
             case "/help" ->  sendMessage(msg,
                             """
                             /help - information about bot features
                             /map - display place on map
+                            /info - show information about place
                             /route - display information about route
                             """);
             //вторым параметром идет адрес для вывода, как его получить - ?
@@ -81,15 +80,31 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void mapDisplayProcess(Message msg, String id, String address) {
-        sendMessage(msg, httpProcess.mapDisplay(getBotToken(), id, address));
+        try {
+            String empty = httpProcess.mapDisplay(getBotToken(), id, address);
+            sendMessage(msg, empty);
+        } catch (HttpException | AddressException e) {
+            sendMessage(msg, e.getMessage());
+        }
     }
 
     private void addrInfoProcess(Message msg, String address) {
-        sendMessage(msg, httpProcess.addrInfo(address));
+        try {
+            String info = httpProcess.addrInfo(address);
+            sendMessage(msg, info);
+        } catch (HttpException | AddressException e) {
+            sendMessage(msg, e.getMessage());
+        }
     }
 
     private void routeProcess(Message msg, String addr) {
-        sendMessage(msg, httpProcess.createRouteWithAddress(addr));
+        try {
+            String route = httpProcess.createRouteWithAddress(addr);
+            sendMessage(msg, route);
+        } catch (HttpException | AddressException e) {
+            httpProcess.resetValues();
+            sendMessage(msg, e.getMessage());
+        }
     }
 
     private void buttonProcess(Message msg) {
