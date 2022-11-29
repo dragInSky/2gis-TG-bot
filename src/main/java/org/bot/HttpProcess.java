@@ -107,7 +107,7 @@ public class HttpProcess {
         Coordinates coordinates = addressToCoordinates(addr);
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
-                token, id, coordinates.getLat(), coordinates.getLon());
+                token, id, coordinates.getLat() + "", coordinates.getLon() + "");
         if (httpRequest.sendGet(url) == null) {
             throw new HttpException("Unknown error");
         }
@@ -208,7 +208,7 @@ public class HttpProcess {
             int latFirstIdx = response.indexOf("lat") + "lat".length() + 2;
             int latLastIdx = response.indexOf(",", latFirstIdx);
 
-            int lonFirstIdx = response.indexOf("lon") + "lat".length() + 2;
+            int lonFirstIdx = response.indexOf("lon") + "lon".length() + 2;
             int lonLastIdx = response.indexOf("}", lonFirstIdx);
 
             return new Coordinates(

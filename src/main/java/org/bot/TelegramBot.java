@@ -82,6 +82,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void mapDisplayProcess(Message msg, String id, String address) {
         try {
             String empty = httpProcess.mapDisplay(getBotToken(), id, address);
+            System.out.println(empty);
             sendMessage(msg, empty);
         } catch (HttpException | AddressException e) {
             sendMessage(msg, e.getMessage());
@@ -115,12 +116,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         String chatId = msg.getChatId().toString();
         SendMessage message = new SendMessage(chatId, data);
         new Button().setUpGeolocation(message);
-
-        if (msg.hasLocation()) { //если была запрошена геолокация
-            Location location = msg.getLocation();
-            userGeolocation = new Coordinates(location);
-            message.setText(userGeolocation.toString());
-        }
 
         try {
             execute(message);
