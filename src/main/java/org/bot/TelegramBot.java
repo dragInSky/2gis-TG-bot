@@ -24,7 +24,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 commandProcess(update.getMessage(), text, "");
             }
         } else { //значит нажата кнопка
-            sendMessage(update.getMessage(), "");
+            sendMessage(update.getMessage(), null);
         }
     }
 
@@ -83,14 +83,18 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void sendMessage(Message msg, String data) {
-        String chatId = msg.getChatId().toString();
-        SendMessage message = new SendMessage(chatId, data);
-        new Button().setUpGeolocation(message);
-
         if (msg.hasLocation()) { //если запрашиваем геоданные
             Location location = msg.getLocation();
             userGeolocation = new Coordinates(location);
         }
+
+        if (data == null) {
+            return;
+        }
+
+        String chatId = msg.getChatId().toString();
+        SendMessage message = new SendMessage(chatId, data);
+        new Button().setUpGeolocation(message);
 
         try {
             execute(message);
