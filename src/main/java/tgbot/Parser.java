@@ -1,4 +1,4 @@
-package org.bot;
+package tgbot;
 
 import org.apache.http.ParseException;
 

@@ -1,6 +1,10 @@
-package org.bot;
+package tgbot.Http;
+
+import tgbot.Exceptions.AddressException;
 
 import org.apache.http.HttpException;
+import tgbot.Coordinates;
+import tgbot.Parser;
 import java.text.MessageFormat;
 import java.util.Objects;
 

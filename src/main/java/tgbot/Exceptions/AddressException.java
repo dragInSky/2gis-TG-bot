@@ -1,7 +1,7 @@
-package org.bot;
+package tgbot.Exceptions;
 
 public class AddressException extends Exception {
-    AddressException(String message) {
+    public AddressException(String message) {
         super(message);
     }
 }

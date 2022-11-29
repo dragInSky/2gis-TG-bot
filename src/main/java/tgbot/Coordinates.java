@@ -1,4 +1,4 @@
-package org.bot;
+package tgbot;
 
 import org.telegram.telegrambots.meta.api.objects.Location;
 
@@ -14,7 +14,7 @@ public class Coordinates {
         latitude = Double.parseDouble(lat);
         longitude = Double.parseDouble(lon);
     }
-    Coordinates(Location location) {
+    public Coordinates(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
     }

@@ -1,4 +1,6 @@
-package org.bot;
+package tgbot.Http;
+
+import tgbot.Coordinates;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;

@@ -1,4 +1,8 @@
-package org.bot;
+package tgbot.Telegram;
+
+import tgbot.Coordinates;
+import tgbot.Exceptions.AddressException;
+import tgbot.Http.HttpProcess;
 
 import org.apache.http.HttpException;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
