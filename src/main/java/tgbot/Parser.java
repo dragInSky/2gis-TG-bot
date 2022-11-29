@@ -48,12 +48,11 @@ public class Parser {
             int idx = 0;
             while (true) {
                 int firstIdx = response.indexOf("\"name", idx);
-                int lastIdx = response.indexOf("type", firstIdx);
+                int lastIdx = response.indexOf("\",", firstIdx + "\"name".length() + 3);
                 if (firstIdx == -1 || lastIdx == -1) {
                     break;
                 }
                 firstIdx += 8;
-                lastIdx -= 3;
 
                 result.append(response, firstIdx, lastIdx);
                 result.append('\n');
