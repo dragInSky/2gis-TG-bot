@@ -1,8 +1,8 @@
 package tgbot.Telegram;
 
 import tgbot.Coordinates;
-import tgbot.Exceptions.AddressException;
 import tgbot.Exceptions.HttpException;
+import tgbot.Exceptions.MapApiException;
 import tgbot.Http.HttpProcess;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -38,15 +38,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         switch (message) {
             case "/start" -> sendMessage(msg,
                     """
-                    Bot grats you!
+                    2gis бот вас приветствует, € могу:
+                    - по двум заданным пользователем адресам строить маршрут и выводить о нем информацию;
+                    - выводить на карте место по адресу;
+                    - выводить по адресу инфорацию об организаци€х.
                     /help - information about bot features
-                    /map - display place on map
-                    /info - show information about place
-                    /route - display information about route
                     """);
             case "/help" ->  sendMessage(msg,
                     """
-                    /help - information about bot features
+                    —писок моих команд:
                     /map - display place on map
                     /info - show information about address
                     /route - display information about route
@@ -54,7 +54,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             case "/map" -> mapDisplayProcess(msg, msg.getChatId().toString(), addr);
             case "/info" -> addrInfoProcess(msg, addr);
             case "/route" -> routeProcess(msg, addr);
-            default ->  sendMessage(msg,"Bot can reply only on commands");
+            default ->  sendMessage(msg,"¬ведите\\отправьте команду!");
         }
     }
 
@@ -64,7 +64,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (data != null) {
                 sendMessage(msg, data);
             }
-        } catch (HttpException | AddressException e) {
+        } catch (HttpException | MapApiException e) {
             sendMessage(msg, e.getMessage());
         }
     }
@@ -73,7 +73,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             String info = httpProcess.addrInfo(address);
             sendMessage(msg, info);
-        } catch (HttpException | AddressException e) {
+        } catch (HttpException| MapApiException e) {
             sendMessage(msg, e.getMessage());
         }
     }
@@ -82,7 +82,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             String route = httpProcess.createRouteWithAddress(addr);
             sendMessage(msg, route);
-        } catch (HttpException | AddressException e) {
+        } catch (HttpException | MapApiException e) {
             httpProcess.resetValues();
             sendMessage(msg, e.getMessage());
         }

@@ -36,7 +36,7 @@ public class HttpRequest {
 
             return response.toString();
         } catch (Exception e) {
-            throw new HttpException(e.getClass().getName());
+            throw new HttpException("Ошибка: " + e.getClass().getName());
         }
     }
 
@@ -63,9 +63,7 @@ public class HttpRequest {
                                "x": {2},
                                "y": {3}
                            }
-                       ],
-                       "type": "pedestrian",
-                       "output": "full"
+                       ]
                     }
                     """;
             urlParameters = urlParameters.replace("{0}", firstCoordinates.getLon() + "");
@@ -92,7 +90,7 @@ public class HttpRequest {
 
             return response.toString();
         } catch (Exception e) {
-            throw new HttpException(e.getClass().getName());
+            throw new HttpException("Ошибка: " + e.getClass().getName());
         }
     }
 }

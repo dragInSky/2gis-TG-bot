@@ -1,8 +1,8 @@
 package tgbot.Http;
 
-import tgbot.Exceptions.AddressException;
 import tgbot.Exceptions.HttpException;
 import tgbot.Coordinates;
+import tgbot.Exceptions.MapApiException;
 import tgbot.Parser;
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -28,18 +28,18 @@ public class HttpProcess {
         secondAddr = "";
     }
 
-    private Coordinates addressToCoordinates(String addr) throws HttpException, AddressException {
+    private Coordinates addressToCoordinates(String addr) throws HttpException, MapApiException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
                 addr, get2GisGetKey());
         String response = httpRequest.sendGet(url);
         if (parser.findBadRequest(response)) {
-            throw new AddressException("¬веден некорректный адрес: " + addr);
+            throw new MapApiException("¬веден некорректный адрес: " + addr);
         }
         return parser.findCoordinates(response);
     }
 
-    public String createRouteWithAddress(String addr) throws AddressException, HttpException {
+    public String createRouteWithAddress(String addr) throws HttpException, MapApiException {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
                 get2GisPostKey());
@@ -59,16 +59,18 @@ public class HttpProcess {
         }
 
         if (Objects.equals(firstAddr, secondAddr)) {
-            throw new AddressException("¬ведите разные адреса!");
+            throw new MapApiException("¬ведите разные адреса!");
         }
         resetValues();
 
         String response = httpRequest.sendPost(url, firstCoordinates, secondCoordinates);
+        if (Objects.equals(response, "")) {
+            throw new MapApiException("ћаршрут не может быть построен!");
+        }
         String status = parser.findStatus(response);
         if (!status.equals("OK")) {
-            throw new HttpException(status);
+            throw new MapApiException("ќшибка: " + status);
         }
-
         //duration = parser.findDuration(response);
         //штука дл€ поиска средней точки
         //Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
@@ -89,7 +91,7 @@ public class HttpProcess {
         return findRouteInformation(response);
     }*/
 
-    public String mapDisplay(String token, String id, String addr) throws AddressException, HttpException {
+    public String mapDisplay(String token, String id, String addr) throws HttpException, MapApiException {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
             return "¬ведите адрес";
@@ -107,7 +109,7 @@ public class HttpProcess {
         return null;
     }
 
-    public String addrInfo(String addr) throws AddressException, HttpException {
+    public String addrInfo(String addr) throws HttpException, MapApiException {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
             return "¬ведите адрес";
@@ -121,19 +123,19 @@ public class HttpProcess {
                 buildingId(addr), get2GisGetKey());
         String response = httpRequest.sendGet(url);
         if (parser.findBadRequest(response)) {
-            throw new AddressException("¬веден некорректный адрес: " + addr);
+            throw new MapApiException("...");
         }
 
         return parser.findCompanies(response);
     }
 
-    private String buildingId(String addr) throws HttpException, AddressException {
+    private String buildingId(String addr) throws HttpException, MapApiException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?q={0}&type=building&key={1}",
                 addr, get2GisGetKey());
         String response = httpRequest.sendGet(url);
         if (parser.findBadRequest(response)) {
-            throw new AddressException("¬веден некорректный адрес: " + addr);
+            throw new MapApiException("¬веден некорректный адрес: " + addr);
         }
 
         return parser.findBuildingId(response);
