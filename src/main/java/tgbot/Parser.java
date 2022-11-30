@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import tgbot.Exceptions.ParseException;
 
 public class Parser {
-    public int findCode(String response) {
+    public int findCode(String response) throws ParseException {
         try {
             JSONObject json = new JSONObject(response);
             JSONObject meta = json.getJSONObject("meta");
@@ -16,7 +16,7 @@ public class Parser {
         }
     }
 
-    public int findDuration(String response) {
+    public int findDuration(String response) throws ParseException {
         try {
             JSONObject json = new JSONObject(response);
             JSONObject result = json.getJSONObject("result");
@@ -27,7 +27,7 @@ public class Parser {
         }
     }
 
-    public String findStatus(String response) {
+    public String findStatus(String response) throws ParseException {
         try {
             JSONObject json = new JSONObject(response);
             return json.getString("status");
@@ -37,7 +37,7 @@ public class Parser {
         }
     }
 
-    public String findBuildingId(String response) {
+    public String findBuildingId(String response) throws ParseException {
         try {
             JSONObject json = new JSONObject(response);
             JSONObject result = json.getJSONObject("result");
@@ -49,7 +49,7 @@ public class Parser {
         }
     }
 
-    public String findCompanies(String response) {
+    public String findCompanies(String response) throws ParseException {
         try {
             StringBuilder companies = new StringBuilder();
             JSONObject json = new JSONObject(response);
@@ -58,7 +58,7 @@ public class Parser {
 
             for (int i = 0; i < items.length(); i++) {
                 JSONObject company = items.getJSONObject(i);
-                companies.append(company.getString("name"));
+                companies.append(" - ").append(company.getString("name")).append("\n");
             }
 
             return companies.toString();
@@ -68,7 +68,7 @@ public class Parser {
         }
     }
 
-    public String findRouteInformation(String response) {
+    public String findRouteInformation(String response) throws ParseException {
         try {
             JSONObject json = new JSONObject(response);
             JSONObject result = json.getJSONArray("result").getJSONObject(0);
@@ -81,13 +81,25 @@ public class Parser {
         }
     }
 
-    public Coordinates findCoordinates(String response) {
+    public Coordinates findCoordinates(String response) throws ParseException {
         try {
             JSONObject json = new JSONObject(response);
             JSONObject result = json.getJSONObject("result");
             JSONObject items = result.getJSONArray("items").getJSONObject(0);
             JSONObject point = items.getJSONObject("point");
             return new Coordinates(point.getDouble("lat"), point.getDouble("lon"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ParseException("Parse error");
+        }
+    }
+
+    public String findBuildingName(String response) throws ParseException {
+        try {
+            JSONObject json = new JSONObject(response);
+            JSONObject result = json.getJSONObject("result");
+            JSONObject items = result.getJSONArray("items").getJSONObject(0);
+            return items.getString("building_name");
         } catch (Exception e) {
             e.printStackTrace();
             throw new ParseException("Parse error");

@@ -3,6 +3,7 @@ package tgbot.Http;
 import tgbot.Exceptions.HttpException;
 import tgbot.Coordinates;
 import tgbot.Exceptions.MapApiException;
+import tgbot.Exceptions.ParseException;
 import tgbot.Parser;
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -28,7 +29,7 @@ public class HttpProcess {
         secondAddr = "";
     }
 
-    private Coordinates addressToCoordinates(String addr) throws HttpException, MapApiException {
+    private Coordinates addressToCoordinates(String addr) throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
                 addr, get2GisGetKey());
@@ -39,7 +40,7 @@ public class HttpProcess {
         return parser.findCoordinates(response);
     }
 
-    public String createRouteWithAddress(String addr) throws HttpException, MapApiException {
+    public String createRouteWithAddress(String addr) throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
                 get2GisPostKey());
@@ -96,7 +97,7 @@ public class HttpProcess {
     }
     */
 
-    public String mapDisplay(String token, String id, String addr) throws HttpException, MapApiException {
+    public String mapDisplay(String token, String id, String addr) throws HttpException, MapApiException, ParseException {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
             return "Введите адрес";
@@ -114,7 +115,7 @@ public class HttpProcess {
         return null;
     }
 
-    public String addrInfo(String addr) throws HttpException, MapApiException {
+    public String addrInfo(String addr) throws HttpException, MapApiException, ParseException {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
             return "Введите адрес";
@@ -128,13 +129,30 @@ public class HttpProcess {
                 buildingId(addr), get2GisGetKey());
         String response = httpRequest.sendGet(url);
         if (parser.findCode(response) != 200) {
-            throw new MapApiException("...");
+            throw new MapApiException("Введен некорректный адрес: " + addr);
         }
 
-        return parser.findCompanies(response);
+        return "Название места: " +
+                "\n - " + detailAddrInfo(addr) +
+                "\nСписок организаций: " +
+                "\n" + parser.findCompanies(response);
     }
 
-    private String buildingId(String addr) throws HttpException, MapApiException {
+    private String detailAddrInfo(String addr) throws HttpException, MapApiException, ParseException {
+        String url = MessageFormat.format(
+            "https://catalog.api.2gis.com/3.0/items?q={0}&fields=items.address," +
+                    "items.adm_div,items.floors,items.point,items.links,items.structure_info.apartments_count," +
+                    "items.structure_info.material,items.structure_info.porch_count&key={1}",
+                addr, get2GisGetKey());
+        String response = httpRequest.sendGet(url);
+        if (parser.findCode(response) != 200) {
+            throw new MapApiException("Введен некорректный адрес: " + addr);
+        }
+
+        return parser.findBuildingName(response);
+    }
+
+    private String buildingId(String addr) throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?q={0}&type=building&key={1}",
                 addr, get2GisGetKey());

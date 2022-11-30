@@ -3,6 +3,7 @@ package tgbot.Telegram;
 import tgbot.Coordinates;
 import tgbot.Exceptions.HttpException;
 import tgbot.Exceptions.MapApiException;
+import tgbot.Exceptions.ParseException;
 import tgbot.Http.HttpProcess;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -66,6 +67,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             }
         } catch (HttpException | MapApiException e) {
             sendMessage(msg, e.getMessage());
+        } catch (ParseException e) {
+            sendMessage(msg, "Ошибка на стороне разработчика!");
         }
     }
 
@@ -75,6 +78,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             sendMessage(msg, info);
         } catch (HttpException| MapApiException e) {
             sendMessage(msg, e.getMessage());
+        } catch (ParseException e) {
+            sendMessage(msg, "Ошибка на стороне разработчика!");
         }
     }
 
@@ -85,6 +90,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         } catch (HttpException | MapApiException e) {
             httpProcess.resetValues();
             sendMessage(msg, e.getMessage());
+        } catch (ParseException e) {
+            sendMessage(msg, "Ошибка на стороне разработчика!");
         }
     }
 
