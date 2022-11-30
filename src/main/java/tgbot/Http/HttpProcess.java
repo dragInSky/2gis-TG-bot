@@ -33,7 +33,7 @@ public class HttpProcess {
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
                 addr, get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        if (parser.findBadRequest(response)) {
+        if (parser.findCode(response) != 200) {
             throw new MapApiException("Введен некорректный адрес: " + addr);
         }
         return parser.findCoordinates(response);
@@ -64,21 +64,25 @@ public class HttpProcess {
         resetValues();
 
         String response = httpRequest.sendPost(url, firstCoordinates, secondCoordinates);
-        if (Objects.equals(response, "")) {
+        if (Objects.equals(response, "")) { //не совсем понятно, когда это условие срабатывает
             throw new MapApiException("Маршрут не может быть построен!");
         }
         String status = parser.findStatus(response);
         if (!status.equals("OK")) {
             throw new MapApiException("Ошибка: " + status);
         }
-        //duration = parser.findDuration(response);
-        //штука для поиска средней точки
-        //Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
 
-        return parser.findRouteInformation(response); //+ "\nMiddle point of route: " + middleCoordinate.toString(); - вывод средней точки
+        /*
+        duration = parser.findDuration(response);
+        штука для поиска средней точки
+        Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
+        */
+
+        return parser.findRouteInformation(response); //+ "\nMiddle point of route: " + middleCoordinate.toString(); //- вывод средней точки
     }
 
-/*    public String createRouteWithCoordinates(Coordinates coordinates) { //штука для поиска средней точки
+    /*
+    public String createRouteWithCoordinates(Coordinates coordinates) { //штука для поиска средней точки
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
                 get2GisPostKey());
@@ -89,7 +93,8 @@ public class HttpProcess {
             return "Unknown error";
         }
         return findRouteInformation(response);
-    }*/
+    }
+    */
 
     public String mapDisplay(String token, String id, String addr) throws HttpException, MapApiException {
         if (Objects.equals(addr, "")) {
@@ -122,7 +127,7 @@ public class HttpProcess {
                 "https://catalog.api.2gis.com/3.0/items?building_id={0}&key={1}",
                 buildingId(addr), get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        if (parser.findBadRequest(response)) {
+        if (parser.findCode(response) != 200) {
             throw new MapApiException("...");
         }
 
@@ -134,7 +139,7 @@ public class HttpProcess {
                 "https://catalog.api.2gis.com/3.0/items?q={0}&type=building&key={1}",
                 addr, get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        if (parser.findBadRequest(response)) {
+        if (parser.findCode(response) != 200) {
             throw new MapApiException("Введен некорректный адрес: " + addr);
         }
 
