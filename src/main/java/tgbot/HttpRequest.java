@@ -35,6 +35,7 @@ public class HttpRequest {
 
             return response.toString();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new HttpException("Ошибка: " + e.getClass().getName());
         }
     }
@@ -89,6 +90,7 @@ public class HttpRequest {
 
             return response.toString();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new HttpException("Ошибка: " + e.getClass().getName());
         }
     }

@@ -14,7 +14,7 @@ public class Coordinates {
         latitude = Double.parseDouble(lat);
         longitude = Double.parseDouble(lon);
     }
-    public Coordinates(Location location) {
+    Coordinates(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
     }

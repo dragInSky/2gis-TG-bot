@@ -11,7 +11,7 @@ public class MapApiProcess {
     private static String firstAddr = "", secondAddr = "";
     private static Coordinates firstCoordinates = null, secondCoordinates = null;
     private static boolean repeatCommand = false;
-    //private static int duration;
+    private static int duration;
     //private static boolean button = false;
     private final HttpRequest httpRequest = new HttpRequest();
     private final Parser parser = new Parser();
@@ -20,7 +20,7 @@ public class MapApiProcess {
         return repeatCommand;
     }
     //public static boolean getButton() { return button; }
-    //public int getDuration() { return duration; }
+    public int getDuration() { return duration; }
 
     public void resetValues() {
         repeatCommand = false;
@@ -72,29 +72,24 @@ public class MapApiProcess {
             throw new MapApiException("Ошибка: " + status);
         }
 
-        /*
         duration = parser.findDuration(response);
-        штука для поиска средней точки
+        //штука для поиска средней точки
         Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
-        */
 
-        return parser.findRouteInformation(response); //+ "\nMiddle point of route: " + middleCoordinate.toString(); //- вывод средней точки
+        return parser.findRouteInformation(response) +
+                "\nMiddle point of route: " + middleCoordinate.toString(); //- вывод средней точки
     }
 
-    /*
-    public String createRouteWithCoordinates(Coordinates coordinates) { //штука для поиска средней точки
+    public String createRouteWithCoordinates(Coordinates coordinates) throws HttpException { //штука для поиска средней точки
         String url = MessageFormat.format(
-                "https://routing.api.2gis.com/carrouting/6.0.0/global?key={0}",
+                "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
                 get2GisPostKey());
-
-        String[] firstAddrInCoordinate = addressToCoordinates(firstAddr).split(" ");
-        String response = httpRequest.sendPost(url, firstAddrInCoordinate, coordinates.toString().split(" "));
+        String response = httpRequest.sendPost(url, firstCoordinates, coordinates);
         if (response == null) {
             return "Unknown error";
         }
-        return findRouteInformation(response);
+        return response;
     }
-    */
 
     public String mapDisplay(String token, String id, String addr) throws HttpException, MapApiException, ParseException {
         if (Objects.equals(addr, "")) {
