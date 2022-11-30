@@ -1,6 +1,5 @@
-package tgbot.Http;
+package tgbot;
 
-import tgbot.Coordinates;
 import tgbot.Exceptions.HttpException;
 
 import javax.net.ssl.HttpsURLConnection;

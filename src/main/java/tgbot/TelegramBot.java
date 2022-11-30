@@ -1,10 +1,8 @@
-package tgbot.Telegram;
+package tgbot;
 
-import tgbot.Coordinates;
 import tgbot.Exceptions.HttpException;
 import tgbot.Exceptions.MapApiException;
 import tgbot.Exceptions.ParseException;
-import tgbot.Http.HttpProcess;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
@@ -14,14 +12,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class TelegramBot extends TelegramLongPollingBot {
     private Coordinates userGeolocation = null;
-    private final HttpProcess httpProcess = new HttpProcess();
+    private final MapApiProcess mapApiProcess = new MapApiProcess();
     private String command;
 
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
-            if (httpProcess.getRepeatCommand()) {
+            if (mapApiProcess.getRepeatCommand()) {
                 commandProcess(update.getMessage(), command, text);
             } else {
                 command = text;
@@ -61,37 +59,31 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void mapDisplayProcess(Message msg, String id, String address) {
         try {
-            String data = httpProcess.mapDisplay(getBotToken(), id, address);
+            String data = mapApiProcess.mapDisplay(getBotToken(), id, address);
             if (data != null) {
                 sendMessage(msg, data);
             }
-        } catch (HttpException | MapApiException e) {
+        } catch (HttpException | MapApiException | ParseException e) {
             sendMessage(msg, e.getMessage());
-        } catch (ParseException e) {
-            sendMessage(msg, "Ошибка на стороне разработчика!");
         }
     }
 
     private void addrInfoProcess(Message msg, String address) {
         try {
-            String info = httpProcess.addrInfo(address);
+            String info = mapApiProcess.addrInfo(address);
             sendMessage(msg, info);
-        } catch (HttpException| MapApiException e) {
+        } catch (HttpException | MapApiException | ParseException e) {
             sendMessage(msg, e.getMessage());
-        } catch (ParseException e) {
-            sendMessage(msg, "Ошибка на стороне разработчика!");
         }
     }
 
     private void routeProcess(Message msg, String addr) {
         try {
-            String route = httpProcess.createRouteWithAddress(addr);
+            String route = mapApiProcess.createRouteWithAddress(addr);
             sendMessage(msg, route);
-        } catch (HttpException | MapApiException e) {
-            httpProcess.resetValues();
+        } catch (HttpException | MapApiException | ParseException e) {
+            mapApiProcess.resetValues();
             sendMessage(msg, e.getMessage());
-        } catch (ParseException e) {
-            sendMessage(msg, "Ошибка на стороне разработчика!");
         }
     }
 

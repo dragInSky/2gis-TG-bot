@@ -12,7 +12,7 @@ public class Parser {
             return meta.getInt("code");
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ParseException("Parse error");
+            throw new ParseException("Ошибка на стороне разработчика!");
         }
     }
 
@@ -23,7 +23,7 @@ public class Parser {
             return result.getInt("total_duration");
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ParseException("Parse error");
+            throw new ParseException("Ошибка на стороне разработчика!");
         }
     }
 
@@ -33,7 +33,7 @@ public class Parser {
             return json.getString("status");
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ParseException("Parse error");
+            throw new ParseException("Ошибка на стороне разработчика!");
         }
     }
 
@@ -45,7 +45,7 @@ public class Parser {
             return items.getString("id");
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ParseException("Parse error");
+            throw new ParseException("Ошибка на стороне разработчика!");
         }
     }
 
@@ -64,7 +64,7 @@ public class Parser {
             return companies.toString();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ParseException("Parse error");
+            throw new ParseException("Ошибка на стороне разработчика!");
         }
     }
 
@@ -77,7 +77,7 @@ public class Parser {
                     "\nДлительность маршрута: " + result.getString("ui_total_duration");
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ParseException("Parse error");
+            throw new ParseException("Ошибка на стороне разработчика!");
         }
     }
 
@@ -90,7 +90,7 @@ public class Parser {
             return new Coordinates(point.getDouble("lat"), point.getDouble("lon"));
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ParseException("Parse error");
+            throw new ParseException("Ошибка на стороне разработчика!");
         }
     }
 
@@ -102,7 +102,7 @@ public class Parser {
             return items.getString("building_name");
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ParseException("Parse error");
+            throw new ParseException("Ошибка на стороне разработчика!");
         }
     }
 }

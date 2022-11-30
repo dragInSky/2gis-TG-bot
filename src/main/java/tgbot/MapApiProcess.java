@@ -1,14 +1,13 @@
-package tgbot.Http;
+package tgbot;
 
 import tgbot.Exceptions.HttpException;
-import tgbot.Coordinates;
 import tgbot.Exceptions.MapApiException;
 import tgbot.Exceptions.ParseException;
-import tgbot.Parser;
+
 import java.text.MessageFormat;
 import java.util.Objects;
 
-public class HttpProcess {
+public class MapApiProcess {
     private static String firstAddr = "", secondAddr = "";
     private static Coordinates firstCoordinates = null, secondCoordinates = null;
     private static boolean repeatCommand = false;
@@ -128,8 +127,9 @@ public class HttpProcess {
                 "https://catalog.api.2gis.com/3.0/items?building_id={0}&key={1}",
                 buildingId(addr), get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        if (parser.findCode(response) != 200) {
-            throw new MapApiException("Введен некорректный адрес: " + addr);
+        int code = parser.findCode(response);
+        if (code != 200) {
+            throw new MapApiException("Ошбика: " + code);
         }
 
         return "Название места: " +
@@ -145,8 +145,9 @@ public class HttpProcess {
                     "items.structure_info.material,items.structure_info.porch_count&key={1}",
                 addr, get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        if (parser.findCode(response) != 200) {
-            throw new MapApiException("Введен некорректный адрес: " + addr);
+        int code = parser.findCode(response);
+        if (code != 200) {
+            throw new MapApiException("Ошбика: " + code);
         }
 
         return parser.findBuildingName(response);
