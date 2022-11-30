@@ -1,6 +1,7 @@
 package tgbot.Http;
 
 import tgbot.Coordinates;
+import tgbot.Exceptions.HttpException;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -13,7 +14,7 @@ public class HttpRequest {
     private final String USER_AGENT = "Mozilla/5.0";
 
     // HTTP GET request
-    public String sendGet(String url) {
+    public String sendGet(String url) throws HttpException {
         try {
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -35,11 +36,11 @@ public class HttpRequest {
 
             return response.toString();
         } catch (Exception e) {
-            return null;
+            throw new HttpException(e.getClass().getName());
         }
     }
 
-    public String sendPost(String url, Coordinates firstCoordinates, Coordinates secondCoordinates) {
+    public String sendPost(String url, Coordinates firstCoordinates, Coordinates secondCoordinates) throws HttpException {
         try {
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -91,7 +92,7 @@ public class HttpRequest {
 
             return response.toString();
         } catch (Exception e) {
-            return null;
+            throw new HttpException(e.getClass().getName());
         }
     }
 }

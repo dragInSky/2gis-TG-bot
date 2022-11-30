@@ -1,8 +1,7 @@
 package tgbot.Http;
 
 import tgbot.Exceptions.AddressException;
-
-import org.apache.http.HttpException;
+import tgbot.Exceptions.HttpException;
 import tgbot.Coordinates;
 import tgbot.Parser;
 import java.text.MessageFormat;
@@ -21,6 +20,7 @@ public class HttpProcess {
         return repeatCommand;
     }
     //public static boolean getButton() { return button; }
+    //public int getDuration() { return duration; }
 
     public void resetValues() {
         repeatCommand = false;
@@ -28,15 +28,11 @@ public class HttpProcess {
         secondAddr = "";
     }
 
-    public Coordinates addressToCoordinates(String addr) throws HttpException, AddressException {
+    private Coordinates addressToCoordinates(String addr) throws HttpException, AddressException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
                 addr, get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        if (response == null) {
-            throw new HttpException("Unknown error");
-        }
-
         if (parser.findBadRequest(response)) {
             throw new AddressException("¬веден некорректный адрес: " + addr);
         }
@@ -65,14 +61,9 @@ public class HttpProcess {
         if (Objects.equals(firstAddr, secondAddr)) {
             throw new AddressException("¬ведите разные адреса!");
         }
-
         resetValues();
 
         String response = httpRequest.sendPost(url, firstCoordinates, secondCoordinates);
-        if (response == null) {
-            throw new HttpException("Unknown error");
-        }
-
         String status = parser.findStatus(response);
         if (!status.equals("OK")) {
             throw new HttpException(status);
@@ -111,9 +102,7 @@ public class HttpProcess {
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
                 token, id, coordinates.getLat() + "", coordinates.getLon() + "");
-        if (httpRequest.sendGet(url) == null) {
-            throw new HttpException("Unknown error");
-        }
+        httpRequest.sendGet(url);
 
         return null;
     }
@@ -131,10 +120,6 @@ public class HttpProcess {
                 "https://catalog.api.2gis.com/3.0/items?building_id={0}&key={1}",
                 buildingId(addr), get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        if (response == null) {
-            throw new HttpException("Unknown error");
-        }
-
         if (parser.findBadRequest(response)) {
             throw new AddressException("¬веден некорректный адрес: " + addr);
         }
@@ -147,10 +132,6 @@ public class HttpProcess {
                 "https://catalog.api.2gis.com/3.0/items?q={0}&type=building&key={1}",
                 addr, get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        if (response == null) {
-            throw new HttpException("Unknown error");
-        }
-
         if (parser.findBadRequest(response)) {
             throw new AddressException("¬веден некорректный адрес: " + addr);
         }
@@ -165,6 +146,4 @@ public class HttpProcess {
     public String get2GisGetKey() {
         return System.getenv("2GIS_GET_KEY");
     }
-
-    //public int getDuration() { return duration; }
 }

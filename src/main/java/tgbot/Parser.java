@@ -1,6 +1,6 @@
 package tgbot;
 
-import org.apache.http.ParseException;
+import tgbot.Exceptions.ParseException;
 
 public class Parser {
     public boolean findBadRequest(String response) {

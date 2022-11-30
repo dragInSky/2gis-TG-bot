@@ -2,9 +2,8 @@ package tgbot.Telegram;
 
 import tgbot.Coordinates;
 import tgbot.Exceptions.AddressException;
+import tgbot.Exceptions.HttpException;
 import tgbot.Http.HttpProcess;
-
-import org.apache.http.HttpException;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
@@ -28,7 +27,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                 commandProcess(update.getMessage(), text, "");
             }
         } else { //значит нажата кнопка
-            sendMessage(update.getMessage(), null);
+            if (update.getMessage().hasLocation()) { //если были запрошены геоданные
+                Location location = update.getMessage().getLocation();
+                userGeolocation = new Coordinates(location);
+            }
         }
     }
 
@@ -87,15 +89,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void sendMessage(Message msg, String data) {
-        if (msg.hasLocation()) { //если запрашиваем геоданные
-            Location location = msg.getLocation();
-            userGeolocation = new Coordinates(location);
-        }
-
-        if (data == null) {
-            return;
-        }
-
         String chatId = msg.getChatId().toString();
         SendMessage message = new SendMessage(chatId, data);
         new Button().setUpGeolocation(message);
