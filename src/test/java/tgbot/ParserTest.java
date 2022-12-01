@@ -147,6 +147,107 @@ class ParserTest {
 
     @Test
     void findCompanies() {
+        String response = """
+                {
+                    "meta": {},
+                    "result": {
+                    "items": [
+                        {
+                            "address_comment": "1 этаж",
+                            "address_name": "8 Марта, 51",
+                            "id": "1267166676656141",
+                            "name": "Simple coffee, кофейня",
+                            "type": "branch"
+                        },
+                        {
+                            "address_comment": "2 этаж",
+                            "address_name": "8 Марта, 51",
+                            "id": "1267166676435645",
+                            "name": "ThatBritish, парикмахерский салон",
+                            "type": "branch"
+                        },
+                        {
+                            "address_comment": "1 этаж",
+                            "address_name": "8 Марта, 51",
+                            "id": "70000001056023916",
+                            "name": "Давыдов, ресторан-караоке",
+                            "type": "branch"
+                        },
+                        {
+                            "address_comment": "18 этаж",
+                            "address_name": "8 Марта, 51",
+                            "id": "70000001023444043",
+                            "name": "Sky18, кофейня",
+                            "type": "branch"
+                        },
+                        {
+                            "address_comment": "1 этаж",
+                            "address_name": "8 Марта, 51",
+                            "ads": {},
+                            "id": "70000001020490742",
+                            "name": "TOPGUN, барбершоп",
+                            "type": "branch"
+                        },
+                        {
+                            "address_comment": "1 этаж",
+                            "address_name": "8 Марта, 51",
+                            "id": "70000001035454616",
+                            "name": "freshFace, магазин для визажистов и бровистов",
+                            "type": "branch"
+                        },
+                        {
+                            "address_comment": "6 кабинет; 5 этаж",
+                            "address_name": "8 Марта, 51",
+                            "id": "70000001041696646",
+                            "name": "Ингосстрах, Отдел урегулирования убытков",
+                            "type": "branch"
+                        },
+                        {
+                            "address_comment": "706 кабинет; 7 этаж",
+                            "address_name": "8 Марта, 51",
+                            "ads": {},
+                            "id": "70000001033985942",
+                            "name": "Kultura, стоматологическая клиника",
+                            "type": "branch"
+                        },
+                        {
+                            "address_comment": "2 этаж",
+                            "address_name": "8 Марта, 51",
+                            "ads": {},
+                            "id": "70000001031626218",
+                            "name": "Контур",
+                            "type": "branch"
+                        },
+                        {
+                            "address_comment": "1 этаж; рядом с эскалатором",
+                            "address_name": "8 Марта, 51",
+                            "id": "1267166676801036",
+                            "name": "Хо-хо, студия цветов",
+                            "type": "branch"
+                        }
+                    ],
+                    "total": 55
+                    }
+                }
+                """;
+        try {
+            String companies = parser.findCompanies(response);
+            Assertions.assertEquals("""
+                     - Simple coffee, кофейня
+                     - ThatBritish, парикмахерский салон
+                     - Давыдов, ресторан-караоке
+                     - Sky18, кофейня
+                     - TOPGUN, барбершоп
+                     - freshFace, магазин для визажистов и бровистов
+                     - Ингосстрах, Отдел урегулирования убытков
+                     - Kultura, стоматологическая клиника
+                     - Контур
+                     - Хо-хо, студия цветов
+                    """,
+                    companies);
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
@@ -188,9 +289,119 @@ class ParserTest {
 
     @Test
     void findCoordinates() {
+        String response = """
+                {
+                    "meta": {},
+                    "result": {
+                        "items": [
+                            {
+                                "address_name": "Садовническая, 25",
+                                "full_name": "Москва, Садовническая, 25",
+                                "id": "...",
+                                "name": "Садовническая, 25",
+                                "point": {
+                                    "lat": 55.746397,
+                                    "lon": 37.634369
+                                },
+                                "purpose_name": "Жилой дом с административными помещениями",
+                                "type": "building"
+                            }
+                        ],
+                        "total": 1
+                    }
+                }
+                """;
+        try {
+            Coordinates expected = new Coordinates(55.746397, 37.634369);
+            Coordinates coordinates = parser.findCoordinates(response);
+            Assertions.assertEquals(expected, coordinates);
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
     void findBuildingName() {
+        String response = """
+                {
+                    "meta": {},
+                    "result": {
+                        "context_rubrics": [],
+                        "total": 1,
+                        "search_attributes": {},
+                        "items": [
+                            {
+                                "id": "141265769336625_f91d4H3777058262347790J0e8g28765",
+                                "type": "branch",
+                                "region_id": "123456",
+                                "segment_id": "123456",
+                                "dates": {},
+                                "adm_div": [],
+                                "description": "string",
+                                "is_routing_available": true,
+                                "links": {},
+                                "org": {},
+                                "reviews": {},
+                                "alias": "shintop_set_avtomarketov",
+                                "timezone_offset": 420,
+                                "has_apartments_info": true,
+                                "floor_id": "141832714658709",
+                                "context": {},
+                                "flags": {},
+                                "floor_plans": {},
+                                "delivery": [],
+                                "name": "Солнышко, кафе",
+                                "point": "54.991984,82.901886",
+                                "employees_org_count": "до 15",
+                                "city_alias": "novosibirsk",
+                                "address": {},
+                                "floors": {},
+                                "is_deleted": true,
+                                "attribute_groups": [],
+                                "itin": "1234567890",
+                                "rubrics": [],
+                                "marker_alt": 0,
+                                "building_name": "someBuilding",
+                            }
+                        ]
+                    }
+                }
+                """;
+        try {
+            String buildingName = parser.findBuildingName(response);
+            Assertions.assertEquals("someBuilding", buildingName);
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    void findAddressTest() {
+        String response = """
+                {
+                    "meta": {},
+                    "result": {
+                        "items": [
+                            {
+                                "address_name": "Кремль, 1х",
+                                "building_name": "Государственный Кремлёвский Дворец",
+                                "full_name": "Москва, Государственный Кремлёвский Дворец",
+                                "id": "...",
+                                "name": "Государственный Кремлёвский Дворец",
+                                "point": {},
+                                "purpose_name": "Культурное учреждение",
+                                "type": "building"
+                            }
+                        ],
+                        "total": 1
+                    }
+                }
+                """;
+        try {
+            String address = parser.findAddress(response);
+            Assertions.assertEquals("Москва, Государственный Кремлёвский Дворец", address);
+        } catch (Exception e) {
+            fail();
+        }
     }
 }
