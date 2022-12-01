@@ -1,16 +1,21 @@
 package tgbot;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import tgbot.Exceptions.ParseException;
 
 public class Parser {
-    public int findCode(String response) throws ParseException {
+    public String findCode(String response) throws ParseException {
         try {
             JSONObject json = new JSONObject(response);
             JSONObject meta = json.getJSONObject("meta");
-            return meta.getInt("code");
-        } catch (Exception e) {
+            if (meta.getInt("code") == 200) {
+                return "200";
+            }
+            JSONObject error = meta.getJSONObject("error");
+            return error.getString("message");
+        } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
         }
@@ -21,7 +26,7 @@ public class Parser {
             JSONObject json = new JSONObject(response);
             JSONObject result = json.getJSONArray("result").getJSONObject(0);
             return result.getInt("total_duration");
-        } catch (Exception e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
         }
@@ -31,7 +36,7 @@ public class Parser {
         try {
             JSONObject json = new JSONObject(response);
             return json.getString("status");
-        } catch (Exception e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
         }
@@ -42,8 +47,11 @@ public class Parser {
             JSONObject json = new JSONObject(response);
             JSONObject result = json.getJSONObject("result");
             JSONObject items = result.getJSONArray("items").getJSONObject(0);
-            return items.getString("id");
-        } catch (Exception e) {
+            if (items.has("id")) {
+                return items.getString("id");
+            }
+            throw new ParseException("По этому адресу нет ничего интересного");
+        } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
         }
@@ -58,11 +66,16 @@ public class Parser {
 
             for (int i = 0; i < items.length(); i++) {
                 JSONObject company = items.getJSONObject(i);
-                companies.append(" - ").append(company.getString("name")).append("\n");
+                if (company.has("name")) {
+                    companies.append(" - ").append(company.getString("name")).append("\n");
+                }
             }
 
-            return companies.toString();
-        } catch (Exception e) {
+            if (!companies.isEmpty()) {
+                return companies.toString();
+            }
+            throw new ParseException("По этому адресу нет ничего интересного");
+        } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
         }
@@ -75,7 +88,7 @@ public class Parser {
             JSONObject distance = result.getJSONObject("ui_total_distance");
             return "Расстояние маршрута: " + distance.getString("value") + " " + distance.getString("unit") +
                     "\nДлительность маршрута: " + result.getString("ui_total_duration");
-        } catch (Exception e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
         }
@@ -88,7 +101,7 @@ public class Parser {
             JSONObject items = result.getJSONArray("items").getJSONObject(0);
             JSONObject point = items.getJSONObject("point");
             return new Coordinates(point.getDouble("lat"), point.getDouble("lon"));
-        } catch (Exception e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
         }
@@ -99,8 +112,11 @@ public class Parser {
             JSONObject json = new JSONObject(response);
             JSONObject result = json.getJSONObject("result");
             JSONObject items = result.getJSONArray("items").getJSONObject(0);
-            return items.getString("building_name");
-        } catch (Exception e) {
+            if (items.has("building_name")) {
+                return items.getString("building_name");
+            }
+            throw new ParseException("По этому адресу нет ничего интересного");
+        } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
         }
@@ -112,7 +128,7 @@ public class Parser {
             JSONObject result = json.getJSONObject("result");
             JSONObject items = result.getJSONArray("items").getJSONObject(0);
             return items.getString("full_name");
-        } catch (Exception e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
         }

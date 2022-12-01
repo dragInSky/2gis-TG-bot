@@ -21,8 +21,8 @@ class ParserTest {
                 }
                 """;
         try {
-            int code = parser.findCode(response);
-            Assertions.assertEquals(200, code);
+            String code = parser.findCode(response);
+            Assertions.assertEquals("200", code);
         } catch (Exception e) {
             fail();
         }
@@ -36,13 +36,16 @@ class ParserTest {
                         "code": 400,
                         "api_version": "dev",
                         "issue_date": "string",
-                        "error": {}
+                        "error": {
+                            "type": "paramIsEmpty",
+                            "message": "Param 'lon' mustn`t be empty"
+                        }
                     }
                 }
                 """;
         try {
-            int code = parser.findCode(response);
-            Assertions.assertEquals(400, code);
+            String code = parser.findCode(response);
+            Assertions.assertEquals("Param 'lon' mustn`t be empty", code);
         } catch (Exception e) {
             fail();
         }

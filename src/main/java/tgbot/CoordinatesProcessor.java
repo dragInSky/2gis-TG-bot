@@ -1,7 +1,7 @@
 package tgbot;
 
-import tgbot.Exceptions.HttpException;
-import tgbot.Exceptions.ParseException;
+//import tgbot.Exceptions.HttpException;
+//import tgbot.Exceptions.ParseException;
 
 import java.util.ArrayList;
 
@@ -44,38 +44,38 @@ public class CoordinatesProcessor {
         return coordinatesArray.get(middleDistancePoint());
     }
 
-    public Coordinates coordinatesProcess() throws HttpException, ParseException {
-        MapApiProcess mapApiProcess = new MapApiProcess();
-        int duration, minDur = Integer.MAX_VALUE;
-        Coordinates middleCoordinate = null;
-        Boolean bFlag = null;
-        for (int i = middleDistancePoint(), breaker = 0; breaker < 10 &&
-                i >= 0 && i < coordinatesArray.size(); breaker++) {
-            System.out.println(i);
-            String route = mapApiProcess.createRouteWithCoordinates(coordinatesArray.get(i));
-            try {
-                duration = new Parser().findDuration(route);
-            }
-            catch (NumberFormatException e) {
-                continue;
-            }
-            if (Math.abs(duration - mapApiProcess.getDuration() / 2) < minDur) {
-                minDur = Math.abs(duration - mapApiProcess.getDuration() / 2);
-                middleCoordinate = coordinatesArray.get(i);
-            }
-            if (bFlag != null && bFlag != (duration > mapApiProcess.getDuration() / 2)) {
-                break;
-            }
-            bFlag = duration > mapApiProcess.getDuration() / 2;
-            if (bFlag) {
-                i--;
-            } else {
-                i++;
-            }
-        }
-
-        return middleCoordinate;
-    }
+//    public Coordinates coordinatesProcess() throws HttpException, ParseException {
+//        MapApiProcess mapApiProcess = new MapApiProcess();
+//        int duration, minDur = Integer.MAX_VALUE;
+//        Coordinates middleCoordinate = null;
+//        Boolean bFlag = null;
+//        for (int i = middleDistancePoint(), breaker = 0; breaker < 10 &&
+//                i >= 0 && i < coordinatesArray.size(); breaker++) {
+//            System.out.println(i);
+//            String route = mapApiProcess.createRouteWithCoordinates(coordinatesArray.get(i));
+//            try {
+//                duration = new Parser().findDuration(route);
+//            }
+//            catch (NumberFormatException e) {
+//                continue;
+//            }
+//            if (Math.abs(duration - mapApiProcess.getDuration() / 2) < minDur) {
+//                minDur = Math.abs(duration - mapApiProcess.getDuration() / 2);
+//                middleCoordinate = coordinatesArray.get(i);
+//            }
+//            if (bFlag != null && bFlag != (duration > mapApiProcess.getDuration() / 2)) {
+//                break;
+//            }
+//            bFlag = duration > mapApiProcess.getDuration() / 2;
+//            if (bFlag) {
+//                i--;
+//            } else {
+//                i++;
+//            }
+//        }
+//
+//        return middleCoordinate;
+//    }
 
     public int middleDistancePoint() {
         double distance, minDist = Double.MAX_VALUE;
