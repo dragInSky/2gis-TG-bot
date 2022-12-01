@@ -10,7 +10,7 @@ import java.util.Objects;
 public class MapApiProcess {
     private static String firstAddr = "", secondAddr = "";
     private static Coordinates firstCoordinates = null, secondCoordinates = null, middlePoint;
-    private static boolean repeatCommand = false;
+    private static boolean repeatCommand = false, middlePointOnMap = false;
     //private static int duration;
     //private static boolean button = false;
     private final HttpRequest httpRequest = new HttpRequest();
@@ -18,6 +18,9 @@ public class MapApiProcess {
 
     public boolean getRepeatCommand(){
         return repeatCommand;
+    }
+    public boolean getMiddlePointOnMap(){
+        return middlePointOnMap;
     }
     //public static boolean getButton() { return button; }
     //public int getDuration() { return duration; }
@@ -88,8 +91,9 @@ public class MapApiProcess {
 
         //штука дл€ поиска средней точки
         //duration = parser.findDuration(response);
-        Coordinates middlePoint = new CoordinatesProcessor(response, firstCoordinates, secondCoordinates).
+        middlePoint = new CoordinatesProcessor(response, firstCoordinates, secondCoordinates).
                 coordinatesProcessEconom();
+        middlePointOnMap = true;
 
         return parser.findRouteInformation(response) + "\n—редн€€ точка маршрута: " + middlePoint +
                 " (" + coordinatesToAddress(middlePoint) + ")"; // вывод средней точки
@@ -125,6 +129,7 @@ public class MapApiProcess {
     }
 
     public void coordinatesMapDisplay(String token, String id) throws HttpException {
+        middlePointOnMap = false;
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
                 token, id, middlePoint.getLat() + "", middlePoint.getLon() + "");

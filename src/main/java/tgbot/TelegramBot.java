@@ -81,7 +81,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             String route = mapApiProcess.createRouteWithAddress(addr);
             sendMessage(msg, route);
-            mapApiProcess.coordinatesMapDisplay(getBotToken(), msg.getChatId().toString());
+            if (mapApiProcess.getMiddlePointOnMap()) {
+                mapApiProcess.coordinatesMapDisplay(getBotToken(), msg.getChatId().toString());
+            }
         } catch (HttpException | MapApiException | ParseException e) {
             mapApiProcess.resetValues();
             sendMessage(msg, e.getMessage());
