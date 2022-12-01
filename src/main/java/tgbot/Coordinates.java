@@ -27,6 +27,23 @@ public class Coordinates {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Coordinates secondCoordinates = (Coordinates) obj;
+        return this.latitude == secondCoordinates.latitude && this.longitude == secondCoordinates.longitude;
+    }
+
+    @Override
+    public int hashCode() {
+        return Double.hashCode(latitude) + Double.hashCode(longitude);
+    }
+
+    @Override
     public String toString() {
         return latitude + " " + longitude;
     }

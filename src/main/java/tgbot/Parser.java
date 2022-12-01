@@ -19,7 +19,7 @@ public class Parser {
     public int findDuration(String response) throws ParseException {
         try {
             JSONObject json = new JSONObject(response);
-            JSONObject result = json.getJSONObject("result");
+            JSONObject result = json.getJSONArray("result").getJSONObject(0);
             return result.getInt("total_duration");
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,6 +100,18 @@ public class Parser {
             JSONObject result = json.getJSONObject("result");
             JSONObject items = result.getJSONArray("items").getJSONObject(0);
             return items.getString("building_name");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ParseException("Ошибка на стороне разработчика!");
+        }
+    }
+
+    public String findAddress(String response) throws ParseException {
+        try {
+            JSONObject json = new JSONObject(response);
+            JSONObject result = json.getJSONObject("result");
+            JSONObject items = result.getJSONArray("items").getJSONObject(0);
+            return items.getString("full_name");
         } catch (Exception e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");

@@ -39,6 +39,17 @@ public class MapApiProcess {
         return parser.findCoordinates(response);
     }
 
+    private String coordinatesToAddress(Coordinates point) throws HttpException, MapApiException, ParseException {
+        String url = MessageFormat.format(
+                "https://catalog.api.2gis.com/3.0/items/geocode?lat={0}&lon={1}&fields=items.point&key={2}",
+                point.getLat() + "", point.getLon() + "", get2GisGetKey());
+        String response = httpRequest.sendGet(url);
+        if (parser.findCode(response) != 200) {
+            throw new MapApiException("Невозможно найти адрес средней точки: " + point);
+        }
+        return parser.findAddress(response);
+    }
+
     public String createRouteWithAddress(String addr) throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
@@ -74,10 +85,13 @@ public class MapApiProcess {
 
         duration = parser.findDuration(response);
         //штука для поиска средней точки
-        Coordinates middleCoordinate = new CoordinatesProcessor(response).coordinatesProcess();
+        Coordinates middleCoordinate = new CoordinatesProcessor(response, firstCoordinates, secondCoordinates).
+                coordinatesProcessEconom();
+        //new CoordinatesProcessor(response, firstCoordinates, secondCoordinates);
 
-        return parser.findRouteInformation(response) +
-                "\nMiddle point of route: " + middleCoordinate.toString(); //- вывод средней точки
+        //return parser.findRouteInformation(response);
+        return parser.findRouteInformation(response) + "\nСредняя точка маршрута: " + middleCoordinate +
+                " (" + coordinatesToAddress(middleCoordinate) + ")"; //- вывод средней точки
     }
 
     public String createRouteWithCoordinates(Coordinates coordinates) throws HttpException { //штука для поиска средней точки

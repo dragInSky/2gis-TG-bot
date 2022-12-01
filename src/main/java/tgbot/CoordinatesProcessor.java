@@ -1,22 +1,26 @@
 package tgbot;
 
 import tgbot.Exceptions.HttpException;
-import tgbot.Exceptions.MapApiException;
 import tgbot.Exceptions.ParseException;
 
 import java.util.ArrayList;
 
 public class CoordinatesProcessor {
     private final ArrayList<Coordinates> coordinatesArray;
+    private final Coordinates m_firstCoordinates;
+    private final double m_distance;
 
-    CoordinatesProcessor(String route) {
-        System.out.println(route);
+    CoordinatesProcessor(String route, Coordinates firstCoordinates, Coordinates secondCoordinates) {
+        m_firstCoordinates = firstCoordinates;
+        m_distance = Math.sqrt(Math.pow(firstCoordinates.getLat() - secondCoordinates.getLat(), 2) +
+                        (Math.pow(firstCoordinates.getLon() - secondCoordinates.getLon(), 2)));
         coordinatesArray = new ArrayList<>();
         int idx = 0;
+        int secondRouteIdx = route.indexOf("ui_total_distance");
         while (true) {
             int startIdx = route.indexOf("LINESTRING(", idx);
             int endIdx = route.indexOf(")", startIdx);
-            if (startIdx == -1 || endIdx == -1) {
+            if (startIdx == -1 || endIdx == -1 || endIdx >= secondRouteIdx) {
                 break;
             }
             startIdx += "LINESTRING(".length();
@@ -24,16 +28,20 @@ public class CoordinatesProcessor {
             String[] strArr = substr.split(",\s|\s");
             for (int i = 0; i + 1 < strArr.length; i += 2) {
                 try {
-                    coordinatesArray.add(
-                            new Coordinates(Double.parseDouble(strArr[i + 1]), Double.parseDouble(strArr[i])));
+                    Coordinates coordinates = new Coordinates(
+                            Double.parseDouble(strArr[i + 1]), Double.parseDouble(strArr[i])
+                    );
+                    if (!coordinatesArray.contains(coordinates)) {
+                        coordinatesArray.add(coordinates);
+                    }
                 } catch (NumberFormatException ignored) {}
             }
             idx = endIdx;
         }
+    }
 
-        for (Coordinates coord : coordinatesArray) {
-            System.out.println(coord.toString());
-        }
+    public Coordinates coordinatesProcessEconom() {
+        return coordinatesArray.get(middleDistancePoint());
     }
 
     public Coordinates coordinatesProcess() throws HttpException, ParseException {
@@ -41,7 +49,8 @@ public class CoordinatesProcessor {
         int duration, minDur = Integer.MAX_VALUE;
         Coordinates middleCoordinate = null;
         Boolean bFlag = null;
-        for (int i = coordinatesArray.size() / 2; i >= 0 && i < coordinatesArray.size();) {
+        for (int i = middleDistancePoint(), breaker = 0; breaker < 10 &&
+                i >= 0 && i < coordinatesArray.size(); breaker++) {
             System.out.println(i);
             String route = mapApiProcess.createRouteWithCoordinates(coordinatesArray.get(i));
             try {
@@ -66,5 +75,24 @@ public class CoordinatesProcessor {
         }
 
         return middleCoordinate;
+    }
+
+    public int middleDistancePoint() {
+        double distance, minDist = Double.MAX_VALUE;
+        int idx = 0;
+        Boolean bFlag = null;
+        for (int i = 5; i < coordinatesArray.size(); i++) {
+            distance = Math.sqrt(Math.pow(coordinatesArray.get(i).getLat() - m_firstCoordinates.getLat(), 2) +
+                    (Math.pow(coordinatesArray.get(i).getLon() - m_firstCoordinates.getLon(), 2)));
+            if (Math.abs(distance - m_distance / 2) < minDist) {
+                minDist = Math.abs(distance - m_distance / 2);
+                idx = i;
+            }
+            if (bFlag != null && bFlag != (distance > m_distance / 2)) {
+                break;
+            }
+            bFlag = distance > m_distance / 2;
+        }
+        return idx;
     }
 }
