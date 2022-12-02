@@ -8,7 +8,8 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public class MapApiProcess {
-    private static String firstAddr = "", secondAddr = "";
+    private static final int RADIUS_OF_SEARCH = 500;
+    private static String firstAddr = "", secondAddr = "", middlePointPlaceAddress;
     private static Coordinates firstCoordinates = null, secondCoordinates = null, middlePoint;
     private static boolean repeatCommand = false, middlePointOnMap = false;
     //private static int duration;
@@ -43,19 +44,19 @@ public class MapApiProcess {
         return parser.findCoordinates(response);
     }
 
-    private String coordinatesToAddress(Coordinates point) throws HttpException, MapApiException, ParseException {
-        String url = MessageFormat.format(
-                "https://catalog.api.2gis.com/3.0/items/geocode?lat={0}&lon={1}&fields=items.point&key={2}",
-                point.getLat() + "", point.getLon() + "", get2GisGetKey());
-        String response = httpRequest.sendGet(url);
-        String code = parser.findCode(response);
-        if (!Objects.equals(code, "200")) {
-            throw new MapApiException(code);
-        }
-        return parser.findAddress(response);
-    }
+//    private String coordinatesToAddress(Coordinates point) throws HttpException, MapApiException, ParseException {
+//        String url = MessageFormat.format(
+//                "https://catalog.api.2gis.com/3.0/items/geocode?lat={0}&lon={1}&fields=items.point&key={2}",
+//                point.getLat() + "", point.getLon() + "", get2GisGetKey());
+//        String response = httpRequest.sendGet(url);
+//        String code = parser.findCode(response);
+//        if (!Objects.equals(code, "200")) {
+//            throw new MapApiException(code);
+//        }
+//        return parser.findAddress(response);
+//    }
 
-    public String createRouteWithAddress(String addr)
+    public String createRouteWithAddress(String addr, SearchCategories search)
             throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
@@ -94,9 +95,19 @@ public class MapApiProcess {
         middlePoint = new CoordinatesProcessor(response, firstCoordinates, secondCoordinates).
                 coordinatesProcessEconom();
         middlePointOnMap = true;
+        String middlePointPlace = radiusSearch(search);
 
-        return parser.findRouteInformation(response) + "\n—редн€€ точка маршрута: " + middlePoint +
-                " (" + coordinatesToAddress(middlePoint) + ")"; // вывод средней точки
+        return parser.findRouteInformation(response) + "\n" + middlePointPlace; // вывод средней точки
+    }
+
+    public String radiusSearch(SearchCategories search) throws HttpException, ParseException {
+        String url = MessageFormat.format(
+                "https://catalog.api.2gis.com/3.0/items?q={0}&type=branch&point={1}%2C{2}&radius={3}&sort=rating&key={4}",
+                search.getSearch(), middlePoint.getLon() + "", middlePoint.getLat() + "", RADIUS_OF_SEARCH, get2GisGetKey());
+        String response = httpRequest.sendGet(url);
+        middlePointPlaceAddress = parser.findPlaceAddress(response);
+        return "ћесто встречи: " + middlePointPlaceAddress +
+                " Ч " + parser.findPlaceInfo(response);
     }
 
 //    public String createRouteWithCoordinates(Coordinates coordinates) throws HttpException { //штука дл€ поиска средней точки
@@ -128,11 +139,12 @@ public class MapApiProcess {
         return null;
     }
 
-    public void coordinatesMapDisplay(String token, String id) throws HttpException {
+    public void coordinatesMapDisplay(String token, String id) throws HttpException, MapApiException, ParseException {
         middlePointOnMap = false;
+        Coordinates coordinates = addressToCoordinates(middlePointPlaceAddress);
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
-                token, id, middlePoint.getLat() + "", middlePoint.getLon() + "");
+                token, id, coordinates.getLat() + "", coordinates.getLon() + "");
         httpRequest.sendGet(url);
     }
 
@@ -155,7 +167,7 @@ public class MapApiProcess {
         }
 
         return "Ќазвание места: " +
-                "\n - " + detailAddrInfo(addr) +
+                "\n Ч " + detailAddrInfo(addr) +
                 "\n—писок организаций: " +
                 "\n" + parser.findCompanies(response);
     }

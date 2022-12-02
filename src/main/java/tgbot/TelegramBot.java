@@ -79,7 +79,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void routeProcess(Message msg, String addr) {
         try {
-            String route = mapApiProcess.createRouteWithAddress(addr);
+            String route = mapApiProcess.createRouteWithAddress(addr, SearchCategories.CAFE);
             sendMessage(msg, route);
             if (mapApiProcess.getMiddlePointOnMap()) {
                 mapApiProcess.coordinatesMapDisplay(getBotToken(), msg.getChatId().toString());

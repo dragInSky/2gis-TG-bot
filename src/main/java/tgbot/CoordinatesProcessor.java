@@ -18,12 +18,12 @@ public class CoordinatesProcessor {
         int idx = 0;
         int secondRouteIdx = route.indexOf("ui_total_distance");
         while (true) {
-            int startIdx = route.indexOf("LINESTRING(", idx);
+            int startIdx = route.indexOf("selection\":\"LINESTRING(", idx);
             int endIdx = route.indexOf(")", startIdx);
             if (startIdx == -1 || endIdx == -1 || endIdx >= secondRouteIdx) {
                 break;
             }
-            startIdx += "LINESTRING(".length();
+            startIdx += "selection\":\"LINESTRING(".length();
             String substr = route.substring(startIdx, endIdx);
             String[] strArr = substr.split(",\s|\s");
             for (int i = 0; i + 1 < strArr.length; i += 2) {

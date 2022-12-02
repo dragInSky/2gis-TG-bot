@@ -133,4 +133,37 @@ public class Parser {
             throw new ParseException("Ошибка на стороне разработчика!");
         }
     }
+
+    public String findPlaceAddress(String response) throws ParseException {
+        try {
+            JSONObject json = new JSONObject(response);
+            JSONObject result = json.getJSONObject("result");
+            JSONObject items = result.getJSONArray("items").getJSONObject(0);
+            if (items.has("full_name")) {
+                return items.getString("full_name");
+            }
+            return items.getString("address_name");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new ParseException("Ошибка на стороне разработчика!");
+        }
+    }
+
+    public String findPlaceInfo(String response) throws ParseException {
+        try {
+            JSONObject json = new JSONObject(response);
+            JSONObject result = json.getJSONObject("result");
+            JSONObject items = result.getJSONArray("items").getJSONObject(0);
+            String res = "";
+            if (items.has("ads")) {
+                JSONObject ads = items.getJSONObject("ads");
+                res = ads.getString("text");
+                res += "\nОписание: " + ads.getString("article").replace("<br />", " ");
+            }
+            return items.getString("name") + "\n" + res;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new ParseException("Ошибка на стороне разработчика!");
+        }
+    }
 }
