@@ -10,16 +10,23 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Objects;
+
 public class TelegramBot extends TelegramLongPollingBot {
     private Coordinates userGeolocation = null;
     private final MapApiProcess mapApiProcess = new MapApiProcess();
     private String command;
+    private boolean cityCommand = false;
 
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
-            if (mapApiProcess.getRepeatCommand()) {
+            if (cityCommand) {
+                cityCommand = false;
+                mapApiProcess.setCity(text + ", ");
+                sendMessage(update.getMessage(), "¬ы изменили город на " + text + "\n/help - список моих команд");
+            } else if (mapApiProcess.getRepeatCommand()) {
                 commandProcess(update.getMessage(), command, text);
             } else {
                 command = text;
@@ -34,27 +41,40 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void commandProcess(Message msg, String message, String addr) {
+        if (!Objects.equals(addr, "")) {
+            addr = mapApiProcess.getCity() + addr;
+        }
         switch (message) {
-            case "/start" -> sendMessage(msg,
-                    """
-                    2gis бот вас приветствует, € могу:
-                    - по двум заданным пользователем адресам строить маршрут и выводить о нем информацию;
-                    - выводить на карте место по адресу;
-                    - выводить по адресу инфорацию об организаци€х.
-                    /help - information about bot features
-                    """);
+            case "/start" -> startCommandProcess(msg);
             case "/help" ->  sendMessage(msg,
                     """
                     —писок моих команд:
-                    /map - display place on map
-                    /info - show information about address
-                    /route - display information about route
+                    /changecity - помен€ть город
+                    /map - вывести на карте место по адресу
+                    /info - вывести по адресу информацию об организаци€х
+                    /route - найти место встречи дл€ двух людей
                     """);
+            case "/changecity" -> changeCityProcess(msg);
             case "/map" -> mapDisplayProcess(msg, msg.getChatId().toString(), addr);
             case "/info" -> addrInfoProcess(msg, addr);
             case "/route" -> routeProcess(msg, addr);
             default ->  sendMessage(msg,"¬ведите\\отправьте команду!");
         }
+    }
+
+    private void startCommandProcess(Message msg) {
+        sendMessage(msg, """
+                ¬ас приветствует 2gis бот, € могу:
+                - находить место встречи дл€ двух людей;
+                - выводить на карте место по адресу;
+                - выводить по адресу информацию об организаци€х.
+                """);
+        changeCityProcess(msg);
+    }
+
+    private void changeCityProcess(Message msg) {
+        sendMessage(msg, "¬ведите город, в котором вы находитесь");
+        cityCommand = true;
     }
 
     private void mapDisplayProcess(Message msg, String id, String address) {
@@ -64,6 +84,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendMessage(msg, data);
             }
         } catch (HttpException | MapApiException | ParseException e) {
+            e.printStackTrace();
             sendMessage(msg, e.getMessage());
         }
     }
@@ -73,6 +94,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             String info = mapApiProcess.addrInfo(address);
             sendMessage(msg, info);
         } catch (HttpException | MapApiException | ParseException e) {
+            e.printStackTrace();
             sendMessage(msg, e.getMessage());
         }
     }
@@ -85,6 +107,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 mapApiProcess.coordinatesMapDisplay(getBotToken(), msg.getChatId().toString());
             }
         } catch (HttpException | MapApiException | ParseException e) {
+            e.printStackTrace();
             mapApiProcess.resetValues();
             sendMessage(msg, e.getMessage());
         }

@@ -50,7 +50,7 @@ public class Parser {
             if (items.has("id")) {
                 return items.getString("id");
             }
-            throw new ParseException("По этому адресу нет ничего интересного");
+            throw new ParseException("По этому адресу нет здания");
         } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
@@ -74,7 +74,7 @@ public class Parser {
             if (!companies.isEmpty()) {
                 return companies.toString();
             }
-            throw new ParseException("По этому адресу нет ничего интересного");
+            throw new ParseException("По этому адресу нет организаций");
         } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");
@@ -107,21 +107,6 @@ public class Parser {
         }
     }
 
-    public String findBuildingName(String response) throws ParseException {
-        try {
-            JSONObject json = new JSONObject(response);
-            JSONObject result = json.getJSONObject("result");
-            JSONObject items = result.getJSONArray("items").getJSONObject(0);
-            if (items.has("building_name")) {
-                return items.getString("building_name");
-            }
-            throw new ParseException("По этому адресу нет ничего интересного");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            throw new ParseException("Ошибка на стороне разработчика!");
-        }
-    }
-
     public String findAddress(String response) throws ParseException {
         try {
             JSONObject json = new JSONObject(response);
@@ -139,9 +124,6 @@ public class Parser {
             JSONObject json = new JSONObject(response);
             JSONObject result = json.getJSONObject("result");
             JSONObject items = result.getJSONArray("items").getJSONObject(0);
-            if (items.has("full_name")) {
-                return items.getString("full_name");
-            }
             return items.getString("address_name");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -157,8 +139,8 @@ public class Parser {
             String res = "";
             if (items.has("ads")) {
                 JSONObject ads = items.getJSONObject("ads");
-                res = ads.getString("text");
-                res += "\nОписание: " + ads.getString("article").replace("<br />", " ");
+                res = "Описание: " + ads.getString("text") +
+                        "\n" + ads.getString("article").replace("<br />", " ");
             }
             return items.getString("name") + "\n" + res;
         } catch (JSONException e) {

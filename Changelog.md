@@ -1,3 +1,6 @@
+### 0.3.1
+- Добавлена команда /changecity
+
 ## Third task (in progress)
 
 ### 0.2.3

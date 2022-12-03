@@ -324,61 +324,6 @@ class ParserTest {
     }
 
     @Test
-    void findBuildingName() {
-        String response = """
-                {
-                    "meta": {},
-                    "result": {
-                        "context_rubrics": [],
-                        "total": 1,
-                        "search_attributes": {},
-                        "items": [
-                            {
-                                "id": "141265769336625_f91d4H3777058262347790J0e8g28765",
-                                "type": "branch",
-                                "region_id": "123456",
-                                "segment_id": "123456",
-                                "dates": {},
-                                "adm_div": [],
-                                "description": "string",
-                                "is_routing_available": true,
-                                "links": {},
-                                "org": {},
-                                "reviews": {},
-                                "alias": "shintop_set_avtomarketov",
-                                "timezone_offset": 420,
-                                "has_apartments_info": true,
-                                "floor_id": "141832714658709",
-                                "context": {},
-                                "flags": {},
-                                "floor_plans": {},
-                                "delivery": [],
-                                "name": "Солнышко, кафе",
-                                "point": "54.991984,82.901886",
-                                "employees_org_count": "до 15",
-                                "city_alias": "novosibirsk",
-                                "address": {},
-                                "floors": {},
-                                "is_deleted": true,
-                                "attribute_groups": [],
-                                "itin": "1234567890",
-                                "rubrics": [],
-                                "marker_alt": 0,
-                                "building_name": "someBuilding",
-                            }
-                        ]
-                    }
-                }
-                """;
-        try {
-            String buildingName = parser.findBuildingName(response);
-            Assertions.assertEquals("someBuilding", buildingName);
-        } catch (Exception e) {
-            fail();
-        }
-    }
-
-    @Test
     void findAddressTest() {
         String response = """
                 {

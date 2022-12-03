@@ -8,9 +8,10 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public class MapApiProcess {
-    private static final int RADIUS_OF_SEARCH = 500;
+    private static final int RADIUS_OF_SEARCH = 400;
     private static String firstAddr = "", secondAddr = "", middlePointPlaceAddress;
-    private static Coordinates firstCoordinates = null, secondCoordinates = null, middlePoint;
+    private String city;
+    private static Coordinates firstCoordinates = null, secondCoordinates = null;
     private static boolean repeatCommand = false, middlePointOnMap = false;
     //private static int duration;
     //private static boolean button = false;
@@ -22,6 +23,12 @@ public class MapApiProcess {
     }
     public boolean getMiddlePointOnMap(){
         return middlePointOnMap;
+    }
+    public String getCity(){
+        return city;
+    }
+    public void setCity(String newCity){
+        city = newCity;
     }
     //public static boolean getButton() { return button; }
     //public int getDuration() { return duration; }
@@ -83,29 +90,32 @@ public class MapApiProcess {
 
         String response = httpRequest.sendPost(url, firstCoordinates, secondCoordinates);
         if (Objects.equals(response, "")) { //не совсем понятно, когда это условие срабатывает
-            throw new MapApiException("Маршрут не может быть построен!");
+            System.out.println("response = \"\";");
+            throw new MapApiException("Данный маршрут не может быть построен!");
         }
         String status = parser.findStatus(response);
         if (!status.equals("OK")) {
-            throw new MapApiException("Ошибка: " + status);
+            System.out.println(status);
+            throw new MapApiException("Данный маршрут не может быть построен!");
         }
 
         //штука для поиска средней точки
         //duration = parser.findDuration(response);
-        middlePoint = new CoordinatesProcessor(response, firstCoordinates, secondCoordinates).
+        Coordinates middlePoint = new CoordinatesProcessor(response, firstCoordinates, secondCoordinates).
                 coordinatesProcessEconom();
         middlePointOnMap = true;
-        String middlePointPlace = radiusSearch(search);
+        String middlePointPlace = radiusSearch(middlePoint, search);
 
         return parser.findRouteInformation(response) + "\n" + middlePointPlace; // вывод средней точки
     }
 
-    public String radiusSearch(SearchCategories search) throws HttpException, ParseException {
+    public String radiusSearch(Coordinates middlePoint, SearchCategories search) throws HttpException, ParseException {
         String url = MessageFormat.format(
-                "https://catalog.api.2gis.com/3.0/items?q={0}&type=branch&point={1}%2C{2}&radius={3}&sort=rating&key={4}",
-                search.getSearch(), middlePoint.getLon() + "", middlePoint.getLat() + "", RADIUS_OF_SEARCH, get2GisGetKey());
+                "https://catalog.api.2gis.com/3.0/items?q={0}&type=branch&point={1}%2C{2}&radius={3}&key={4}",
+                search.getSearch(), middlePoint.getLon() + "", middlePoint.getLat() + "",
+                RADIUS_OF_SEARCH, get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        middlePointPlaceAddress = parser.findPlaceAddress(response);
+        middlePointPlaceAddress = city + parser.findPlaceAddress(response);
         return "Место встречи: " + middlePointPlaceAddress +
                 " — " + parser.findPlaceInfo(response);
     }
@@ -163,29 +173,12 @@ public class MapApiProcess {
         String response = httpRequest.sendGet(url);
         String code = parser.findCode(response);
         if (!Objects.equals(code, "200")) {
-            throw new MapApiException(code);
+            throw new MapApiException("По этому адресу нет организаций");
         }
 
-        return "Название места: " +
-                "\n — " + detailAddrInfo(addr) +
-                "\nСписок организаций: " +
-                "\n" + parser.findCompanies(response);
+        return "Список организаций:\n" + parser.findCompanies(response);
     }
 
-    private String detailAddrInfo(String addr) throws HttpException, MapApiException, ParseException {
-        String url = MessageFormat.format(
-            "https://catalog.api.2gis.com/3.0/items?q={0}&fields=items.address," +
-                    "items.adm_div,items.floors,items.point,items.links,items.structure_info.apartments_count," +
-                    "items.structure_info.material,items.structure_info.porch_count&key={1}",
-                addr, get2GisGetKey());
-        String response = httpRequest.sendGet(url);
-        String code = parser.findCode(response);
-        if (!Objects.equals(code, "200")) {
-            throw new MapApiException(code);
-        }
-
-        return parser.findBuildingName(response);
-    }
 
     private String buildingId(String addr) throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
