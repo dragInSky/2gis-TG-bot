@@ -5,6 +5,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import tgbot.Exceptions.ParseException;
 
+import java.util.Objects;
+
 public class Parser {
     public String findCode(String response) throws ParseException {
         try {
@@ -143,6 +145,18 @@ public class Parser {
                         "\n" + ads.getString("article").replace("<br />", " ");
             }
             return items.getString("name") + "\n" + res;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new ParseException("Ошибка на стороне разработчика!");
+        }
+    }
+
+    public boolean findCityOnlyAddress(String response) throws ParseException {
+        try {
+            JSONObject json = new JSONObject(response);
+            JSONObject result = json.getJSONObject("result");
+            JSONObject items = result.getJSONArray("items").getJSONObject(0);
+            return Objects.equals(items.getString("type"), "adm_div");
         } catch (JSONException e) {
             e.printStackTrace();
             throw new ParseException("Ошибка на стороне разработчика!");

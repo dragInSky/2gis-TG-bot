@@ -10,7 +10,7 @@ import java.util.Objects;
 public class MapApiProcess {
     private static final int RADIUS_OF_SEARCH = 400;
     private static String firstAddr = "", secondAddr = "", middlePointPlaceAddress;
-    private String city;
+    private String city = "Екатеринбург, ";
     private static Coordinates firstCoordinates = null, secondCoordinates = null;
     private static boolean repeatCommand = false, middlePointOnMap = false;
     //private static int duration;
@@ -44,8 +44,7 @@ public class MapApiProcess {
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
                 addr, get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        String code = parser.findCode(response);
-        if (!Objects.equals(code, "200")) {
+        if (parser.findCityOnlyAddress(response) || !Objects.equals(parser.findCode(response), "200")) {
             throw new MapApiException("Введен некорректный адрес: " + addr);
         }
         return parser.findCoordinates(response);
@@ -166,13 +165,14 @@ public class MapApiProcess {
         else {
             repeatCommand = false;
         }
+        addressToCoordinates(addr);
 
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?building_id={0}&key={1}",
                 buildingId(addr), get2GisGetKey());
+        System.out.println(url);
         String response = httpRequest.sendGet(url);
-        String code = parser.findCode(response);
-        if (!Objects.equals(code, "200")) {
+        if (!Objects.equals(parser.findCode(response), "200")) {
             throw new MapApiException("По этому адресу нет организаций");
         }
 
@@ -184,9 +184,9 @@ public class MapApiProcess {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?q={0}&type=building&key={1}",
                 addr, get2GisGetKey());
+        System.out.println(url);
         String response = httpRequest.sendGet(url);
-        String code = parser.findCode(response);
-        if (!Objects.equals(code, "200")) {
+        if (!Objects.equals(parser.findCode(response), "200")) {
             throw new MapApiException("Введен некорректный адрес: " + addr);
         }
 
