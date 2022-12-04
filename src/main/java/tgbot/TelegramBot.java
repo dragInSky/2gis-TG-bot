@@ -30,8 +30,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else { //значит нажата кнопка
             if (update.hasCallbackQuery()) { //если были запрошены геоданные
                 String callbackData = update.getCallbackQuery().getData();
-                long messageId = update.getCallbackQuery().getMessage().getMessageId();
-                long chatId = update.getCallbackQuery().getMessage().getChatId();
 
                 if(callbackData.equals("GEO_BUTTON")) {
                     Location location = update.getMessage().getLocation();
