@@ -1,7 +1,6 @@
 package tgbot;
 
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
+
 import tgbot.Exceptions.HttpException;
 import tgbot.Exceptions.MapApiException;
 import tgbot.Exceptions.ParseException;
@@ -14,9 +13,10 @@ public class MapApiProcess {
     private static Coordinates firstCoordinates = null, secondCoordinates = null, middlePoint;
     private static boolean repeatCommand = false, middlePointOnMap = false;
 
-    private static SendMessage message = new SendMessage();
     //private static int duration;
-    //private static boolean button = false;
+    private static boolean button = false;
+
+    private static boolean buttonDel = false;
     private final HttpRequest httpRequest = new HttpRequest();
     private final Parser parser = new Parser();
 
@@ -27,14 +27,20 @@ public class MapApiProcess {
         return middlePointOnMap;
     }
 
-    public SendMessage getMessage(){return message;}
-    //public static boolean getButton() { return button; }
+
+    public boolean getButton() { return button; }
+
+    public boolean getButtonDel() { return buttonDel; }
+
+
     //public int getDuration() { return duration; }
 
     public void resetValues() {
         repeatCommand = false;
         firstAddr = "";
         secondAddr = "";
+        button = false;
+        buttonDel = false;
     }
 
     private Coordinates addressToCoordinates(String addr) throws HttpException, MapApiException, ParseException {
@@ -49,7 +55,7 @@ public class MapApiProcess {
         return parser.findCoordinates(response);
     }
 
-    private String coordinatesToAddress(Coordinates point) throws HttpException, MapApiException, ParseException {
+    public String coordinatesToAddress(Coordinates point) throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?lat={0}&lon={1}&fields=items.point&key={2}",
                 point.getLat() + "", point.getLon() + "", get2GisGetKey());
@@ -61,7 +67,7 @@ public class MapApiProcess {
         return parser.findAddress(response);
     }
 
-    public String createRouteWithAddress(String addr, Message msg)
+    public String createRouteWithAddress(String addr)
             throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
@@ -69,11 +75,13 @@ public class MapApiProcess {
 
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
-            new Button().setUpGeolocation(message, msg);
-            return "";
+            button = true;
+            return "Введите первый адрес";
         }
         else if (Objects.equals(firstAddr, "")) {
             firstAddr = addr;
+            buttonDel = true;
+            button = false;
             firstCoordinates = addressToCoordinates(firstAddr);
             return "Введите второй адрес";
         }
@@ -162,12 +170,12 @@ public class MapApiProcess {
         }
 
         return "Название места: " +
-                "\n - " + detailAddrInfo(addr) +
+                "\n - "  +
                 "\nСписок организаций: " +
                 "\n" + parser.findCompanies(response);
     }
 
-    private String detailAddrInfo(String addr) throws HttpException, MapApiException, ParseException {
+    /*private String detailAddrInfo(String addr) throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
             "https://catalog.api.2gis.com/3.0/items?q={0}&fields=items.address," +
                     "items.adm_div,items.floors,items.point,items.links,items.structure_info.apartments_count," +
@@ -180,7 +188,7 @@ public class MapApiProcess {
         }
 
         return parser.findBuildingName(response);
-    }
+    }*/
 
     private String buildingId(String addr) throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
