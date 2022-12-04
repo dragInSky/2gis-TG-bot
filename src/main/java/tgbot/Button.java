@@ -1,24 +1,34 @@
 package tgbot;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Button {
-    public void setUpGeolocation(SendMessage message) {
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setSelective(true);
-        List<KeyboardRow> keyboardRows = new ArrayList<>();
-        KeyboardRow row = new KeyboardRow();
-        KeyboardButton keyboardButton = new KeyboardButton("Отправить геоданные");
-        keyboardButton.setRequestLocation(true);
-        row.add(keyboardButton);
-        keyboardRows.add(row);
-        replyKeyboardMarkup.setKeyboard(keyboardRows);
-        message.setReplyMarkup(replyKeyboardMarkup);
+    public void setUpGeolocation(SendMessage message, Message msg) {
+        String chatId = msg.getChatId().toString();
+        message.setChatId(String.valueOf(chatId));
+        message.setText("Введите первый адрес");
+
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        var geoButton = new InlineKeyboardButton();
+
+        geoButton.setText("Отправить геолокацию");
+        geoButton.setCallbackData("GEO_BUTTON");
+
+        rowInLine.add(geoButton);
+
+        rowsInLine.add(rowInLine);
+
+        markupInLine.setKeyboard(rowsInLine);
+        message.setReplyMarkup(markupInLine);
     }
 }

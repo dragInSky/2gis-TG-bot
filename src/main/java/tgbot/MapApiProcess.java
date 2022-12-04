@@ -1,5 +1,7 @@
 package tgbot;
 
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import tgbot.Exceptions.HttpException;
 import tgbot.Exceptions.MapApiException;
 import tgbot.Exceptions.ParseException;
@@ -11,6 +13,8 @@ public class MapApiProcess {
     private static String firstAddr = "", secondAddr = "";
     private static Coordinates firstCoordinates = null, secondCoordinates = null, middlePoint;
     private static boolean repeatCommand = false, middlePointOnMap = false;
+
+    private static SendMessage message = new SendMessage();
     //private static int duration;
     //private static boolean button = false;
     private final HttpRequest httpRequest = new HttpRequest();
@@ -22,6 +26,8 @@ public class MapApiProcess {
     public boolean getMiddlePointOnMap(){
         return middlePointOnMap;
     }
+
+    public SendMessage getMessage(){return message;}
     //public static boolean getButton() { return button; }
     //public int getDuration() { return duration; }
 
@@ -55,7 +61,7 @@ public class MapApiProcess {
         return parser.findAddress(response);
     }
 
-    public String createRouteWithAddress(String addr)
+    public String createRouteWithAddress(String addr, Message msg)
             throws HttpException, MapApiException, ParseException {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
@@ -63,7 +69,8 @@ public class MapApiProcess {
 
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
-            return "¬ведите первый адрес";
+            new Button().setUpGeolocation(message, msg);
+            return "";
         }
         else if (Objects.equals(firstAddr, "")) {
             firstAddr = addr;

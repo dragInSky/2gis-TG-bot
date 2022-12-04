@@ -10,6 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Objects;
+
 public class TelegramBot extends TelegramLongPollingBot {
     private Coordinates userGeolocation = null;
     private final MapApiProcess mapApiProcess = new MapApiProcess();
@@ -26,9 +28,16 @@ public class TelegramBot extends TelegramLongPollingBot {
                 commandProcess(update.getMessage(), text, "");
             }
         } else { //значит нажата кнопка
-            if (update.getMessage().hasLocation()) { //если были запрошены геоданные
-                Location location = update.getMessage().getLocation();
-                userGeolocation = new Coordinates(location);
+            if (update.hasCallbackQuery()) { //если были запрошены геоданные
+                String callbackData = update.getCallbackQuery().getData();
+                long messageId = update.getCallbackQuery().getMessage().getMessageId();
+                long chatId = update.getCallbackQuery().getMessage().getChatId();
+
+                if(callbackData.equals("GEO_BUTTON")) {
+                    Location location = update.getMessage().getLocation();
+                    userGeolocation = new Coordinates(location);
+                }
+
             }
         }
     }
@@ -79,8 +88,13 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void routeProcess(Message msg, String addr) {
         try {
-            String route = mapApiProcess.createRouteWithAddress(addr);
-            sendMessage(msg, route);
+            String route = mapApiProcess.createRouteWithAddress(addr, msg);
+            if (Objects.equals(addr, "")) {
+                sendMessage(mapApiProcess.getMessage());
+            }
+            else {
+                sendMessage(msg, route);
+            }
             if (mapApiProcess.getMiddlePointOnMap()) {
                 mapApiProcess.coordinatesMapDisplay(getBotToken(), msg.getChatId().toString());
             }
@@ -93,8 +107,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void sendMessage(Message msg, String data) {
         String chatId = msg.getChatId().toString();
         SendMessage message = new SendMessage(chatId, data);
-        new Button().setUpGeolocation(message);
 
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendMessage(SendMessage message) {
         try {
             execute(message);
         } catch (TelegramApiException e) {
