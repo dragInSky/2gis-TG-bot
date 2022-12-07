@@ -169,9 +169,7 @@ public class MapApiProcess {
             throw new MapApiException(code);
         }
 
-        return "Название места: " +
-                "\n - "  +
-                "\nСписок организаций: " +
+        return "Список организаций: " +
                 "\n" + parser.findCompanies(response);
     }
 
