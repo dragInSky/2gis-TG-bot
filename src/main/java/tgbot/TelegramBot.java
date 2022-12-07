@@ -1,15 +1,11 @@
 package tgbot;
 
-import tgbot.Exceptions.HttpException;
-import tgbot.Exceptions.MapApiException;
-import tgbot.Exceptions.ParseException;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 
 public class TelegramBot extends TelegramLongPollingBot {
 
@@ -19,6 +15,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        //System.out.println("Starting: " + update.getMessage().getChatId());
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
             if (mapApiProcess.getRepeatCommand()) {
@@ -34,12 +31,17 @@ public class TelegramBot extends TelegramLongPollingBot {
                 Coordinates userGeolocation = new Coordinates(location);
                 try {
                     commandProcess(update.getMessage(), command, mapApiProcess.coordinatesToAddress(userGeolocation));
-                }
-                catch (MapApiException  | ParseException  | HttpException e) {
+                } catch (BotException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
+//        try {
+//            Thread.sleep(10_000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        System.out.println("Finishing: " + update.getMessage().getChatId());
     }
 
     private void commandProcess(Message msg, String message, String addr) {
@@ -72,7 +74,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (data != null) {
                 sendMessage(msg, data);
             }
-        } catch (HttpException | MapApiException | ParseException e) {
+        } catch (BotException e) {
             sendMessage(msg, e.getMessage());
         }
     }
@@ -81,7 +83,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             String info = mapApiProcess.addrInfo(address);
             sendMessage(msg, info);
-        } catch (HttpException | MapApiException | ParseException e) {
+        } catch (BotException e) {
             sendMessage(msg, e.getMessage());
         }
     }
@@ -93,7 +95,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (mapApiProcess.getMiddlePointOnMap()) {
                 mapApiProcess.coordinatesMapDisplay(getBotToken(), msg.getChatId().toString());
             }
-        } catch (HttpException | MapApiException | ParseException e) {
+        } catch (BotException e) {
             mapApiProcess.resetValues();
             sendMessage(msg, e.getMessage());
         }

@@ -1,7 +1,5 @@
 package tgbot;
 
-import tgbot.Exceptions.HttpException;
-
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -13,7 +11,7 @@ public class HttpRequest {
     private final String USER_AGENT = "Mozilla/5.0";
 
     // HTTP GET request
-    public String sendGet(String url) throws HttpException {
+    public String sendGet(String url) throws BotException {
         try {
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -36,11 +34,11 @@ public class HttpRequest {
             return response.toString();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new HttpException("Ошибка: " + e.getClass().getName());
+            throw new BotException("Ошибка: " + e.getClass().getName());
         }
     }
 
-    public String sendPost(String url, Coordinates firstCoordinates, Coordinates secondCoordinates) throws HttpException {
+    public String sendPost(String url, Coordinates firstCoordinates, Coordinates secondCoordinates) throws BotException {
         try {
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -91,7 +89,7 @@ public class HttpRequest {
             return response.toString();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new HttpException("Ошибка: " + e.getClass().getName());
+            throw new BotException("Ошибка: " + e.getClass().getName());
         }
     }
 }

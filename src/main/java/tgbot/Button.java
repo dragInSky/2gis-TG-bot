@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Button {
-
-    ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-    public void setUpGeolocation(SendMessage message) {
+    private final ReplyKeyboardMarkup replyKeyboardMarkup;
+    private final ReplyKeyboardRemove replyKeyboardRemove;
+    Button() {
+        replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setOneTimeKeyboard(true);
@@ -22,12 +23,15 @@ public class Button {
         row.add(keyboardButton);
         keyboardRows.add(row);
         replyKeyboardMarkup.setKeyboard(keyboardRows);
+
+        replyKeyboardRemove = new ReplyKeyboardRemove();
+        replyKeyboardRemove.setRemoveKeyboard(true);
+    }
+    public void setUpGeolocation(SendMessage message) {
         message.setReplyMarkup(replyKeyboardMarkup);
     }
 
     public void removeKeyboard(SendMessage message) {
-        ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
-        replyKeyboardRemove.setRemoveKeyboard(true);
         message.setReplyMarkup(replyKeyboardRemove);
     }
 }
