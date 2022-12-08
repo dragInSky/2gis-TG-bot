@@ -40,7 +40,7 @@ public class CoordinatesProcessor {
         }
     }
 
-    public Coordinates coordinatesProcessEconom() {
+    public Coordinates coordinatesProcess() {
         return coordinatesArray.get(middleDistancePoint());
     }
 

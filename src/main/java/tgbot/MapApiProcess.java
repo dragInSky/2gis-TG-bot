@@ -1,9 +1,5 @@
 package tgbot;
 
-import tgbot.Exceptions.HttpException;
-import tgbot.Exceptions.MapApiException;
-import tgbot.Exceptions.ParseException;
-
 import java.text.MessageFormat;
 import java.util.Objects;
 
@@ -12,9 +8,8 @@ public class MapApiProcess {
     private static String firstAddr = "", secondAddr = "", middlePointPlaceAddress;
     private String city = "Екатеринбург, ";
     private static Coordinates firstCoordinates = null, secondCoordinates = null;
-    private static boolean repeatCommand = false, middlePointOnMap = false;
+    private static boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false;
     //private static int duration;
-    //private static boolean button = false;
     private final HttpRequest httpRequest = new HttpRequest();
     private final Parser parser = new Parser();
 
@@ -30,49 +25,67 @@ public class MapApiProcess {
     public void setCity(String newCity){
         city = newCity;
     }
-    //public static boolean getButton() { return button; }
+    public boolean getButton() {
+        return button;
+    }
+    public boolean getButtonDel() {
+        return buttonDel;
+    }
     //public int getDuration() { return duration; }
 
     public void resetValues() {
         repeatCommand = false;
+        button = false;
+        buttonDel = false;
+        firstCoordinates = null;
+        secondCoordinates = null;
         firstAddr = "";
         secondAddr = "";
     }
 
-    private Coordinates addressToCoordinates(String addr) throws HttpException, MapApiException, ParseException {
+    private Coordinates addressToCoordinates(String addr) throws BotException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&fields=items.point&key={1}",
                 addr, get2GisGetKey());
         String response = httpRequest.sendGet(url);
         if (parser.findCityOnlyAddress(response) || !Objects.equals(parser.findCode(response), "200")) {
-            throw new MapApiException("Введен некорректный адрес: " + addr);
+            throw new BotException("Введен некорректный адрес: " + addr);
         }
         return parser.findCoordinates(response);
     }
 
-//    private String coordinatesToAddress(Coordinates point) throws HttpException, MapApiException, ParseException {
+//    public String coordinatesToAddress(Coordinates point) throws BotException {
 //        String url = MessageFormat.format(
 //                "https://catalog.api.2gis.com/3.0/items/geocode?lat={0}&lon={1}&fields=items.point&key={2}",
 //                point.getLat() + "", point.getLon() + "", get2GisGetKey());
 //        String response = httpRequest.sendGet(url);
 //        String code = parser.findCode(response);
 //        if (!Objects.equals(code, "200")) {
-//            throw new MapApiException(code);
+//            throw new BotException(code);
 //        }
 //        return parser.findAddress(response);
 //    }
 
-    public String createRouteWithAddress(String addr, SearchCategories search)
-            throws HttpException, MapApiException, ParseException {
+    public String createRouteWithAddress(Coordinates geolocation) throws BotException {
+        buttonDel = true;
+        button = false;
+        firstCoordinates = geolocation;
+        return "Введите второй адрес";
+    }
+
+    public String createRouteWithAddress(String addr, SearchCategories search) throws BotException {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
                 get2GisPostKey());
 
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
+            button = true;
             return "Введите первый адрес";
         }
-        else if (Objects.equals(firstAddr, "")) {
+        else if (firstCoordinates == null) {
+            buttonDel = true;
+            button = false;
             firstAddr = addr;
             firstCoordinates = addressToCoordinates(firstAddr);
             return "Введите второй адрес";
@@ -83,32 +96,32 @@ public class MapApiProcess {
         }
 
         if (Objects.equals(firstAddr, secondAddr)) {
-            throw new MapApiException("Введите разные адреса!");
+            throw new BotException("Введите разные адреса!");
         }
-        resetValues();
 
         String response = httpRequest.sendPost(url, firstCoordinates, secondCoordinates);
         if (Objects.equals(response, "")) { //не совсем понятно, когда это условие срабатывает
             System.out.println("response = \"\";");
-            throw new MapApiException("Данный маршрут не может быть построен!");
+            throw new BotException("Данный маршрут не может быть построен!");
         }
         String status = parser.findStatus(response);
         if (!status.equals("OK")) {
             System.out.println(status);
-            throw new MapApiException("Данный маршрут не может быть построен!");
+            throw new BotException("Данный маршрут не может быть построен!");
         }
 
-        //штука для поиска средней точки
         //duration = parser.findDuration(response);
         Coordinates middlePoint = new CoordinatesProcessor(response, firstCoordinates, secondCoordinates).
-                coordinatesProcessEconom();
+                coordinatesProcess();
         middlePointOnMap = true;
+
         String middlePointPlace = radiusSearch(middlePoint, search);
 
-        return parser.findRouteInformation(response) + "\n" + middlePointPlace; // вывод средней точки
+        resetValues();
+        return parser.findRouteInformation(response) + "\nmiddle point(debug): " + middlePoint + "\n" + middlePointPlace;
     }
 
-    public String radiusSearch(Coordinates middlePoint, SearchCategories search) throws HttpException, ParseException {
+    public String radiusSearch(Coordinates middlePoint, SearchCategories search) throws BotException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?q={0}&type=branch&point={1}%2C{2}&radius={3}&key={4}",
                 search.getSearch(), middlePoint.getLon() + "", middlePoint.getLat() + "",
@@ -116,21 +129,10 @@ public class MapApiProcess {
         String response = httpRequest.sendGet(url);
         middlePointPlaceAddress = city + parser.findPlaceAddress(response);
         return "Место встречи: " + middlePointPlaceAddress +
-                " — " + parser.findPlaceInfo(response);
+                "\n— " + parser.findPlaceInfo(response);
     }
 
-//    public String createRouteWithCoordinates(Coordinates coordinates) throws HttpException { //штука для поиска средней точки
-//        String url = MessageFormat.format(
-//                "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
-//                get2GisPostKey());
-//        String response = httpRequest.sendPost(url, firstCoordinates, coordinates);
-//        if (response == null) {
-//            return "Неизвестная ошибка";
-//        }
-//        return response;
-//    }
-
-    public String mapDisplay(String token, String id, String addr) throws HttpException, MapApiException, ParseException {
+    public String mapDisplay(String token, String id, String addr) throws BotException {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
             return "Введите адрес";
@@ -148,7 +150,7 @@ public class MapApiProcess {
         return null;
     }
 
-    public void coordinatesMapDisplay(String token, String id) throws HttpException, MapApiException, ParseException {
+    public void coordinatesMapDisplay(String token, String id) throws BotException {
         middlePointOnMap = false;
         Coordinates coordinates = addressToCoordinates(middlePointPlaceAddress);
         String url = MessageFormat.format(
@@ -157,7 +159,7 @@ public class MapApiProcess {
         httpRequest.sendGet(url);
     }
 
-    public String addrInfo(String addr) throws HttpException, MapApiException, ParseException {
+    public String addrInfo(String addr) throws BotException {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
             return "Введите адрес";
@@ -173,21 +175,21 @@ public class MapApiProcess {
         System.out.println(url);
         String response = httpRequest.sendGet(url);
         if (!Objects.equals(parser.findCode(response), "200")) {
-            throw new MapApiException("По этому адресу нет организаций");
+            throw new BotException("По этому адресу нет организаций");
         }
 
         return "Список организаций:\n" + parser.findCompanies(response);
     }
 
 
-    private String buildingId(String addr) throws HttpException, MapApiException, ParseException {
+    private String buildingId(String addr) throws BotException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?q={0}&type=building&key={1}",
                 addr, get2GisGetKey());
         System.out.println(url);
         String response = httpRequest.sendGet(url);
         if (!Objects.equals(parser.findCode(response), "200")) {
-            throw new MapApiException("Введен некорректный адрес: " + addr);
+            throw new BotException("Введен некорректный адрес: " + addr);
         }
 
         return parser.findBuildingId(response);

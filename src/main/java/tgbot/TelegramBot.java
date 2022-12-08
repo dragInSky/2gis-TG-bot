@@ -1,8 +1,5 @@
 package tgbot;
 
-import tgbot.Exceptions.HttpException;
-import tgbot.Exceptions.MapApiException;
-import tgbot.Exceptions.ParseException;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
@@ -13,13 +10,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.Objects;
 
 public class TelegramBot extends TelegramLongPollingBot {
-    private Coordinates userGeolocation = null;
+    private final Button button = new Button();
     private final MapApiProcess mapApiProcess = new MapApiProcess();
     private String command;
     private boolean cityCommand = false;
 
     @Override
     public void onUpdateReceived(Update update) {
+        //System.out.println("Starting: " + update.getMessage().getChatId());
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
             if (cityCommand) {
@@ -35,9 +33,16 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else { //значит нажата кнопка
             if (update.getMessage().hasLocation()) { //если были запрошены геоданные
                 Location location = update.getMessage().getLocation();
-                userGeolocation = new Coordinates(location);
+                Coordinates userGeolocation = new Coordinates(location);
+                routeProcess(update.getMessage(), userGeolocation);
             }
         }
+//        try {
+//            Thread.sleep(10_000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        System.out.println("Finishing: " + update.getMessage().getChatId());
     }
 
     private void commandProcess(Message msg, String message, String addr) {
@@ -83,8 +88,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (data != null) {
                 sendMessage(msg, data);
             }
-        } catch (HttpException | MapApiException | ParseException e) {
-            e.printStackTrace();
+        } catch (BotException e) {
             sendMessage(msg, e.getMessage());
         }
     }
@@ -93,8 +97,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             String info = mapApiProcess.addrInfo(address);
             sendMessage(msg, info);
-        } catch (HttpException | MapApiException | ParseException e) {
-            e.printStackTrace();
+        } catch (BotException e) {
+            sendMessage(msg, e.getMessage());
+        }
+    }
+
+    private void routeProcess(Message msg, Coordinates geolocation) {
+        try {
+            String route = mapApiProcess.createRouteWithAddress(geolocation);
+            sendMessage(msg, route);
+        } catch (BotException e) {
+            mapApiProcess.resetValues();
             sendMessage(msg, e.getMessage());
         }
     }
@@ -106,8 +119,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (mapApiProcess.getMiddlePointOnMap()) {
                 mapApiProcess.coordinatesMapDisplay(getBotToken(), msg.getChatId().toString());
             }
-        } catch (HttpException | MapApiException | ParseException e) {
-            e.printStackTrace();
+        } catch (BotException e) {
             mapApiProcess.resetValues();
             sendMessage(msg, e.getMessage());
         }
@@ -116,17 +128,19 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void sendMessage(Message msg, String data) {
         String chatId = msg.getChatId().toString();
         SendMessage message = new SendMessage(chatId, data);
-        new Button().setUpGeolocation(message);
+
+        if (mapApiProcess.getButton()) {
+            button.setUpGeolocation(message);
+        }
+        if (mapApiProcess.getButtonDel()) {
+            button.removeKeyboard(message);
+        }
 
         try {
             execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-    }
-
-    public Coordinates getUserGeolocation() {
-        return userGeolocation;
     }
 
     @Override
