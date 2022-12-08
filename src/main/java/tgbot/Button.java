@@ -18,7 +18,7 @@ public class Button {
         replyKeyboardMarkup.setOneTimeKeyboard(true);
         List<KeyboardRow> keyboardRows = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
-        KeyboardButton keyboardButton = new KeyboardButton("Отправить геоданные");
+        KeyboardButton keyboardButton = new KeyboardButton("Отправить геолокацию");
         keyboardButton.setRequestLocation(true);
         row.add(keyboardButton);
         keyboardRows.add(row);

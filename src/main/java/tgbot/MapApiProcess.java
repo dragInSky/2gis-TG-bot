@@ -54,18 +54,6 @@ public class MapApiProcess {
         return parser.findCoordinates(response);
     }
 
-//    public String coordinatesToAddress(Coordinates point) throws BotException {
-//        String url = MessageFormat.format(
-//                "https://catalog.api.2gis.com/3.0/items/geocode?lat={0}&lon={1}&fields=items.point&key={2}",
-//                point.getLat() + "", point.getLon() + "", get2GisGetKey());
-//        String response = httpRequest.sendGet(url);
-//        String code = parser.findCode(response);
-//        if (!Objects.equals(code, "200")) {
-//            throw new BotException(code);
-//        }
-//        return parser.findAddress(response);
-//    }
-
     public String createRouteWithAddress(Coordinates geolocation) throws BotException {
         buttonDel = true;
         button = false;
@@ -172,7 +160,6 @@ public class MapApiProcess {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?building_id={0}&key={1}",
                 buildingId(addr), get2GisGetKey());
-        System.out.println(url);
         String response = httpRequest.sendGet(url);
         if (!Objects.equals(parser.findCode(response), "200")) {
             throw new BotException("По этому адресу нет организаций");
