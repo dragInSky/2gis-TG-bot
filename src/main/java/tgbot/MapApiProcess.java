@@ -173,7 +173,6 @@ public class MapApiProcess {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?q={0}&type=building&key={1}",
                 addr, get2GisGetKey());
-        System.out.println(url);
         String response = httpRequest.sendGet(url);
         if (!Objects.equals(parser.findCode(response), "200")) {
             throw new BotException("¬веден некорректный адрес: " + addr);
