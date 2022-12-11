@@ -120,7 +120,7 @@ public class MapApiProcess {
                 "\nЧ " + parser.findPlaceInfo(response);
     }
 
-    public String mapDisplay(String token, String id, String addr) throws BotException {
+    public String mapDisplay(String token, String chatId, String addr) throws BotException {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
             return "¬ведите адрес";
@@ -132,7 +132,7 @@ public class MapApiProcess {
         Coordinates coordinates = addressToCoordinates(addr);
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
-                token, id, coordinates.getLat() + "", coordinates.getLon() + "");
+                token, chatId, coordinates.getLat() + "", coordinates.getLon() + "");
         httpRequest.sendGet(url);
 
         return null;
