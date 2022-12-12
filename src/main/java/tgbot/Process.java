@@ -28,27 +28,8 @@ public class Process {
             addr = mapApiProcess.getCity() + addr;
         }
         switch (text) {
-            case "/start" -> { return startCommandProcess(chatId); }
-            case "/help" -> {
-                return new Struct(chatId,
-                        """
-                        Список моих команд:
-                        /changecity - поменять город
-                        /map - вывести на карте место по адресу
-                        /info - вывести по адресу информацию об организациях
-                        /route - найти место встречи для двух людей
-                        """);
-            }
-            case "/changecity" -> { return changeCityProcess(chatId); }
-            case "/map" -> { return mapDisplayProcess(chatId, addr, botToken); }
-            case "/info" -> { return addrInfoProcess(chatId, addr); }
-            case "/route" -> { return routeProcess(chatId, addr); }
-            default -> { return new Struct(chatId,"Введите\\отправьте команду!"); }
-        }
-    }
-
-    private Struct startCommandProcess(String chatId) {
-        return new Struct(chatId, """
+            case "/start" -> {
+                return new Struct(chatId, """
                 Вас приветствует 2gis бот, я могу:
                 - находить место встречи для двух людей;
                 - выводить на карте место по адресу;
@@ -56,6 +37,23 @@ public class Process {
                 
                 /changecity - поменять город (сейчас Екатеринбург).
                 """);
+            }
+            case "/help" -> {
+                return new Struct(chatId,
+                """
+                Список моих команд:
+                /changecity - поменять город
+                /map - вывести на карте место по адресу
+                /info - вывести по адресу информацию об организациях
+                /route - найти место встречи для двух людей
+                """);
+            }
+            case "/changecity" -> { return changeCityProcess(chatId); }
+            case "/map" -> { return mapDisplayProcess(chatId, addr, botToken); }
+            case "/info" -> { return addrInfoProcess(chatId, addr); }
+            case "/route" -> { return routeProcess(chatId, addr); }
+            default -> { return new Struct(chatId,"Введите\\отправьте команду!"); }
+        }
     }
 
     private Struct changeCityProcess(String chatId) {
