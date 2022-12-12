@@ -1,8 +1,10 @@
-package tgbot;
+package tgbot.processors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import tgbot.BotException;
+import tgbot.Structs.Coordinates;
 
 import java.util.Objects;
 

@@ -1,16 +1,18 @@
-package tgbot;
+package tgbot.processors;
 
 //import tgbot.Exceptions.HttpException;
 //import tgbot.Exceptions.ParseException;
 
+import tgbot.Structs.Coordinates;
+
 import java.util.ArrayList;
 
-public class CoordinatesProcessor {
+public class CoordinatesProcess {
     private final ArrayList<Coordinates> coordinatesArray;
     private final Coordinates m_firstCoordinates;
     private final double m_distance;
 
-    CoordinatesProcessor(String route, Coordinates firstCoordinates, Coordinates secondCoordinates) {
+    CoordinatesProcess(String route, Coordinates firstCoordinates, Coordinates secondCoordinates) {
         m_firstCoordinates = firstCoordinates;
         m_distance = Math.sqrt(Math.pow(firstCoordinates.getLat() - secondCoordinates.getLat(), 2) +
                         (Math.pow(firstCoordinates.getLon() - secondCoordinates.getLon(), 2)));

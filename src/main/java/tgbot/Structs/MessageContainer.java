@@ -1,14 +1,14 @@
-package tgbot;
+package tgbot.Structs;
 
-public class Struct {
+public class MessageContainer {
     private final String m_chatId, m_data;
     private final boolean m_bFlag;
-    Struct(String chatId, String data) {
+    public MessageContainer(String chatId, String data) {
         m_chatId = chatId;
         m_data = data;
         m_bFlag = false;
     }
-    Struct(String chatId, String data, boolean bFlag) {
+    public MessageContainer(String chatId, String data, boolean bFlag) {
         m_chatId = chatId;
         m_data = data;
         m_bFlag = bFlag;

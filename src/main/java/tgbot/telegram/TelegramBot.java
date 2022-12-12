@@ -1,10 +1,14 @@
-package tgbot;
+package tgbot.telegram;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import tgbot.BotException;
+import tgbot.Structs.Coordinates;
+import tgbot.processors.Process;
+import tgbot.Structs.MessageContainer;
 
 public class TelegramBot extends TelegramLongPollingBot {
     private final Button button = new Button();
@@ -21,7 +25,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             Location location = update.getMessage().getLocation();
             userGeolocation = new Coordinates(location);
         }
-        Struct messageData = process.processing(chatId, text, userGeolocation, getBotToken());
+        MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken());
         if (messageData != null) {
             sendMessage(messageData);
         }
@@ -33,7 +37,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        System.out.println("Finishing: " + update.getMessage().getChatId());
     }
 
-    public void sendMessage(Struct messageData) {
+    public void sendMessage(MessageContainer messageData) {
         SendMessage message = new SendMessage(messageData.getChatId(), messageData.getData());
 
         if (process.mapApiProcess.getButton()) {

@@ -1,4 +1,8 @@
-package tgbot;
+package tgbot.processors;
+
+import tgbot.BotException;
+import tgbot.Structs.Coordinates;
+import tgbot.SearchCategories;
 
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -99,7 +103,7 @@ public class MapApiProcess {
         }
 
         //duration = parser.findDuration(response);
-        Coordinates middlePoint = new CoordinatesProcessor(response, firstCoordinates, secondCoordinates).
+        Coordinates middlePoint = new CoordinatesProcess(response, firstCoordinates, secondCoordinates).
                 coordinatesProcess();
         middlePointOnMap = true;
 
