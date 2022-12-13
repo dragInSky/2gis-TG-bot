@@ -10,7 +10,16 @@ import tgbot.Structs.Coordinates;
 import tgbot.processors.Process;
 import tgbot.Structs.MessageContainer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TelegramBot extends TelegramLongPollingBot {
+
+    //Менеджер потоков следит, чтобы каждому потоку выделялся свой обработчик команд
+    private final Map<String, Process> managerOfThreads = new HashMap<>();
+
+    //Менеджер команд у пользователя
+    private final Map<String, String> managerOfThreadProcess = new HashMap<>();
     private final Button button = new Button();
     private final Process process = new Process();
 
@@ -56,6 +65,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
+    private void mainLogic(String chatId) {
+        
+    }
+
 
     @Override
     public String getBotUsername() {
