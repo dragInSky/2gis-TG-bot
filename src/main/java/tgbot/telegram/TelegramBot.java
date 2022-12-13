@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import tgbot.BotException;
 import tgbot.Structs.Coordinates;
+import tgbot.Structs.User;
 import tgbot.processors.Process;
 import tgbot.Structs.MessageContainer;
 
@@ -20,6 +21,9 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     //Менеджер команд у пользователя
     private final Map<String, String> managerOfThreadProcess = new HashMap<>();
+
+    //Менеджер полей у пользователя
+    private final Map<String, User> managerOfThreadData = new HashMap<>();
     private final Button button = new Button();
     private final Process process = new Process();
 
@@ -67,7 +71,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void mainLogic(String chatId) {
-        
+
     }
 
 

@@ -1,4 +1,4 @@
-package tgbot.telegram;
+/*package tgbot.telegram;
 
 import tgbot.Structs.User;
 
@@ -9,7 +9,7 @@ public class BaseOfClients {
     //отвечает за корректную запись в Map(базу) клиентов
     private final Map<String, User> base = new HashMap<>();
 
-    private final HandlerJSON handlerJSON = new HandlerJSON();
+    //private final HandlerJSON handlerJSON = new HandlerJSON();
 
     public void registateClient(String userID) {
         if (!base.containsKey(userID)) {
@@ -23,13 +23,13 @@ public class BaseOfClients {
     }
 
     public void readToLocalBase() {
-        String path = "D:\\JAVA\\UNIVERSITY\\Bot_consol\\ConsolniyBot\\text.json";
-        handlerJSON.readBase(base, path);
+        String path = "D:\\text.json";
+       // handlerJSON.readBase(base, path);
     }
 
     public void updateToJSONBase() {
-        String path = "D:\\JAVA\\UNIVERSITY\\Bot_consol\\ConsolniyBot\\text.json";
-        handlerJSON.updateBase(base, path);
+        String path = "D:\\text.json";
+        //handlerJSON.updateBase(base, path);
     }
 }
-}
+*/
