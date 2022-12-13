@@ -3,7 +3,7 @@ package tgbot.Structs;
 
 public class User {
     private static final int RADIUS_OF_SEARCH = 400;
-    private static String firstAddr = "", secondAddr = "", middlePointPlaceAddress;
+    private static String firstAddr = "", secondAddr = "", middlePointPlaceAddress, map = "";
     private String city = "Екатеринбург, ";
     private static Coordinates firstCoordinates = null, secondCoordinates = null;
     private static boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false;
@@ -29,6 +29,10 @@ public class User {
         return city;
     }
 
+    public String getMap(){
+        return map;
+    }
+
     public String getFirstAddr(){
         return firstAddr;
     }
@@ -51,6 +55,10 @@ public class User {
 
     public void setCity(String newCity){
         city = newCity;
+    }
+
+    public void setMap(String newAddr){
+        map = newAddr;
     }
 
     public void setFirstAddr(String newAddr){
@@ -87,5 +95,16 @@ public class User {
 
     public void setButtonDel(boolean newBoolean){
         buttonDel = newBoolean;
+    }
+
+    public void resetValues() {
+        repeatCommand = false;
+        button = false;
+        buttonDel = false;
+        firstCoordinates = null;
+        secondCoordinates = null;
+        firstAddr = "";
+        secondAddr = "";
+        map = "";
     }
 }
