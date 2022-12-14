@@ -5,6 +5,8 @@ public class User {
     private static final int RADIUS_OF_SEARCH = 400;
     private static String firstAddr = "", secondAddr = "", middlePointPlaceAddress, map = "";
     private String city = "Екатеринбург, ";
+
+    //private String command;
     private static Coordinates firstCoordinates = null, secondCoordinates = null;
     private static boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false;
     //private static int duration;
@@ -28,6 +30,10 @@ public class User {
     public String getCity(){
         return city;
     }
+
+    /*public String getCommand(){
+        return command;
+    }*/
 
     public String getMap(){
         return map;
@@ -60,6 +66,10 @@ public class User {
     public void setMap(String newAddr){
         map = newAddr;
     }
+
+   /* public void setCommand(String newCommand){
+        command = newCommand;
+    }*/
 
     public void setFirstAddr(String newAddr){
         firstAddr = newAddr;

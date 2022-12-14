@@ -4,12 +4,21 @@ import tgbot.BotException;
 import tgbot.Structs.Coordinates;
 import tgbot.SearchCategories;
 import tgbot.Structs.MessageContainer;
+import tgbot.Structs.User;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class Process {
-    public final MapApiProcess mapApiProcess = new MapApiProcess();
+
+   public Process() {
+        cityCommand = false;
+        mapApiProcess = new MapApiProcess();
+    }
+
+    public final MapApiProcess mapApiProcess;
     private String command;
+
     private boolean cityCommand = false;
 
     public MessageContainer processing(String chatId, String text, Coordinates userGeolocation, String botToken) {
@@ -56,7 +65,8 @@ public class Process {
             case "/changecity" -> { return changeCityProcess(chatId); }
             case "/map" -> { return mapDisplayProcess(chatId, addr, botToken); }
             case "/info" -> { return addrInfoProcess(chatId, addr); }
-            case "/route" -> { return routeProcess(chatId, addr); }
+            case "/route" -> {
+                return routeProcess(chatId, addr); }
             default -> { return new MessageContainer(chatId,"¬ведите\\отправьте команду!"); }
         }
     }
@@ -89,7 +99,7 @@ public class Process {
 
     private MessageContainer routeProcess(String chatId, Coordinates geolocation) {
         try {
-            String route = mapApiProcess.createRouteWithAddress(geolocation);
+            String route = mapApiProcess.createRouteWithAddress(chatId, geolocation);
             return new MessageContainer(chatId, route);
         } catch (BotException e) {
             mapApiProcess.resetValues();
@@ -99,7 +109,7 @@ public class Process {
 
     private MessageContainer routeProcess(String chatId, String addr) {
         try {
-            String route = mapApiProcess.createRouteWithAddress(addr, SearchCategories.CAFE);
+            String route = mapApiProcess.createRouteWithAddress(chatId, addr, SearchCategories.CAFE);
             return new MessageContainer(chatId, route, true);
         } catch (BotException e) {
             mapApiProcess.resetValues();

@@ -1,4 +1,4 @@
-package tgbot;
+/*package tgbot;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -116,4 +116,4 @@ class ProcessTest {
         MessageContainer res3 = process.processing("1", "Тургенева 4", null, "");
         Assertions.assertNotNull(res3.getData());
     }
-}
+}*/

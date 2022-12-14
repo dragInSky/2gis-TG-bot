@@ -3,11 +3,26 @@ package tgbot.processors;
 import tgbot.BotException;
 import tgbot.Structs.Coordinates;
 import tgbot.SearchCategories;
+import tgbot.Structs.User;
 
 import java.text.MessageFormat;
+import java.util.Map;
 import java.util.Objects;
 
 public class MapApiProcess {
+
+    MapApiProcess() {
+        repeatCommand = false;
+        middlePointOnMap = false;
+        button = false;
+        buttonDel = false;
+        firstCoordinates = null;
+        secondCoordinates = null;
+        firstAddr = "";
+        secondAddr = "";
+        city = "≈катеринбург, ";
+    }
+
     private static final int RADIUS_OF_SEARCH = 400;
     private static String firstAddr = "", secondAddr = "", middlePointPlaceAddress;
     private String city = "≈катеринбург, ";
@@ -23,6 +38,16 @@ public class MapApiProcess {
     public boolean getMiddlePointOnMap(){
         return middlePointOnMap;
     }
+
+
+    public String getFirstAddr() {
+        return firstAddr;
+    }
+
+    public String getSecondAddr() {
+        return secondAddr;
+    }
+
     public String getCity(){
         return city;
     }
@@ -58,23 +83,33 @@ public class MapApiProcess {
         return parser.findCoordinates(response);
     }
 
-    public String createRouteWithAddress(Coordinates geolocation) throws BotException {
+    public String createRouteWithAddress(String chatId, Coordinates geolocation) throws BotException {
+        //managerOfThreadData.get(chatId).setButtonDel(true);
+        //managerOfThreadData.get(chatId).setButton(false);
+        //managerOfThreadData.get(chatId).setFirstCoordinates(geolocation);
         buttonDel = true;
         button = false;
         firstCoordinates = geolocation;
         return "¬ведите второй адрес";
     }
 
-    public String createRouteWithAddress(String addr, SearchCategories search) throws BotException {
+    public String createRouteWithAddress(String chatId,String addr, SearchCategories search) throws BotException {
         String url = MessageFormat.format(
                 "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
                 get2GisPostKey());
 
         if (Objects.equals(addr, "")) {
+            //managerOfThreadData.get(chatId).setRepeatCommand(true);
+            //managerOfThreadData.get(chatId).setButton(true);
             repeatCommand = true;
             button = true;
             return "¬ведите первый адрес";
         }
+        /*else if (managerOfThreadData.get(chatId).getFirstCoordinates() == null){
+            managerOfThreadData.get(chatId).setButtonDel(true);
+            managerOfThreadData.get(chatId).setButton(false);
+            managerOfThreadData.get(chatId).setFirstAddr(addr);
+            managerOfThreadData.get(chatId).setFirstCoordinates(addressToCoordinates(addr));*/
         else if (firstCoordinates == null) {
             buttonDel = true;
             button = false;
@@ -82,16 +117,26 @@ public class MapApiProcess {
             firstCoordinates = addressToCoordinates(firstAddr);
             return "¬ведите второй адрес";
         }
+
+        /*else if (Objects.equals(managerOfThreadData.get(chatId).getSecondAddr(), "")){
+            managerOfThreadData.get(chatId).setSecondAddr(addr);
+            managerOfThreadData.get(chatId).setSecondCoordinates(addressToCoordinates(addr));
+        }*/
         else if (Objects.equals(secondAddr, "")) {
             secondAddr = addr;
             secondCoordinates = addressToCoordinates(secondAddr);
         }
 
-        if (Objects.equals(firstAddr, secondAddr)) {
+        /*if (Objects.equals(firstAddr, secondAddr)) {
             throw new BotException("¬ведите разные адреса!");
-        }
+        }*/
+
+        /*String response = httpRequest.sendPost(url, managerOfThreadData.get(chatId).getFirstCoordinates(),
+                managerOfThreadData.get(chatId).getSecondCoordinates());*/
+
 
         String response = httpRequest.sendPost(url, firstCoordinates, secondCoordinates);
+
         if (Objects.equals(response, "")) { //не совсем пон€тно, когда это условие срабатывает
             System.out.println("response = \"\";");
             throw new BotException("ƒанный маршрут не может быть построен!");
@@ -103,12 +148,19 @@ public class MapApiProcess {
         }
 
         //duration = parser.findDuration(response);
+
+        /*Coordinates middlePoint = new CoordinatesProcess(response,
+                managerOfThreadData.get(chatId).getFirstCoordinates(),
+                managerOfThreadData.get(chatId).getSecondCoordinates()).
+                coordinatesProcess();*/
+
         Coordinates middlePoint = new CoordinatesProcess(response, firstCoordinates, secondCoordinates).
                 coordinatesProcess();
         middlePointOnMap = true;
 
         String middlePointPlace = radiusSearch(middlePoint, search);
 
+        //managerOfThreadData.get(chatId).resetValues();
         resetValues();
         return parser.findRouteInformation(response) + "\nmiddle point(debug): " + middlePoint + "\n" + middlePointPlace;
     }

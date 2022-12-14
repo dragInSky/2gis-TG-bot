@@ -20,12 +20,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final Map<String, Process> managerOfThreads = new HashMap<>();
 
     //Менеджер команд у пользователя
-    private final Map<String, String> managerOfThreadProcess = new HashMap<>();
+    //private final Map<String, String> managerOfThreadProcess = new HashMap<>();
 
     //Менеджер полей у пользователя
     private final Map<String, User> managerOfThreadData = new HashMap<>();
     private final Button button = new Button();
-    private final Process process = new Process();
+    //private final Process process = new Process();
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -38,10 +38,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             Location location = update.getMessage().getLocation();
             userGeolocation = new Coordinates(location);
         }
-        MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken());
-        if (messageData != null) {
+        mainLogic(chatId, text, userGeolocation);
+        //MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken());
+        /*if (messageData != null) {
             sendMessage(messageData);
-        }
+        }*/
 //        try {
 //            Thread.sleep(10_000);
 //        } catch (InterruptedException e) {
@@ -50,28 +51,38 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        System.out.println("Finishing: " + update.getMessage().getChatId());
     }
 
-    public void sendMessage(MessageContainer messageData) {
-        SendMessage message = new SendMessage(messageData.getChatId(), messageData.getData());
+    public void sendMessage(MessageContainer messageData, String chatId) {
 
-        if (process.mapApiProcess.getButton()) {
+        SendMessage message = new SendMessage(messageData.getChatId(), messageData.getData());
+        /*if (process.mapApiProcess.getButton()) {
             button.setUpGeolocation(message);
         }
         if (process.mapApiProcess.getButtonDel()) {
             button.removeKeyboard(message);
-        }
+        }*/
 
         try {
             execute(message);
-            if (messageData.isFlag() && process.mapApiProcess.getMiddlePointOnMap()) {
+            /*if (messageData.isFlag() && process.mapApiProcess.getMiddlePointOnMap()) {
                 process.mapApiProcess.coordinatesMapDisplay(getBotToken(), messageData.getChatId());
-            }
-        } catch (TelegramApiException | BotException e) {
+            }*/
+        } catch (TelegramApiException /*| BotException*/ e) {
             e.printStackTrace();
         }
     }
 
-    private void mainLogic(String chatId) {
-
+    private void mainLogic(String chatId, String text, Coordinates userGeolocation) {
+        if (!managerOfThreads.containsKey(chatId)) {
+            managerOfThreads.put(String.valueOf(chatId), new Process());
+            managerOfThreadData.put(String.valueOf(chatId), new User());
+        }
+        //System.out.println(chatId);
+        Process  process = managerOfThreads.get(chatId);
+        MessageContainer messageData = process.processing(chatId, text, userGeolocation,
+                getBotToken());
+        if (messageData != null) {
+            sendMessage(messageData, chatId);
+        }
     }
 
 
