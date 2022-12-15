@@ -9,7 +9,7 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public class MapApiProcess {
-    private static final int RADIUS_OF_SEARCH = 400;
+    private static final int RADIUS_OF_SEARCH = 350;
     private String firstAddr = "", secondAddr = "", middlePointPlaceAddress, city = "Екатеринбург, ";
     private Coordinates firstCoordinates = null, secondCoordinates = null;
     private boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false;
@@ -66,12 +66,19 @@ public class MapApiProcess {
         return parser.findCoordinates(response);
     }
 
+    public boolean notExistingCity(String city) throws BotException {
+        String url = MessageFormat.format(
+                "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&key={1}",
+                city, get2GisGetKey());
+        String response = httpRequest.sendGet(url);
+        return !parser.findCityOnlyAddress(response) || !Objects.equals(parser.findCode(response), "200");
+    }
+
     public String cityInPoint(Coordinates geolocation) throws BotException {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?lon={0}&lat={1}&" +
                         "fields=items.adm_div,items.address&type=adm_div.city&key={2}",
                 geolocation.getLon() + "", geolocation.getLat() + "", get2GisGetKey());
-        System.out.println(url);
         String response = httpRequest.sendGet(url);
         if (!Objects.equals(parser.findCode(response), "200")) {
             throw new BotException("По этому адресу нет города");

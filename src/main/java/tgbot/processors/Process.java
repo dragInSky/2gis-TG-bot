@@ -19,14 +19,16 @@ public class Process {
 
     public MessageContainer processing(String chatId, String text, Coordinates userGeolocation, String botToken) {
         if (cityCommand) {
-            cityCommand = false;
-            if (userGeolocation != null) {
-                try {
+            try {
+                if (userGeolocation != null) {
                     text = mapApiProcess.cityInPoint(userGeolocation); //Передали город геолокацией
-                } catch (BotException e) {
-                    return new MessageContainer(chatId, e.getMessage());
+                } else if (mapApiProcess.notExistingCity(text)) {
+                    return new MessageContainer(chatId, "Введите правильное название города!");
                 }
+            } catch (BotException e) {
+                return new MessageContainer(chatId, e.getMessage());
             }
+            cityCommand = false;
             mapApiProcess.setCity(text + ", ");
             return new MessageContainer(chatId, "Вы изменили город на " + text + "\n/help - список моих команд");
         } else if (userGeolocation != null) {
