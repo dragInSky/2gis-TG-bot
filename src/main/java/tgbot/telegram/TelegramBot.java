@@ -24,6 +24,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     //Менеджер полей у пользователя
     //private final Map<String, User> managerOfThreadData = new HashMap<>();
     private final Button button = new Button();
+
+    //private final ButtonMessage buttonMessage = new ButtonMessage();
     private Process process;
     private final HttpRequest httpRequest = new HttpRequest();
     private final Parser parser = new Parser();
@@ -38,7 +40,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         String chatId = update.getMessage().getChatId().toString();
         String text = "";
         Coordinates userGeolocation = null;
-        Object callbackData = null;
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             text = update.getMessage().getText();
@@ -46,10 +47,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             Location location = update.getMessage().getLocation();
             userGeolocation = new Coordinates(location);
         }
-        else if (update.hasCallbackQuery()) {
-            callbackData = update.getCallbackQuery().getData();
-        }
-        mainLogic(chatId, text, userGeolocation, callbackData);
+        mainLogic(chatId, text, userGeolocation);
 //        try {
 //            Thread.sleep(10_000);
 //        } catch (InterruptedException e) {
@@ -58,7 +56,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        System.out.println("Finishing: " + update.getMessage().getChatId());
     }
 
-    private void mainLogic(String chatId, String text, Coordinates userGeolocation, Object callbackData) {
+    private void mainLogic(String chatId, String text, Coordinates userGeolocation) {
         if (!managerOfThreads.containsKey(chatId)) {
             managerOfThreads.put(String.valueOf(chatId), new Process(parser, httpRequest));
             //managerOfThreadData.put(String.valueOf(chatId), new User());
@@ -70,8 +68,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             process.mapApiProcess.setCity(userCities.get(chatId));
         }
 
-        MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken(), userCities,
-                callbackData);
+        MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken(), userCities);
         if (messageData != null) {
             sendMessage(messageData);
         }
@@ -85,6 +82,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
         if (process.mapApiProcess.getButtonDel()) {
             button.removeKeyboard(message);
+        }
+        if (process.mapApiProcess.getRouteList()) {
+            button.route(message);
+        }
+        if (process.mapApiProcess.getPlaceList()) {
+            button.place(message);
         }
 
         try {

@@ -1,4 +1,4 @@
-package tgbot.telegram;
+/*package tgbot.telegram;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -33,7 +33,7 @@ public class ButtonMessage {
 
     }
 
-    public void Place(SendMessage message) {
+    public void place(SendMessage message) {
         var cafeButton = new InlineKeyboardButton();
 
         cafeButton.setText("Кафе");
@@ -84,7 +84,6 @@ public class ButtonMessage {
         rowsInLine.add(rowInLine);
 
         markupInLine.setKeyboard(rowsInLine);
-        message.setText("Выберите тип маршрута");
         message.setReplyMarkup(markupInLine);
     }
 
@@ -94,3 +93,4 @@ public class ButtonMessage {
     }
 
 }
+*/
