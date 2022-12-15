@@ -2,7 +2,6 @@ package tgbot.processors;
 
 import tgbot.BotException;
 import tgbot.structs.Coordinates;
-
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

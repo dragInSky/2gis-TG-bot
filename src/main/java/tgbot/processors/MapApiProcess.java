@@ -10,13 +10,16 @@ import java.util.Objects;
 
 public class MapApiProcess {
     private static final int RADIUS_OF_SEARCH = 400;
-    private String firstAddr = "", secondAddr = "", middlePointPlaceAddress;
-    private String city = "Екатеринбург, ";
+    private String firstAddr = "", secondAddr = "", middlePointPlaceAddress, city = "Екатеринбург, ";
     private Coordinates firstCoordinates = null, secondCoordinates = null;
     private boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false;
-    //private static int duration;
-    private final HttpRequest httpRequest = new HttpRequest();
-    private final Parser parser = new Parser();
+    private final HttpRequest httpRequest;
+    private final Parser parser;
+
+    MapApiProcess(Parser parser, HttpRequest httpRequest) {
+        this.httpRequest = httpRequest;
+        this.parser = parser;
+    }
 
     public boolean getRepeatCommand(){
         return repeatCommand;
@@ -27,7 +30,7 @@ public class MapApiProcess {
     public String getCity(){
         return city;
     }
-    public void setCity(String newCity){
+    public void setCity(String newCity) {
         city = newCity;
         button = false;
         buttonDel = true;
@@ -41,7 +44,6 @@ public class MapApiProcess {
     public boolean getButtonDel() {
         return buttonDel;
     }
-    //public int getDuration() { return duration; }
 
     public void resetValues() {
         repeatCommand = false;
@@ -68,10 +70,10 @@ public class MapApiProcess {
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items/geocode?lon={0}&lat={1}&" +
                         "fields=items.adm_div,items.address&type=adm_div.city&key={2}",
-                geolocation.getLon(), geolocation.getLat(), get2GisGetKey());
+                geolocation.getLon() + "", geolocation.getLat() + "", get2GisGetKey());
         System.out.println(url);
         String response = httpRequest.sendGet(url);
-        if (parser.findCityOnlyAddress(response) || !Objects.equals(parser.findCode(response), "200")) {
+        if (!Objects.equals(parser.findCode(response), "200")) {
             throw new BotException("По этому адресу нет города");
         }
         return parser.findCity(response);
@@ -137,22 +139,17 @@ public class MapApiProcess {
             throw new BotException("Данный маршрут не может быть построен!");
         }
 
-        //duration = parser.findDuration(response);
-
         /*Coordinates middlePoint = new CoordinatesProcess(response,
                 managerOfThreadData.get(chatId).getFirstCoordinates(),
                 managerOfThreadData.get(chatId).getSecondCoordinates()).
                 coordinatesProcess();*/
 
-        Coordinates middlePoint = new CoordinatesProcess(response, firstCoordinates, secondCoordinates).
-                coordinatesProcess();
+        Coordinates middlePoint = new CoordinatesProcess(response, firstCoordinates).middleDistancePoint();
         middlePointOnMap = true;
-
-        String middlePointPlace = radiusSearch(middlePoint, search);
 
         //managerOfThreadData.get(chatId).resetValues();
         resetValues();
-        return parser.findRouteInformation(response) + "\nmiddle point(debug): " + middlePoint + "\n" + middlePointPlace;
+        return parser.findRouteInformation(response) + "\n" + radiusSearch(middlePoint, search);
     }
 
     public String radiusSearch(Coordinates middlePoint, SearchCategories search) throws BotException {
@@ -199,7 +196,7 @@ public class MapApiProcess {
         } else {
             repeatCommand = false;
         }
-        addressToCoordinates(addr);
+        addressToCoordinates(addr); //используется для проверки корректности адреса
 
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?building_id={0}&key={1}",
@@ -211,7 +208,6 @@ public class MapApiProcess {
 
         return "Список организаций:\n" + parser.findCompanies(response);
     }
-
 
     private String buildingId(String addr) throws BotException {
         String url = MessageFormat.format(

@@ -5,21 +5,24 @@ import tgbot.structs.Coordinates;
 import tgbot.SearchCategories;
 import tgbot.structs.MessageContainer;
 //import tgbot.Structs.User;
-
 //import java.util.Map;
 import java.util.Objects;
 
 public class Process {
-    public final MapApiProcess mapApiProcess = new MapApiProcess();
+    public final MapApiProcess mapApiProcess;
     private String command;
     private boolean cityCommand = false;
+
+    public Process(Parser parser, HttpRequest httpRequest) {
+        mapApiProcess = new MapApiProcess(parser, httpRequest);
+    }
 
     public MessageContainer processing(String chatId, String text, Coordinates userGeolocation, String botToken) {
         if (cityCommand) {
             cityCommand = false;
             if (userGeolocation != null) {
                 try {
-                    text = mapApiProcess.cityInPoint(userGeolocation);
+                    text = mapApiProcess.cityInPoint(userGeolocation); //Передали город геолокацией
                 } catch (BotException e) {
                     return new MessageContainer(chatId, e.getMessage());
                 }

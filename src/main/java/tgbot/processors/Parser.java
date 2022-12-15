@@ -5,7 +5,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import tgbot.BotException;
 import tgbot.structs.Coordinates;
-
 import java.util.Objects;
 
 public class Parser {
@@ -98,17 +97,15 @@ public class Parser {
     }
 
     public String findCity(String response) throws BotException {
-        return response;
-//        try {
-//            JSONObject json = new JSONObject(response);
-//            JSONObject result = json.getJSONObject("result");
-//            JSONObject items = result.getJSONArray("items").getJSONObject(0);
-//            JSONObject point = items.getJSONObject("point");
-//            return new Coordinates(point.getDouble("lat"), point.getDouble("lon"));
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            throw new BotException("Ошибка на стороне разработчика!");
-//        }
+        try {
+            JSONObject json = new JSONObject(response);
+            JSONObject result = json.getJSONObject("result");
+            JSONObject items = result.getJSONArray("items").getJSONObject(0);
+            return items.getString("name");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new BotException("Ошибка на стороне разработчика!");
+        }
     }
 
     public Coordinates findCoordinates(String response) throws BotException {
