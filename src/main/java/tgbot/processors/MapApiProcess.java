@@ -187,13 +187,13 @@ public class MapApiProcess {
 
         place = text;
 
-        SearchCategories search = SearchCategories.CAFE;
-        /*if(place.equals("Кафе"))
+        SearchCategories search;
+        if(place.equals(city + ", " + "Кафе"))
             search = SearchCategories.CAFE;
-        else if(place.equals("Парк"))
+        else if(place.equals(city + ", " + "Парк"))
             search = SearchCategories.PARK;
         else
-            search = SearchCategories.BAR;*/
+            search = SearchCategories.BAR;
 
         Coordinates middlePoint = new CoordinatesProcess(response, firstCoordinates).middleDistancePoint();
         middlePointOnMap = true;
