@@ -14,7 +14,7 @@ public class MapApiProcess {
             place = "";
     private Coordinates firstCoordinates = null, secondCoordinates = null;
     private boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false,
-            routetList = false, placeList = false;
+            routetList = false, placeList = false, delLast = true;
     private final HttpRequest httpRequest;
     private final Parser parser;
 
@@ -57,6 +57,10 @@ public class MapApiProcess {
         return placeList;
     }
 
+    public  boolean getDelLast(){
+        return delLast;
+    }
+
 
     public void resetValues() {
         repeatCommand = false;
@@ -70,6 +74,7 @@ public class MapApiProcess {
         placeList = false;
         type = "";
         place = "";
+        delLast = true;
     }
 
     private Coordinates addressToCoordinates(String addr) throws BotException {
@@ -124,6 +129,7 @@ public class MapApiProcess {
             repeatCommand = true;
             buttonDel = false;
             button = true;
+            delLast = false;
             return "¬ведите первый адрес";
         } /*else if (managerOfThreadData.get(chatId).getFirstCoordinates() == null){
             managerOfThreadData.get(chatId).setButtonDel(true);

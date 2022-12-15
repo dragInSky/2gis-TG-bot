@@ -80,7 +80,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (process.mapApiProcess.getButton()) {
             button.setUpGeolocation(message);
         }
-        if (process.mapApiProcess.getButtonDel()) {
+        if (process.mapApiProcess.getButtonDel() | process.mapApiProcess.getDelLast()) {
             button.removeKeyboard(message);
         }
         if (process.mapApiProcess.getRouteList()) {
