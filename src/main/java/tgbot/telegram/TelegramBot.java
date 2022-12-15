@@ -18,6 +18,7 @@ import java.util.Map;
 public class TelegramBot extends TelegramLongPollingBot {
     //Менеджер потоков следит, чтобы каждому потоку выделялся свой обработчик команд
     private final Map<String, Process> managerOfThreads = new HashMap<>();
+    private final Map<String, String> userCities;
     //Менеджер команд у пользователя
     //private final Map<String, String> managerOfThreadProcess = new HashMap<>();
     //Менеджер полей у пользователя
@@ -26,6 +27,10 @@ public class TelegramBot extends TelegramLongPollingBot {
     private Process process;
     private final HttpRequest httpRequest = new HttpRequest();
     private final Parser parser = new Parser();
+
+    TelegramBot(Map<String, String> userCities) {
+        this.userCities = userCities;
+    }
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -49,6 +54,24 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        System.out.println("Finishing: " + update.getMessage().getChatId());
     }
 
+    private void mainLogic(String chatId, String text, Coordinates userGeolocation) {
+        if (!managerOfThreads.containsKey(chatId)) {
+            managerOfThreads.put(String.valueOf(chatId), new Process(parser, httpRequest));
+            //managerOfThreadData.put(String.valueOf(chatId), new User());
+        }
+
+        process = managerOfThreads.get(chatId);
+
+        if (userCities.containsKey(chatId)) {
+            process.mapApiProcess.setCity(userCities.get(chatId));
+        }
+
+        MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken(), userCities);
+        if (messageData != null) {
+            sendMessage(messageData);
+        }
+    }
+
     public void sendMessage(MessageContainer messageData) {
         SendMessage message = new SendMessage(messageData.getChatId(), messageData.getData());
 
@@ -68,19 +91,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
-
-    private void mainLogic(String chatId, String text, Coordinates userGeolocation) {
-        if (!managerOfThreads.containsKey(chatId)) {
-            managerOfThreads.put(String.valueOf(chatId), new Process(parser, httpRequest));
-            //managerOfThreadData.put(String.valueOf(chatId), new User());
-        }
-        process = managerOfThreads.get(chatId);
-        MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken());
-        if (messageData != null) {
-            sendMessage(messageData);
-        }
-    }
-
 
     @Override
     public String getBotUsername() {

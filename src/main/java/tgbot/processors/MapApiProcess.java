@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class MapApiProcess {
     private static final int RADIUS_OF_SEARCH = 350;
-    private String firstAddr = "", secondAddr = "", middlePointPlaceAddress, city = "Екатеринбург, ";
+    private String firstAddr = "", secondAddr = "", middlePointPlaceAddress, city = "Екатеринбург";
     private Coordinates firstCoordinates = null, secondCoordinates = null;
     private boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false;
     private final HttpRequest httpRequest;
@@ -33,7 +33,6 @@ public class MapApiProcess {
     public void setCity(String newCity) {
         city = newCity;
         button = false;
-        buttonDel = true;
     }
     public boolean getButton() {
         return button;
@@ -43,6 +42,9 @@ public class MapApiProcess {
     }
     public boolean getButtonDel() {
         return buttonDel;
+    }
+    public void setButtonDel(boolean value) {
+        buttonDel = value;
     }
 
     public void resetValues() {
@@ -71,7 +73,7 @@ public class MapApiProcess {
                 "https://catalog.api.2gis.com/3.0/items/geocode?q={0}&key={1}",
                 city, get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        return !parser.findCityOnlyAddress(response) || !Objects.equals(parser.findCode(response), "200");
+        return !Objects.equals(parser.findCode(response), "200") || !parser.findCityOnlyAddress(response);
     }
 
     public String cityInPoint(Coordinates geolocation) throws BotException {
