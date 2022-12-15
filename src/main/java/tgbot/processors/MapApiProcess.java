@@ -3,6 +3,7 @@ package tgbot.processors;
 import tgbot.BotException;
 import tgbot.structs.Coordinates;
 import tgbot.SearchCategories;
+import tgbot.telegram.ButtonMessage;
 //import tgbot.structs.User;
 import java.text.MessageFormat;
 //import java.util.Map;
@@ -12,7 +13,8 @@ public class MapApiProcess {
     private static final int RADIUS_OF_SEARCH = 350;
     private String firstAddr = "", secondAddr = "", middlePointPlaceAddress, city = "Екатеринбург";
     private Coordinates firstCoordinates = null, secondCoordinates = null;
-    private boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false;
+    private boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false,
+            routetList = false, placeList = false, resetList = false;
     private final HttpRequest httpRequest;
     private final Parser parser;
 
@@ -55,6 +57,9 @@ public class MapApiProcess {
         secondCoordinates = null;
         firstAddr = "";
         secondAddr = "";
+        routetList = false;
+        placeList = false;
+        resetList = false;
     }
 
     private Coordinates addressToCoordinates(String addr) throws BotException {
@@ -96,6 +101,19 @@ public class MapApiProcess {
         button = false;
         firstCoordinates = geolocation;
         return "Введите второй адрес";
+    }
+
+    public String createRouteWithAddress(/*String chatId,*/  String callbackData) throws BotException {
+        if (callbackData.equals(ButtonMessage.PEDESTRIAN_BUTTON) | callbackData.equals(ButtonMessage.JAM_BUTTON) |
+                callbackData.equals(ButtonMessage.BICYCLE_BUTTON)) {
+            routetList = true;
+        }
+        else {
+            resetList = true;
+            routetList = false;
+            placeList = true;
+        }
+        return "";
     }
 
     public String createRouteWithAddress(/*String chatId,*/String addr, SearchCategories search) throws BotException {
@@ -152,13 +170,16 @@ public class MapApiProcess {
                 managerOfThreadData.get(chatId).getFirstCoordinates(),
                 managerOfThreadData.get(chatId).getSecondCoordinates()).
                 coordinatesProcess();*/
+        if(placeList == true)
+        {
+            Coordinates middlePoint = new CoordinatesProcess(response, firstCoordinates).middleDistancePoint();
+            middlePointOnMap = true;
 
-        Coordinates middlePoint = new CoordinatesProcess(response, firstCoordinates).middleDistancePoint();
-        middlePointOnMap = true;
-
-        //managerOfThreadData.get(chatId).resetValues();
-        resetValues();
-        return parser.findRouteInformation(response) + "\n" + radiusSearch(middlePoint, search);
+            //managerOfThreadData.get(chatId).resetValues();
+            resetValues();
+            return parser.findRouteInformation(response) + "\n" + radiusSearch(middlePoint, search);
+        }
+        return "";
     }
 
     public String radiusSearch(Coordinates middlePoint, SearchCategories search) throws BotException {

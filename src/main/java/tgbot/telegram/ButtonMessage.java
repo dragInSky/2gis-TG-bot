@@ -10,17 +10,17 @@ import java.util.List;
 
 public class ButtonMessage {
 
-    public final String CAFE_BUTTON = "CAFE_BUTTON";
+    public static final String CAFE_BUTTON = "CAFE_BUTTON";
 
-    public final String PARK_BUTTON = "PARK_BUTTON";
+    public static final String PARK_BUTTON = "PARK_BUTTON";
 
-    public final String BAR_BUTTON = "BAR_BUTTON";
+    public static final String BAR_BUTTON = "BAR_BUTTON";
 
-    public final String PEDESTRIAN_BUTTON = "PEDESTRIAN_BUTTON";//Пешеходный маршрут
+    public static final String PEDESTRIAN_BUTTON = "PEDESTRIAN_BUTTON";//Пешеходный маршрут
 
-    public final String JAM_BUTTON = "JAM_BUTTON";//На машине
+    public static final String JAM_BUTTON = "JAM_BUTTON";//На машине
 
-    public final String BICYCLE_BUTTON = "BICYCLE_BUTTON";
+    public static final String BICYCLE_BUTTON = "BICYCLE_BUTTON";
     private final InlineKeyboardMarkup markupInLine;
     private final List<List<InlineKeyboardButton>> rowsInLine;
     private final List<InlineKeyboardButton> rowInLine;
@@ -57,6 +57,7 @@ public class ButtonMessage {
         rowsInLine.add(rowInLine);
 
         markupInLine.setKeyboard(rowsInLine);
+        message.setText("Выберете место");
         message.setReplyMarkup(markupInLine);
     }
 
@@ -83,6 +84,7 @@ public class ButtonMessage {
         rowsInLine.add(rowInLine);
 
         markupInLine.setKeyboard(rowsInLine);
+        message.setText("Выберите тип маршрута");
         message.setReplyMarkup(markupInLine);
     }
 

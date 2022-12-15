@@ -25,7 +25,7 @@ public class Process {
     }
 
     public MessageContainer processing(String chatId, String text, Coordinates userGeolocation,
-                                       String botToken, Map<String, String> userCities) {
+                                       String botToken, Map<String, String> userCities, Object callbackData) {
         if (cityCommand) {
             cityCommand = false;
             try {
@@ -65,6 +65,8 @@ public class Process {
             return new MessageContainer(chatId, "Вы изменили город на " + text + "\n/help - список моих команд");
         } else if (userGeolocation != null) {
             return routeProcess(chatId, userGeolocation);
+        } else if (callbackData.equals(null)) {
+            return routeProcess(chatId, callbackData);
         } else if (mapApiProcess.getRepeatCommand()) {
             return commandProcess(chatId, command, text, botToken);
         } else {
@@ -80,30 +82,40 @@ public class Process {
         switch (text) {
             case "/start" -> {
                 return new MessageContainer(chatId,
-                """
-                Вас приветствует 2gis бот, я могу:
-                - находить место встречи для двух людей;
-                - выводить на карте место по адресу;
-                - выводить по адресу информацию об организациях.
-                """ +
-                "/changecity - поменять город (сейчас " + mapApiProcess.getCity() + ")." +
-                "\n/help - список моих команд.");
+                        """
+                                Вас приветствует 2gis бот, я могу:
+                                - находить место встречи для двух людей;
+                                - выводить на карте место по адресу;
+                                - выводить по адресу информацию об организациях.
+                                """ +
+                                "/changecity - поменять город (сейчас " + mapApiProcess.getCity() + ")." +
+                                "\n/help - список моих команд.");
             }
             case "/help" -> {
                 return new MessageContainer(chatId,
-                """
-                Список моих команд:
-                /changecity - поменять город
-                /map - вывести на карте место по адресу
-                /info - вывести по адресу информацию об организациях
-                /route - найти место встречи для двух людей
-                """);
+                        """
+                                Список моих команд:
+                                /changecity - поменять город
+                                /map - вывести на карте место по адресу
+                                /info - вывести по адресу информацию об организациях
+                                /route - найти место встречи для двух людей
+                                """);
             }
-            case "/changecity" -> { return changeCityProcess(chatId); }
-            case "/map" -> { return mapDisplayProcess(chatId, addr, botToken); }
-            case "/info" -> { return addrInfoProcess(chatId, addr); }
-            case "/route" -> { return routeProcess(chatId, addr); }
-            default -> { return new MessageContainer(chatId,"Введите\\отправьте команду!"); }
+            case "/changecity" -> {
+                return changeCityProcess(chatId);
+            }
+            case "/map" -> {
+                return mapDisplayProcess(chatId, addr, botToken);
+            }
+            case "/info" -> {
+                return addrInfoProcess(chatId, addr);
+            }
+            case "/route" -> {
+                return routeProcess(chatId, addr);
+            }
+            default -> {
+                return new MessageContainer(chatId, "Введите\\отправьте команду!");
+            }
         }
     }
 
@@ -153,5 +165,18 @@ public class Process {
             mapApiProcess.resetValues();
             return new MessageContainer(chatId, e.getMessage());
         }
+    }
+
+    private MessageContainer routeProcess(String chatId, Object callbackData) {
+        try {
+
+            String route = mapApiProcess.createRouteWithAddress(/*chatId,*/ callbackData.toString());
+            return new MessageContainer(chatId, route);
+        } catch (BotException e) {
+            mapApiProcess.resetValues();
+            return new MessageContainer(chatId, e.getMessage());
+        }
+
+
     }
 }

@@ -38,6 +38,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         String chatId = update.getMessage().getChatId().toString();
         String text = "";
         Coordinates userGeolocation = null;
+        Object callbackData = null;
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             text = update.getMessage().getText();
@@ -45,7 +46,10 @@ public class TelegramBot extends TelegramLongPollingBot {
             Location location = update.getMessage().getLocation();
             userGeolocation = new Coordinates(location);
         }
-        mainLogic(chatId, text, userGeolocation);
+        else if (update.hasCallbackQuery()) {
+            callbackData = update.getCallbackQuery().getData();
+        }
+        mainLogic(chatId, text, userGeolocation, callbackData);
 //        try {
 //            Thread.sleep(10_000);
 //        } catch (InterruptedException e) {
@@ -54,7 +58,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 //        System.out.println("Finishing: " + update.getMessage().getChatId());
     }
 
-    private void mainLogic(String chatId, String text, Coordinates userGeolocation) {
+    private void mainLogic(String chatId, String text, Coordinates userGeolocation, Object callbackData) {
         if (!managerOfThreads.containsKey(chatId)) {
             managerOfThreads.put(String.valueOf(chatId), new Process(parser, httpRequest));
             //managerOfThreadData.put(String.valueOf(chatId), new User());
@@ -66,7 +70,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             process.mapApiProcess.setCity(userCities.get(chatId));
         }
 
-        MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken(), userCities);
+        MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken(), userCities,
+                callbackData);
         if (messageData != null) {
             sendMessage(messageData);
         }
