@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import tgbot.BotException;
 import tgbot.Structs.Coordinates;
-import tgbot.Structs.User;
+//import tgbot.Structs.User;
 import tgbot.processors.Process;
 import tgbot.Structs.MessageContainer;
 
@@ -23,7 +23,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     //private final Map<String, String> managerOfThreadProcess = new HashMap<>();
 
     //Менеджер полей у пользователя
-    private final Map<String, User> managerOfThreadData = new HashMap<>();
+    //private final Map<String, User> managerOfThreadData = new HashMap<>();
     private final Button button = new Button();
     //private final Process process = new Process();
 
@@ -39,10 +39,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             userGeolocation = new Coordinates(location);
         }
         mainLogic(chatId, text, userGeolocation);
-        //MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken());
-        /*if (messageData != null) {
-            sendMessage(messageData);
-        }*/
 //        try {
 //            Thread.sleep(10_000);
 //        } catch (InterruptedException e) {
@@ -54,19 +50,20 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void sendMessage(MessageContainer messageData, String chatId) {
 
         SendMessage message = new SendMessage(messageData.getChatId(), messageData.getData());
-        /*if (process.mapApiProcess.getButton()) {
+        Process  process = managerOfThreads.get(chatId);
+        if (process.mapApiProcess.getButton()) {
             button.setUpGeolocation(message);
         }
         if (process.mapApiProcess.getButtonDel()) {
             button.removeKeyboard(message);
-        }*/
+        }
 
         try {
             execute(message);
-            /*if (messageData.isFlag() && process.mapApiProcess.getMiddlePointOnMap()) {
+            if (messageData.isFlag() && process.mapApiProcess.getMiddlePointOnMap()) {
                 process.mapApiProcess.coordinatesMapDisplay(getBotToken(), messageData.getChatId());
-            }*/
-        } catch (TelegramApiException /*| BotException*/ e) {
+            }
+        } catch (TelegramApiException | BotException e) {
             e.printStackTrace();
         }
     }
@@ -74,9 +71,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void mainLogic(String chatId, String text, Coordinates userGeolocation) {
         if (!managerOfThreads.containsKey(chatId)) {
             managerOfThreads.put(String.valueOf(chatId), new Process());
-            managerOfThreadData.put(String.valueOf(chatId), new User());
+            //managerOfThreadData.put(String.valueOf(chatId), new User());
         }
-        //System.out.println(chatId);
         Process  process = managerOfThreads.get(chatId);
         MessageContainer messageData = process.processing(chatId, text, userGeolocation,
                 getBotToken());

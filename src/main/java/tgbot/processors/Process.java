@@ -4,19 +4,15 @@ import tgbot.BotException;
 import tgbot.Structs.Coordinates;
 import tgbot.SearchCategories;
 import tgbot.Structs.MessageContainer;
-import tgbot.Structs.User;
+//import tgbot.Structs.User;
 
-import java.util.Map;
+//import java.util.Map;
 import java.util.Objects;
 
 public class Process {
 
-   public Process() {
-        cityCommand = false;
-        mapApiProcess = new MapApiProcess();
-    }
 
-    public final MapApiProcess mapApiProcess;
+    public final MapApiProcess mapApiProcess = new MapApiProcess();
     private String command;
 
     private boolean cityCommand = false;
@@ -99,7 +95,7 @@ public class Process {
 
     private MessageContainer routeProcess(String chatId, Coordinates geolocation) {
         try {
-            String route = mapApiProcess.createRouteWithAddress(chatId, geolocation);
+            String route = mapApiProcess.createRouteWithAddress(/*chatId,*/ geolocation);
             return new MessageContainer(chatId, route);
         } catch (BotException e) {
             mapApiProcess.resetValues();
@@ -109,7 +105,7 @@ public class Process {
 
     private MessageContainer routeProcess(String chatId, String addr) {
         try {
-            String route = mapApiProcess.createRouteWithAddress(chatId, addr, SearchCategories.CAFE);
+            String route = mapApiProcess.createRouteWithAddress(/*chatId,*/ addr, SearchCategories.CAFE);
             return new MessageContainer(chatId, route, true);
         } catch (BotException e) {
             mapApiProcess.resetValues();
