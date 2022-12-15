@@ -1,4 +1,4 @@
-/*package tgbot;
+package tgbot;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class ProcessTest {
                 - находить место встречи для двух людей;
                 - выводить на карте место по адресу;
                 - выводить по адресу информацию об организациях.
-                
+
                 /changecity - поменять город (сейчас Екатеринбург).
                 """,
                 res.getData());
@@ -116,4 +116,4 @@ class ProcessTest {
         MessageContainer res3 = process.processing("1", "Тургенева 4", null, "");
         Assertions.assertNotNull(res3.getData());
     }
-}*/
+}
