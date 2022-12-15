@@ -40,7 +40,8 @@ public class HttpRequest {
         }
     }
 
-    public String sendPost(String url, Coordinates firstCoordinates, Coordinates secondCoordinates) throws BotException {
+    public String sendPost(String url, Coordinates firstCoordinates, Coordinates secondCoordinates, String type)
+            throws BotException {
         try {
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -63,13 +64,16 @@ public class HttpRequest {
                                "x": {2},
                                "y": {3}
                            }
-                       ]
+                       ],
+                       "type": "{4}"
                     }
                     """;
             urlParameters = urlParameters.replace("{0}", firstCoordinates.getLon() + "");
             urlParameters = urlParameters.replace("{1}", firstCoordinates.getLat() + "");
             urlParameters = urlParameters.replace("{2}", secondCoordinates.getLon() + "");
             urlParameters = urlParameters.replace("{3}", secondCoordinates.getLat() + "");
+            urlParameters = urlParameters.replace("{4}", type);
+
 
             // Send post request
             con.setDoOutput(true);

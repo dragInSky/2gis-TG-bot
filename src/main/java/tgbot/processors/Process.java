@@ -25,7 +25,7 @@ public class Process {
     }
 
     public MessageContainer processing(String chatId, String text, Coordinates userGeolocation,
-                                       String botToken, Map<String, String> userCities, Object callbackData) {
+                                       String botToken, Map<String, String> userCities) {
         if (cityCommand) {
             cityCommand = false;
             try {
@@ -65,8 +65,6 @@ public class Process {
             return new MessageContainer(chatId, "¬ы изменили город на " + text + "\n/help - список моих команд");
         } else if (userGeolocation != null) {
             return routeProcess(chatId, userGeolocation);
-        } else if (callbackData.equals(null)) {
-            return routeProcess(chatId, callbackData);
         } else if (mapApiProcess.getRepeatCommand()) {
             return commandProcess(chatId, command, text, botToken);
         } else {
@@ -157,26 +155,13 @@ public class Process {
         }
     }
 
-    private MessageContainer routeProcess(String chatId, String addr) {
+    private MessageContainer routeProcess(String chatId, String text) {
         try {
-            String route = mapApiProcess.createRouteWithAddress(/*chatId,*/ addr, SearchCategories.CAFE);
+            String route = mapApiProcess.createRouteWithAddress(/*chatId,*/ text);
             return new MessageContainer(chatId, route, true);
         } catch (BotException e) {
             mapApiProcess.resetValues();
             return new MessageContainer(chatId, e.getMessage());
         }
-    }
-
-    private MessageContainer routeProcess(String chatId, Object callbackData) {
-        try {
-
-            String route = mapApiProcess.createRouteWithAddress(/*chatId,*/ callbackData.toString());
-            return new MessageContainer(chatId, route);
-        } catch (BotException e) {
-            mapApiProcess.resetValues();
-            return new MessageContainer(chatId, e.getMessage());
-        }
-
-
     }
 }
