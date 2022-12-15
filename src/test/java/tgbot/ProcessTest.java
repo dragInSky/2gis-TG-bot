@@ -2,8 +2,8 @@ package tgbot;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import tgbot.Structs.Coordinates;
-import tgbot.Structs.MessageContainer;
+import tgbot.structs.Coordinates;
+import tgbot.structs.MessageContainer;
 import tgbot.processors.Process;
 
 class ProcessTest {

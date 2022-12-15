@@ -1,9 +1,9 @@
 package tgbot.processors;
 
 import tgbot.BotException;
-import tgbot.Structs.Coordinates;
+import tgbot.structs.Coordinates;
 import tgbot.SearchCategories;
-import tgbot.Structs.MessageContainer;
+import tgbot.structs.MessageContainer;
 
 import java.util.Objects;
 
@@ -13,13 +13,20 @@ public class Process {
     private boolean cityCommand = false;
 
     public MessageContainer processing(String chatId, String text, Coordinates userGeolocation, String botToken) {
-        if (userGeolocation != null) {
-            return routeProcess(chatId, userGeolocation);
-        }
+
         if (cityCommand) {
             cityCommand = false;
+            if (userGeolocation != null) {
+                try {
+                    text = mapApiProcess.cityInPoint(userGeolocation);
+                } catch (BotException e) {
+                    return new MessageContainer(chatId, e.getMessage());
+                }
+            }
             mapApiProcess.setCity(text + ", ");
             return new MessageContainer(chatId, "¬ы изменили город на " + text + "\n/help - список моих команд");
+        } else if (userGeolocation != null) {
+            return routeProcess(chatId, userGeolocation);
         } else if (mapApiProcess.getRepeatCommand()) {
             return commandProcess(chatId, command, text, botToken);
         } else {
@@ -34,13 +41,15 @@ public class Process {
         }
         switch (text) {
             case "/start" -> {
-                return new MessageContainer(chatId, """
+                return new MessageContainer(chatId,
+                """
                 ¬ас приветствует 2gis бот, € могу:
                 - находить место встречи дл€ двух людей;
                 - выводить на карте место по адресу;
                 - выводить по адресу информацию об организаци€х.
                 
                 /changecity - помен€ть город (сейчас ≈катеринбург).
+                /help - список моих команд.
                 """);
             }
             case "/help" -> {
@@ -62,6 +71,7 @@ public class Process {
     }
 
     private MessageContainer changeCityProcess(String chatId) {
+        mapApiProcess.setButton(true);
         cityCommand = true;
         return new MessageContainer(chatId, "¬ведите город, в котором вы находитесь");
     }

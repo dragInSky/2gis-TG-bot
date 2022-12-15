@@ -1,4 +1,4 @@
-package tgbot.Structs;
+package tgbot.structs;
 
 import org.telegram.telegrambots.meta.api.objects.Location;
 

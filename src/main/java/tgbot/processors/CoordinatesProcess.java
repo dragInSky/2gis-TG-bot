@@ -3,7 +3,7 @@ package tgbot.processors;
 //import tgbot.Exceptions.HttpException;
 //import tgbot.Exceptions.ParseException;
 
-import tgbot.Structs.Coordinates;
+import tgbot.structs.Coordinates;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,7 @@
 package tgbot.processors;
 
 import tgbot.BotException;
-import tgbot.Structs.Coordinates;
+import tgbot.structs.Coordinates;
 import tgbot.SearchCategories;
 
 import java.text.MessageFormat;
@@ -26,11 +26,16 @@ public class MapApiProcess {
     public String getCity(){
         return city;
     }
-    public void setCity(String newCity){
+    public void setCity(String newCity) {
         city = newCity;
+        button = false;
+        buttonDel = true;
     }
     public boolean getButton() {
         return button;
+    }
+    public void setButton(boolean value) {
+        button = value;
     }
     public boolean getButtonDel() {
         return buttonDel;
@@ -58,6 +63,19 @@ public class MapApiProcess {
         return parser.findCoordinates(response);
     }
 
+    public String cityInPoint(Coordinates geolocation) throws BotException {
+        String url = MessageFormat.format(
+                "https://catalog.api.2gis.com/3.0/items/geocode?lon={0}&lat={1}&" +
+                        "fields=items.adm_div,items.address&type=adm_div.city&key={2}",
+                geolocation.getLon(), geolocation.getLat(), get2GisGetKey());
+        System.out.println(url);
+        String response = httpRequest.sendGet(url);
+        if (parser.findCityOnlyAddress(response) || !Objects.equals(parser.findCode(response), "200")) {
+            throw new BotException("По этому адресу нет города");
+        }
+        return parser.findCity(response);
+    }
+
     public String createRouteWithAddress(Coordinates geolocation) throws BotException {
         buttonDel = true;
         button = false;
@@ -72,17 +90,16 @@ public class MapApiProcess {
 
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
+            buttonDel = false;
             button = true;
             return "Введите первый адрес";
-        }
-        else if (firstCoordinates == null) {
+        } else if (firstCoordinates == null) {
             buttonDel = true;
             button = false;
             firstAddr = addr;
             firstCoordinates = addressToCoordinates(firstAddr);
             return "Введите второй адрес";
-        }
-        else if (Objects.equals(secondAddr, "")) {
+        } else if (Objects.equals(secondAddr, "")) {
             secondAddr = addr;
             secondCoordinates = addressToCoordinates(secondAddr);
         }
@@ -128,8 +145,7 @@ public class MapApiProcess {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
             return "Введите адрес";
-        }
-        else {
+        } else {
             repeatCommand = false;
         }
 
@@ -155,8 +171,7 @@ public class MapApiProcess {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
             return "Введите адрес";
-        }
-        else {
+        } else {
             repeatCommand = false;
         }
         addressToCoordinates(addr);

@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import tgbot.BotException;
-import tgbot.Structs.Coordinates;
+import tgbot.structs.Coordinates;
 
 import java.util.Objects;
 
@@ -95,6 +95,20 @@ public class Parser {
             e.printStackTrace();
             throw new BotException("Ошибка на стороне разработчика!");
         }
+    }
+
+    public String findCity(String response) throws BotException {
+        return response;
+//        try {
+//            JSONObject json = new JSONObject(response);
+//            JSONObject result = json.getJSONObject("result");
+//            JSONObject items = result.getJSONArray("items").getJSONObject(0);
+//            JSONObject point = items.getJSONObject("point");
+//            return new Coordinates(point.getDouble("lat"), point.getDouble("lon"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            throw new BotException("Ошибка на стороне разработчика!");
+//        }
     }
 
     public Coordinates findCoordinates(String response) throws BotException {

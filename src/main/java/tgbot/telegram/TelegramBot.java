@@ -6,9 +6,9 @@ import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import tgbot.BotException;
-import tgbot.Structs.Coordinates;
+import tgbot.structs.Coordinates;
 import tgbot.processors.Process;
-import tgbot.Structs.MessageContainer;
+import tgbot.structs.MessageContainer;
 
 public class TelegramBot extends TelegramLongPollingBot {
     private final Button button = new Button();
@@ -17,14 +17,17 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         //System.out.println("Starting: " + update.getMessage().getChatId());
-        String chatId = update.getMessage().getChatId().toString(), text = "";
+        String chatId = update.getMessage().getChatId().toString();
+        String text = "";
         Coordinates userGeolocation = null;
+
         if (update.hasMessage() && update.getMessage().hasText()) {
             text = update.getMessage().getText();
         } else if (update.getMessage().hasLocation()) {
             Location location = update.getMessage().getLocation();
             userGeolocation = new Coordinates(location);
         }
+
         MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken());
         if (messageData != null) {
             sendMessage(messageData);

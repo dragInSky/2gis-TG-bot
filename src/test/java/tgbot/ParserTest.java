@@ -2,7 +2,7 @@ package tgbot;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import tgbot.Structs.Coordinates;
+import tgbot.structs.Coordinates;
 import tgbot.processors.Parser;
 
 import static org.junit.jupiter.api.Assertions.fail;
