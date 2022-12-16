@@ -134,7 +134,11 @@ public class MapApiProcess {
             throw new BotException("Введите разные адреса!");
         }
 
+
         if (!buttonDel) {
+            if (!text.equals("Пешком") & !text.equals("На машине") & !text.equals("Велосипед")) {
+                return "Пожалуйста, выберите из списка";
+            }
             type = text;
             buttonDel = true;
             routeList = false;
@@ -162,6 +166,10 @@ public class MapApiProcess {
         if (!status.equals("OK")) {
             System.out.println(status);
             throw new BotException("Данный маршрут не может быть построен!");
+        }
+
+        if (!text.equals("Кафе") & !text.equals("Парк") & !text.equals("Бар")) {
+            return "Пожалуйста, выберите из списка";
         }
 
         place = text;

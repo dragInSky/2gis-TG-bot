@@ -38,7 +38,7 @@ public class Button {
 
         KeyboardButton pedestrianButton = new KeyboardButton("Пешком");
         KeyboardButton jamButton = new KeyboardButton("На машине");
-        KeyboardButton bicycleButton = new KeyboardButton("На велике");
+        KeyboardButton bicycleButton = new KeyboardButton("Велосипед");
 
         row.add(pedestrianButton);
         row.add(jamButton);
