@@ -8,11 +8,11 @@ import java.util.Objects;
 
 public class MapApiProcess {
     private static final int RADIUS_OF_SEARCH = 350;
-    private String firstAddr = "", secondAddr = "", middlePointPlaceAddress, city = "Екатеринбург", type = "",
-            place = "";
+    private String firstAddr = "", secondAddr = "", type = "", place = "",
+            city = "Екатеринбург", middlePointPlaceAddress;
     private Coordinates firstCoordinates = null, secondCoordinates = null;
-    private boolean repeatCommand = false, middlePointOnMap = false, button = false, buttonDel = false,
-            routetList = false, placeList = false, delLast = true;
+    private boolean repeatCommand = false, middlePointOnMap = false, button = false,
+            buttonDel = false, routeList = false, placeList = false, delLast = true;
     private final HttpRequest httpRequest;
     private final Parser parser;
 
@@ -46,33 +46,29 @@ public class MapApiProcess {
     public void setButtonDel(boolean value) {
         buttonDel = value;
     }
-
     public boolean getRouteList(){
-        return routetList;
+        return routeList;
     }
-
     public boolean getPlaceList(){
         return placeList;
     }
-
     public  boolean getDelLast(){
         return delLast;
     }
-
 
     public void resetValues() {
         repeatCommand = false;
         button = false;
         buttonDel = false;
+        routeList = false;
+        placeList = false;
+        delLast = true;
         firstCoordinates = null;
         secondCoordinates = null;
         firstAddr = "";
         secondAddr = "";
-        routetList = false;
-        placeList = false;
         type = "";
         place = "";
-        delLast = true;
     }
 
     private Coordinates addressToCoordinates(String addr) throws BotException {
@@ -123,37 +119,36 @@ public class MapApiProcess {
             buttonDel = false;
             button = true;
             delLast = false;
-            return "Введите первый адрес";
-        }
-        else if (firstCoordinates == null) {
+            return "Введите первый адрес:";
+        } else if (firstCoordinates == null) {
             buttonDel = true;
             button = false;
-            firstAddr = text;
+            firstAddr = city + ", " + text;
             firstCoordinates = addressToCoordinates(firstAddr);
-            return "Введите второй адрес";
-        }
-        else if (Objects.equals(secondAddr, "")) {
-            secondAddr = text;
-            secondCoordinates = addressToCoordinates(secondAddr);
-            routetList = true;
+            return "Введите второй адрес:";
+        } else if (Objects.equals(secondAddr, "")) {
+            secondAddr = city + ", " + text;
+            routeList = true;
             buttonDel = false;
-            return "Выберите тип маршрута";
+            secondCoordinates = addressToCoordinates(secondAddr);
+            return "Выберите тип маршрута:";
         }
 
         if (Objects.equals(firstAddr, secondAddr)) {
             throw new BotException("Введите разные адреса!");
         }
 
-        if (!buttonDel){
-            buttonDel = true;
+        if (!buttonDel) {
             type = text;
-            routetList = false;
+            buttonDel = true;
+            routeList = false;
             placeList = true;
-            return "Выберете место";
+            return "Выберете место:";
         }
-        if (type.equals(city + ", " + "Пешком"))
+
+        if (type.equals("Пешком"))
             type = "pedestrian";
-        else if (type.equals(city + ", " + "На машине"))
+        else if (type.equals("На машине"))
             type = "jam";
         else
             type = "bicycle";
@@ -172,9 +167,9 @@ public class MapApiProcess {
         place = text;
 
         SearchCategories search;
-        if(place.equals(city + ", " + "Кафе"))
+        if (place.equals("Кафе"))
             search = SearchCategories.CAFE;
-        else if(place.equals(city + ", " + "Парк"))
+        else if (place.equals("Парк"))
             search = SearchCategories.PARK;
         else
             search = SearchCategories.BAR;
@@ -182,8 +177,8 @@ public class MapApiProcess {
         Coordinates middlePoint = new CoordinatesProcess(response, firstCoordinates).middleDistancePoint();
         middlePointOnMap = true;
         resetValues();
-        return parser.findRouteInformation(response) + "\n" + radiusSearch(middlePoint, search);
 
+        return parser.findRouteInformation(response) + "\n" + radiusSearch(middlePoint, search);
     }
 
     public String radiusSearch(Coordinates middlePoint, SearchCategories search) throws BotException {
@@ -192,7 +187,10 @@ public class MapApiProcess {
                 search.getSearch(), middlePoint.getLon() + "", middlePoint.getLat() + "",
                 RADIUS_OF_SEARCH, get2GisGetKey());
         String response = httpRequest.sendGet(url);
-        middlePointPlaceAddress = city + parser.findPlaceAddress(response);
+        if (!Objects.equals(parser.findCode(response), "200")) {
+            throw new BotException("Поблизости нет " + search.getSearch() + "!");
+        }
+        middlePointPlaceAddress = city + ", " + parser.findPlaceAddress(response);
         return "Место встречи: " + middlePointPlaceAddress +
                 "\n— " + parser.findPlaceInfo(response);
     }
@@ -200,12 +198,12 @@ public class MapApiProcess {
     public String mapDisplay(String token, String chatId, String addr) throws BotException {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
-            return "Введите адрес";
+            return "Введите адрес:";
         } else {
             repeatCommand = false;
         }
 
-        Coordinates coordinates = addressToCoordinates(addr);
+        Coordinates coordinates = addressToCoordinates(city + ", " + addr);
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
                 token, chatId, coordinates.getLat() + "", coordinates.getLon() + "");
@@ -214,27 +212,27 @@ public class MapApiProcess {
         return null;
     }
 
-    public void coordinatesMapDisplay(String token, String id) throws BotException {
+    public void coordinatesMapDisplay(String token, String chatId) throws BotException {
         middlePointOnMap = false;
         Coordinates coordinates = addressToCoordinates(middlePointPlaceAddress);
         String url = MessageFormat.format(
                 "https://api.telegram.org/bot{0}/sendlocation?chat_id={1}&latitude={2}&longitude={3}",
-                token, id, coordinates.getLat() + "", coordinates.getLon() + "");
+                token, chatId, coordinates.getLat() + "", coordinates.getLon() + "");
         httpRequest.sendGet(url);
     }
 
     public String addrInfo(String addr) throws BotException {
         if (Objects.equals(addr, "")) {
             repeatCommand = true;
-            return "Введите адрес";
+            return "Введите адрес:";
         } else {
             repeatCommand = false;
         }
-        addressToCoordinates(addr); //используется для проверки корректности адреса
+        addressToCoordinates(city + ", " + addr); //используется для проверки корректности адреса
 
         String url = MessageFormat.format(
                 "https://catalog.api.2gis.com/3.0/items?building_id={0}&key={1}",
-                buildingId(addr), get2GisGetKey());
+                buildingId(city + ", " + addr), get2GisGetKey());
         String response = httpRequest.sendGet(url);
         if (!Objects.equals(parser.findCode(response), "200")) {
             throw new BotException("По этому адресу нет организаций");

@@ -1,7 +1,7 @@
 package tgbot;
 
 public enum SearchCategories {
-    CAFE("кафе"), RESTAURANT("рестаран"), BAR("бар"), CINEMA("кинотеатры"), CULTURE("культура"), PARK("парк отдыха");
+    CAFE("кафе"), RESTAURANT("ресторан"), BAR("бар"), CINEMA("кинотеатры"), CULTURE("культура"), PARK("парк отдыха");
 
     private final String m_search;
 
