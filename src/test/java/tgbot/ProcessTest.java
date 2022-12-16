@@ -7,16 +7,15 @@ import tgbot.processors.Parser;
 import tgbot.structs.Coordinates;
 import tgbot.structs.MessageContainer;
 import tgbot.processors.Process;
-
 import java.util.HashMap;
 
-/*class ProcessTest {
+class ProcessTest {
     private final Process process = new Process(new Parser(), new HttpRequest());
 
     @Test
     void helpCaseTest() {
         MessageContainer res = process.processing("1", "/help",
-                null, "", new HashMap<>(), null);
+                null, "", new HashMap<>());
         Assertions.assertEquals("""
                 —писок моих команд:
                 /changecity - помен€ть город
@@ -62,7 +61,7 @@ import java.util.HashMap;
     void mapCaseTest() {
         MessageContainer res1 = process.processing("1", "/map",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите адрес", res1.getData());
+        Assertions.assertEquals("¬ведите адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "8 марта 51",
                 null, "", new HashMap<>());
@@ -73,7 +72,7 @@ import java.util.HashMap;
     void infoCaseTest() {
         MessageContainer res1 = process.processing("1", "/info",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите адрес", res1.getData());
+        Assertions.assertEquals("¬ведите адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "8 марта 51",
                 null, "", new HashMap<>());
@@ -84,7 +83,7 @@ import java.util.HashMap;
     void wrongAddressInfoCaseTest() {
         MessageContainer res1 = process.processing("1", "/info",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите адрес", res1.getData());
+        Assertions.assertEquals("¬ведите адрес:", res1.getData());
 
         String text = "ы";
         MessageContainer res2 = process.processing("1", text,
@@ -96,11 +95,11 @@ import java.util.HashMap;
     void routeCaseTest() {
         MessageContainer res1 = process.processing("1", "/route",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите первый адрес", res1.getData());
+        Assertions.assertEquals("¬ведите первый адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "8 марта 51",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите второй адрес", res2.getData());
+        Assertions.assertEquals("¬ведите второй адрес:", res2.getData());
 
         MessageContainer res3 = process.processing("1", "“ургенева 4",
                 null, "", new HashMap<>());
@@ -111,11 +110,11 @@ import java.util.HashMap;
     void wrongAddressRouteCaseTest() {
         MessageContainer res1 = process.processing("1", "/route",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите первый адрес", res1.getData());
+        Assertions.assertEquals("¬ведите первый адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "8 марта 51",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите второй адрес", res2.getData());
+        Assertions.assertEquals("¬ведите второй адрес:", res2.getData());
 
         String text = "ы";
         MessageContainer res3 = process.processing("1", text, null, "", new HashMap<>());
@@ -126,14 +125,14 @@ import java.util.HashMap;
     void geolocationRouteCaseTest() {
         MessageContainer res1 = process.processing("1", "/route",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите первый адрес", res1.getData());
+        Assertions.assertEquals("¬ведите первый адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "",
                 new Coordinates(56.823422, 60.605626), "", new HashMap<>());
-        Assertions.assertEquals("¬ведите второй адрес", res2.getData());
+        Assertions.assertEquals("¬ведите второй адрес:", res2.getData());
 
         MessageContainer res3 = process.processing("1", "“ургенева 4",
                 null, "", new HashMap<>());
         Assertions.assertNotNull(res3.getData());
     }
-}*/
+}

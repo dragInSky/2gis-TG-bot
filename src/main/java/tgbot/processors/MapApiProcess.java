@@ -106,7 +106,7 @@ public class MapApiProcess {
         buttonDel = true;
         button = false;
         firstCoordinates = geolocation;
-        return "¬ведите второй адрес";
+        return "¬ведите второй адрес:";
     }
 
     public String createRouteWithAddress(String text) throws BotException {

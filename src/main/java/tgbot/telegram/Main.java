@@ -13,7 +13,8 @@ public class Main {
     public static void main(String[] args) {
         final Map<String, String> userCities = new HashMap<>();
 
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("out/artifacts/consoleBot_jar/cities"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(
+                new FileReader("out/artifacts/consoleBot_jar/cities"))) {
             String line = bufferedReader.readLine();
             while (line != null) {
                 if (!line.equals("")) {
