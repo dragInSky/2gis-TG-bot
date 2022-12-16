@@ -39,14 +39,14 @@ public class Process {
 
             if (!userCities.containsKey(chatId)) {
                 try (BufferedWriter bufferedWriter =
-                             new BufferedWriter(new FileWriter("cities", true))) {
+                             new BufferedWriter(new FileWriter("out/artifacts/consoleBot_jar/cities", true))) {
                     String fileContent = chatId + " : " + text + "\n";
                     bufferedWriter.write(fileContent);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                Path path = Paths.get("cities");
+                Path path = Paths.get("out/artifacts/consoleBot_jar/cities");
                 try {
                     String content = Files.readString(path);
                     int startIdx = content.indexOf(chatId + " : ") + (chatId + " : ").length();
