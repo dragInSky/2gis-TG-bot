@@ -7,7 +7,7 @@ public class CoordinatesProcess {
     private final ArrayList<Coordinates> coordinatesArray;
     private final Coordinates m_firstCoordinates;
 
-    CoordinatesProcess(String route, Coordinates firstCoordinates) {
+    public CoordinatesProcess(String route, Coordinates firstCoordinates) {
         m_firstCoordinates = firstCoordinates;
         coordinatesArray = new ArrayList<>();
         int idx = 0;

@@ -7,7 +7,11 @@ import tgbot.processors.Parser;
 import tgbot.structs.Coordinates;
 import tgbot.structs.MessageContainer;
 import tgbot.processors.Process;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 class ProcessTest {
     private final Process process = new Process(new Parser(), new HttpRequest());
@@ -48,12 +52,27 @@ class ProcessTest {
 
     @Test
     void changecityCaseTest() {
+        Map<String, String> userCities = new HashMap<>();
+
+        try (BufferedReader bufferedReader = new BufferedReader(
+                new FileReader("out/artifacts/consoleBot_jar/cities"))) {
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                if (!line.equals("")) {
+                    userCities.put(line.split(" : ")[0], line.split(" : ")[1]);
+                }
+                line = bufferedReader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         MessageContainer res1 = process.processing("1", "/changecity",
-                null, "", new HashMap<>());
+                null, "", userCities);
         Assertions.assertTrue(res1.getData().startsWith("Введите город, в котором вы находитесь (сейчас "));
 
         String text = "Екатеринбург";
-        MessageContainer res2 = process.processing("1", text, null, "", new HashMap<>());
+        MessageContainer res2 = process.processing("1", text, null, "", userCities);
         Assertions.assertEquals("Вы изменили город на " + text + "\n/help - список моих команд", res2.getData());
     }
 

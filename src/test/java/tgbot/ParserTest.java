@@ -4,11 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tgbot.structs.Coordinates;
 import tgbot.processors.Parser;
-
 import static org.junit.jupiter.api.Assertions.fail;
 
 class ParserTest {
-    Parser parser = new Parser();
+    private final Parser parser = new Parser();
 
     @Test
     void findCode200Test() {

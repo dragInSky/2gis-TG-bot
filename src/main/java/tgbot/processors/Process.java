@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.Objects;
 
 public class Process {
     public final MapApiProcess mapApiProcess;
@@ -81,23 +80,23 @@ public class Process {
             case "/start" -> {
                 return new MessageContainer(chatId,
                         """
-                                Вас приветствует 2gis бот, я могу:
-                                - находить место встречи для двух людей;
-                                - выводить на карте место по адресу;
-                                - выводить по адресу информацию об организациях.
-                                """ +
-                                "/changecity - поменять город (сейчас " + mapApiProcess.getCity() + ")." +
-                                "\n/help - список моих команд.");
+                        Вас приветствует 2gis бот, я могу:
+                        - находить место встречи для двух людей;
+                        - выводить на карте место по адресу;
+                        - выводить по адресу информацию об организациях.
+                        """ +
+                        "/changecity - поменять город (сейчас " + mapApiProcess.getCity() + ")." +
+                        "\n/help - список моих команд.");
             }
             case "/help" -> {
                 return new MessageContainer(chatId,
                         """
-                                Список моих команд:
-                                /changecity - поменять город
-                                /map - вывести на карте место по адресу
-                                /info - вывести по адресу информацию об организациях
-                                /route - найти место встречи для двух людей
-                                """);
+                        Список моих команд:
+                        /changecity - поменять город
+                        /map - вывести на карте место по адресу
+                        /info - вывести по адресу информацию об организациях
+                        /route - найти место встречи для двух людей
+                        """);
             }
             case "/changecity" -> {
                 return changeCityProcess(chatId);

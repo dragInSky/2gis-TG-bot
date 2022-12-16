@@ -110,10 +110,6 @@ public class MapApiProcess {
     }
 
     public String createRouteWithAddress(String text) throws BotException {
-        String url = MessageFormat.format(
-                "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
-                get2GisPostKey());
-
         if (Objects.equals(text, "")) {
             repeatCommand = true;
             buttonDel = false;
@@ -153,7 +149,11 @@ public class MapApiProcess {
         else
             type = "bicycle";
 
+        String url = MessageFormat.format(
+                "https://routing.api.2gis.com/carrouting/6.0.1/global?key={0}",
+                get2GisPostKey());
         String response = httpRequest.sendPost(url, firstCoordinates, secondCoordinates, type);
+
         if (Objects.equals(response, "")) { //не совсем понятно, когда это условие срабатывает
             System.out.println("response = \"\";");
             throw new BotException("Данный маршрут не может быть построен!");
@@ -175,7 +175,6 @@ public class MapApiProcess {
             search = SearchCategories.BAR;
 
         Coordinates middlePoint = new CoordinatesProcess(response, firstCoordinates).middleDistancePoint();
-        middlePointOnMap = true;
         resetValues();
 
         return parser.findRouteInformation(response) + "\n" + radiusSearch(middlePoint, search);
@@ -189,11 +188,18 @@ public class MapApiProcess {
         String response = httpRequest.sendGet(url);
         if (!Objects.equals(parser.findCode(response), "200")) {
             switch (search.getSearch()) {
-                case "парк отдыха" -> throw new BotException("Поблизости нет парков(");
-                case "бар" -> throw new BotException("Поблизости нет баров(");
-                case "кафе" -> throw new BotException("Поблизости нет кафе(");
+                case "парк отдыха" -> {
+                    return "Поблизости нет парков(";
+                }
+                case "бар" -> {
+                    return "Поблизости нет баров(";
+                }
+                case "кафе" -> {
+                    return "Поблизости нет кафе(";
+                }
             }
         }
+        middlePointOnMap = true;
         middlePointPlaceAddress = city + ", " + parser.findPlaceAddress(response);
         return "Место встречи: " + middlePointPlaceAddress +
                 "\n— " + parser.findPlaceInfo(response);
