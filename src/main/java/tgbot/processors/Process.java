@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.Objects;
 
 public class Process {
     public final MapApiProcess mapApiProcess;
@@ -24,42 +23,7 @@ public class Process {
     public MessageContainer processing(String chatId, String text, Coordinates userGeolocation,
                                        String botToken, Map<String, String> userCities) {
         if (cityCommand) {
-            cityCommand = false;
-            try {
-                if (userGeolocation != null) {
-                    text = mapApiProcess.cityInPoint(userGeolocation); //Передали город геолокацией
-                } else if (mapApiProcess.notExistingCity(text)) {
-                    return new MessageContainer(chatId, "Введено некорректное название города: " + text);
-                }
-            } catch (BotException e) {
-                return new MessageContainer(chatId, e.getMessage());
-            }
-
-            if (!userCities.containsKey(chatId)) {
-                try (BufferedWriter bufferedWriter =
-                             new BufferedWriter(new FileWriter("out/artifacts/consoleBot_jar/cities", true))) {
-                    String fileContent = chatId + " : " + text + "\n";
-                    bufferedWriter.write(fileContent);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Path path = Paths.get("out/artifacts/consoleBot_jar/cities");
-                try {
-                    String content = Files.readString(path);
-                    int startIdx = content.indexOf(chatId + " : ") + (chatId + " : ").length();
-                    int endIdx = content.indexOf("\n", startIdx);
-                    content = content.replace(content.substring(startIdx, endIdx), text);
-                    Files.writeString(path, content);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            userCities.put(String.valueOf(chatId), text);
-
-            mapApiProcess.setCity(text);
-            mapApiProcess.setButtonDel(true);
-            return new MessageContainer(chatId, "Вы изменили город на " + text + "\n/help - список моих команд");
+            return afterChangingCity(chatId, text, userGeolocation, userCities);
         } else if (userGeolocation != null) {
             return routeProcess(chatId, userGeolocation);
         } else if (mapApiProcess.getRepeatCommand()) {
@@ -70,31 +34,69 @@ public class Process {
         }
     }
 
-    private MessageContainer commandProcess(String chatId, String text, String addr, String botToken) {
-        if (!Objects.equals(addr, "")) {
-            addr = mapApiProcess.getCity() + ", " + addr;
+    private MessageContainer afterChangingCity(String chatId, String text, Coordinates userGeolocation,
+                                               Map<String, String> userCities) {
+        cityCommand = false;
+        try {
+            if (userGeolocation != null) {
+                text = mapApiProcess.cityInPoint(userGeolocation); //Передали город геолокацией
+            } else if (mapApiProcess.notExistingCity(text)) {
+                return new MessageContainer(chatId, "Введено некорректное название города: " + text);
+            }
+        } catch (BotException e) {
+            return new MessageContainer(chatId, e.getMessage());
         }
+
+        if (!userCities.containsKey(chatId)) {
+            try (BufferedWriter bufferedWriter =
+                         new BufferedWriter(new FileWriter("out/artifacts/consoleBot_jar/cities", true))) {
+                String fileContent = chatId + " : " + text + "\n";
+                bufferedWriter.write(fileContent);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Path path = Paths.get("out/artifacts/consoleBot_jar/cities");
+            try {
+                String content = Files.readString(path);
+                int startIdx = content.indexOf(chatId + " : ") + (chatId + " : ").length();
+                int endIdx = content.indexOf("\n", startIdx);
+                content = content.replace(content.substring(startIdx, endIdx), text);
+                Files.writeString(path, content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        userCities.put(String.valueOf(chatId), text);
+
+        mapApiProcess.setCity(text);
+        mapApiProcess.setButtonDel(true);
+
+        return new MessageContainer(chatId, "Вы изменили город на " + text + "\n/help - список моих команд");
+    }
+
+    private MessageContainer commandProcess(String chatId, String text, String addr, String botToken) {
         switch (text) {
             case "/start" -> {
                 return new MessageContainer(chatId,
                         """
-                                Вас приветствует 2gis бот, я могу:
-                                - находить место встречи для двух людей;
-                                - выводить на карте место по адресу;
-                                - выводить по адресу информацию об организациях.
-                                """ +
-                                "/changecity - поменять город (сейчас " + mapApiProcess.getCity() + ")." +
-                                "\n/help - список моих команд.");
+                        Вас приветствует 2gis бот, я могу:
+                        - находить место встречи для двух людей;
+                        - выводить на карте место по адресу;
+                        - выводить по адресу информацию об организациях.
+                        """ +
+                        "/changecity - поменять город (сейчас " + mapApiProcess.getCity() + ")." +
+                        "\n/help - список моих команд.");
             }
             case "/help" -> {
                 return new MessageContainer(chatId,
                         """
-                                Список моих команд:
-                                /changecity - поменять город
-                                /map - вывести на карте место по адресу
-                                /info - вывести по адресу информацию об организациях
-                                /route - найти место встречи для двух людей
-                                """);
+                        Список моих команд:
+                        /changecity - поменять город
+                        /map - вывести на карте место по адресу
+                        /info - вывести по адресу информацию об организациях
+                        /route - найти место встречи для двух людей
+                        """);
             }
             case "/changecity" -> {
                 return changeCityProcess(chatId);

@@ -19,7 +19,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final Map<String, Process> managerOfThreads = new HashMap<>();
     private final Map<String, String> userCities;
     private final Button button = new Button();
-
     private Process process;
     private final HttpRequest httpRequest = new HttpRequest();
     private final Parser parser = new Parser();
@@ -33,6 +32,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         String chatId = update.getMessage().getChatId().toString();
         String text = "";
         Coordinates userGeolocation = null;
+
         if (update.hasMessage() && update.getMessage().hasText()) {
             text = update.getMessage().getText();
         } else if (update.getMessage().hasLocation()) {

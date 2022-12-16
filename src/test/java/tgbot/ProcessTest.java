@@ -7,16 +7,19 @@ import tgbot.processors.Parser;
 import tgbot.structs.Coordinates;
 import tgbot.structs.MessageContainer;
 import tgbot.processors.Process;
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
-/*class ProcessTest {
+class ProcessTest {
     private final Process process = new Process(new Parser(), new HttpRequest());
 
     @Test
     void helpCaseTest() {
         MessageContainer res = process.processing("1", "/help",
-                null, "", new HashMap<>(), null);
+                null, "", new HashMap<>());
         Assertions.assertEquals("""
                 —писок моих команд:
                 /changecity - помен€ть город
@@ -49,12 +52,27 @@ import java.util.HashMap;
 
     @Test
     void changecityCaseTest() {
+        Map<String, String> userCities = new HashMap<>();
+
+        try (BufferedReader bufferedReader = new BufferedReader(
+                new FileReader("out/artifacts/consoleBot_jar/cities"))) {
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                if (!line.equals("")) {
+                    userCities.put(line.split(" : ")[0], line.split(" : ")[1]);
+                }
+                line = bufferedReader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         MessageContainer res1 = process.processing("1", "/changecity",
-                null, "", new HashMap<>());
+                null, "", userCities);
         Assertions.assertTrue(res1.getData().startsWith("¬ведите город, в котором вы находитесь (сейчас "));
 
         String text = "≈катеринбург";
-        MessageContainer res2 = process.processing("1", text, null, "", new HashMap<>());
+        MessageContainer res2 = process.processing("1", text, null, "", userCities);
         Assertions.assertEquals("¬ы изменили город на " + text + "\n/help - список моих команд", res2.getData());
     }
 
@@ -62,7 +80,7 @@ import java.util.HashMap;
     void mapCaseTest() {
         MessageContainer res1 = process.processing("1", "/map",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите адрес", res1.getData());
+        Assertions.assertEquals("¬ведите адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "8 марта 51",
                 null, "", new HashMap<>());
@@ -73,7 +91,7 @@ import java.util.HashMap;
     void infoCaseTest() {
         MessageContainer res1 = process.processing("1", "/info",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите адрес", res1.getData());
+        Assertions.assertEquals("¬ведите адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "8 марта 51",
                 null, "", new HashMap<>());
@@ -84,7 +102,7 @@ import java.util.HashMap;
     void wrongAddressInfoCaseTest() {
         MessageContainer res1 = process.processing("1", "/info",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите адрес", res1.getData());
+        Assertions.assertEquals("¬ведите адрес:", res1.getData());
 
         String text = "ы";
         MessageContainer res2 = process.processing("1", text,
@@ -96,11 +114,11 @@ import java.util.HashMap;
     void routeCaseTest() {
         MessageContainer res1 = process.processing("1", "/route",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите первый адрес", res1.getData());
+        Assertions.assertEquals("¬ведите первый адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "8 марта 51",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите второй адрес", res2.getData());
+        Assertions.assertEquals("¬ведите второй адрес:", res2.getData());
 
         MessageContainer res3 = process.processing("1", "“ургенева 4",
                 null, "", new HashMap<>());
@@ -111,11 +129,11 @@ import java.util.HashMap;
     void wrongAddressRouteCaseTest() {
         MessageContainer res1 = process.processing("1", "/route",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите первый адрес", res1.getData());
+        Assertions.assertEquals("¬ведите первый адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "8 марта 51",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите второй адрес", res2.getData());
+        Assertions.assertEquals("¬ведите второй адрес:", res2.getData());
 
         String text = "ы";
         MessageContainer res3 = process.processing("1", text, null, "", new HashMap<>());
@@ -126,14 +144,14 @@ import java.util.HashMap;
     void geolocationRouteCaseTest() {
         MessageContainer res1 = process.processing("1", "/route",
                 null, "", new HashMap<>());
-        Assertions.assertEquals("¬ведите первый адрес", res1.getData());
+        Assertions.assertEquals("¬ведите первый адрес:", res1.getData());
 
         MessageContainer res2 = process.processing("1", "",
                 new Coordinates(56.823422, 60.605626), "", new HashMap<>());
-        Assertions.assertEquals("¬ведите второй адрес", res2.getData());
+        Assertions.assertEquals("¬ведите второй адрес:", res2.getData());
 
         MessageContainer res3 = process.processing("1", "“ургенева 4",
                 null, "", new HashMap<>());
         Assertions.assertNotNull(res3.getData());
     }
-}*/
+}

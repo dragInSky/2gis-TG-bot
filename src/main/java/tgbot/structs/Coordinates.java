@@ -9,10 +9,6 @@ public class Coordinates {
         latitude = lat;
         longitude = lon;
     }
-    public Coordinates(String lat, String lon) {
-        latitude = Double.parseDouble(lat);
-        longitude = Double.parseDouble(lon);
-    }
     public Coordinates(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();

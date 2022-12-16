@@ -38,7 +38,7 @@ public class Button {
 
         KeyboardButton pedestrianButton = new KeyboardButton("Пешком");
         KeyboardButton jamButton = new KeyboardButton("На машине");
-        KeyboardButton bicycleButton = new KeyboardButton("На велосипеде");
+        KeyboardButton bicycleButton = new KeyboardButton("Велосипед");
 
         row.add(pedestrianButton);
         row.add(jamButton);
@@ -69,8 +69,6 @@ public class Button {
         replyKeyboardRemove.setRemoveKeyboard(true);
         message.setReplyMarkup(replyKeyboardMarkup);
     }
-
-
 
     public void removeKeyboard(SendMessage message) {
         message.setReplyMarkup(replyKeyboardRemove);
