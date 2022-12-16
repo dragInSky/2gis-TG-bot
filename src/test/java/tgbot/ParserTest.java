@@ -2,7 +2,7 @@ package tgbot;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import tgbot.Structs.Coordinates;
+import tgbot.structs.Coordinates;
 import tgbot.processors.Parser;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -350,6 +350,80 @@ class ParserTest {
         try {
             String address = parser.findAddress(response);
             Assertions.assertEquals("Москва, Государственный Кремлёвский Дворец", address);
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    void findCityTest() {
+        String response = """
+                {
+                    "meta": {
+                        "api_version": "3.0.960709",
+                        "code": 200,
+                        "issue_date": "20221215"
+                    },
+                    "result": {
+                        "items": [
+                            {
+                            "adm_div": [
+                                {},
+                                {},
+                                {}
+                                ],
+                                "full_name": "Екатеринбург",
+                                "id": "1267260165455895",
+                                "name": "Екатеринбург",
+                                "subtype": "city",
+                                "type": "adm_div"
+                            }
+                        ],
+                        "total": 1
+                    }
+                }
+                """;
+        try {
+            String city = parser.findCity(response);
+            Assertions.assertEquals("Екатеринбург", city);
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    void findCityOnlyAddressTest() {
+        String response = """
+                {
+                  "meta": {
+                    "api_version": "3.0.960709",
+                    "code": 200,
+                    "issue_date": "20221215"
+                  },
+                  "result": {
+                    "items": [
+                      {
+                        "full_name": "Екатеринбург",
+                        "id": "1267260165455895",
+                        "name": "Екатеринбург",
+                        "point": {
+                          "lat": 56.839656,
+                          "lon": 60.61642
+                        },
+                        "subtype": "city",
+                        "type": "adm_div"
+                      },
+                      {},
+                      {},
+                      {}
+                    ],
+                    "total": 4
+                  }
+                }
+                """;
+        try {
+            boolean isCity = parser.findCityOnlyAddress(response);
+            Assertions.assertTrue(isCity);
         } catch (Exception e) {
             fail();
         }

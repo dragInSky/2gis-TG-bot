@@ -6,7 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>consoleBot</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.2-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>org.telegram</groupId>
@@ -23,8 +23,8 @@
     </dependencies>
 
     <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
 </project>

@@ -4,8 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import tgbot.BotException;
-import tgbot.Structs.Coordinates;
-
+import tgbot.structs.Coordinates;
 import java.util.Objects;
 
 public class Parser {
@@ -91,6 +90,18 @@ public class Parser {
             JSONObject distance = result.getJSONObject("ui_total_distance");
             return "Расстояние маршрута: " + distance.getString("value") + " " + distance.getString("unit") +
                     "\nДлительность маршрута: " + result.getString("ui_total_duration");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new BotException("Ошибка на стороне разработчика!");
+        }
+    }
+
+    public String findCity(String response) throws BotException {
+        try {
+            JSONObject json = new JSONObject(response);
+            JSONObject result = json.getJSONObject("result");
+            JSONObject items = result.getJSONArray("items").getJSONObject(0);
+            return items.getString("name");
         } catch (JSONException e) {
             e.printStackTrace();
             throw new BotException("Ошибка на стороне разработчика!");

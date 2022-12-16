@@ -1,4 +1,4 @@
-package tgbot.Structs;
+package tgbot.structs;
 
 public class MessageContainer {
     private final String m_chatId, m_data;
