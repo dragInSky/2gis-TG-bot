@@ -188,7 +188,11 @@ public class MapApiProcess {
                 RADIUS_OF_SEARCH, get2GisGetKey());
         String response = httpRequest.sendGet(url);
         if (!Objects.equals(parser.findCode(response), "200")) {
-            throw new BotException("Поблизости нет " + search.getSearch() + "!");
+            switch (search.getSearch()) {
+                case "парк отдыха" -> throw new BotException("Поблизости нет парков(");
+                case "бар" -> throw new BotException("Поблизости нет баров(");
+                case "кафе" -> throw new BotException("Поблизости нет кафе(");
+            }
         }
         middlePointPlaceAddress = city + ", " + parser.findPlaceAddress(response);
         return "Место встречи: " + middlePointPlaceAddress +
