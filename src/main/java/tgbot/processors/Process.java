@@ -12,9 +12,13 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 public class Process {
-    public final MapApiProcess mapApiProcess;
+    private final MapApiProcess mapApiProcess;
     private String command;
     private boolean cityCommand = false;
+
+    public MapApiProcess getMapApiProcess() {
+        return mapApiProcess;
+    }
 
     public Process(Parser parser, HttpRequest httpRequest) {
         mapApiProcess = new MapApiProcess(parser, httpRequest);

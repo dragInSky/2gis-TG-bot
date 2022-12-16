@@ -19,7 +19,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final Map<String, Process> managerOfThreads = new HashMap<>();
     private final Map<String, String> userCities;
     private final Button button = new Button();
-    private Process process;
     private final HttpRequest httpRequest = new HttpRequest();
     private final Parser parser = new Parser();
 
@@ -48,38 +47,38 @@ public class TelegramBot extends TelegramLongPollingBot {
             managerOfThreads.put(String.valueOf(chatId), new Process(parser, httpRequest));
         }
 
-        process = managerOfThreads.get(chatId);
+        Process process = managerOfThreads.get(chatId);
 
         if (userCities.containsKey(chatId)) {
-            process.mapApiProcess.setCity(userCities.get(chatId));
+            process.getMapApiProcess().setCity(userCities.get(chatId));
         }
 
         MessageContainer messageData = process.processing(chatId, text, userGeolocation, getBotToken(), userCities);
         if (messageData != null) {
-            sendMessage(messageData);
+            sendMessage(messageData, process);
         }
     }
 
-    public void sendMessage(MessageContainer messageData) {
+    public void sendMessage(MessageContainer messageData, Process process) {
         SendMessage message = new SendMessage(messageData.getChatId(), messageData.getData());
 
-        if (process.mapApiProcess.getButton()) {
+        if (process.getMapApiProcess().getButton()) {
             button.setUpGeolocation(message);
         }
-        if (process.mapApiProcess.getButtonDel() | process.mapApiProcess.getDelLast()) {
+        if (process.getMapApiProcess().getButtonDel() | process.getMapApiProcess().getDelLast()) {
             button.removeKeyboard(message);
         }
-        if (process.mapApiProcess.getRouteList()) {
+        if (process.getMapApiProcess().getRouteList()) {
             button.route(message);
         }
-        if (process.mapApiProcess.getPlaceList()) {
+        if (process.getMapApiProcess().getPlaceList()) {
             button.place(message);
         }
 
         try {
             execute(message);
-            if (messageData.isFlag() && process.mapApiProcess.getMiddlePointOnMap()) {
-                process.mapApiProcess.coordinatesMapDisplay(getBotToken(), messageData.getChatId());
+            if (messageData.isFlag() && process.getMapApiProcess().getMiddlePointOnMap()) {
+                process.getMapApiProcess().coordinatesMapDisplay(getBotToken(), messageData.getChatId());
             }
         } catch (TelegramApiException | BotException e) {
             e.printStackTrace();
