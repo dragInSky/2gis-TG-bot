@@ -2,7 +2,6 @@ package tgbot.processors;
 
 import tgbot.BotException;
 import tgbot.structs.Coordinates;
-import tgbot.SearchCategories;
 import tgbot.structs.MessageContainer;
 //import tgbot.Structs.User;
 //import java.util.Map;
@@ -40,14 +39,14 @@ public class Process {
 
             if (!userCities.containsKey(chatId)) {
                 try (BufferedWriter bufferedWriter =
-                             new BufferedWriter(new FileWriter("src/main/resources/cities", true))) {
+                             new BufferedWriter(new FileWriter("cities", true))) {
                     String fileContent = chatId + " : " + text + "\n";
                     bufferedWriter.write(fileContent);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                Path path = Paths.get("src/main/resources/cities");
+                Path path = Paths.get("cities");
                 try {
                     String content = Files.readString(path);
                     int startIdx = content.indexOf(chatId + " : ") + (chatId + " : ").length();

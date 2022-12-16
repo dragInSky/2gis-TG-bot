@@ -279,10 +279,10 @@ public class MapApiProcess {
     }
 
     public String get2GisPostKey() {
-        return System.getenv("2GIS_POST_KEY");
+        return System.getenv("GIS_POST_KEY");
     }
 
     public String get2GisGetKey() {
-        return System.getenv("2GIS_GET_KEY");
+        return System.getenv("GIS_GET_KEY");
     }
 }
