@@ -3,8 +3,6 @@ package tgbot.processors;
 import tgbot.BotException;
 import tgbot.structs.Coordinates;
 import tgbot.structs.MessageContainer;
-//import tgbot.Structs.User;
-//import java.util.Map;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -39,14 +37,14 @@ public class Process {
 
             if (!userCities.containsKey(chatId)) {
                 try (BufferedWriter bufferedWriter =
-                             new BufferedWriter(new FileWriter("cities", true))) {
+                             new BufferedWriter(new FileWriter("out/artifacts/consoleBot_jar/cities", true))) {
                     String fileContent = chatId + " : " + text + "\n";
                     bufferedWriter.write(fileContent);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                Path path = Paths.get("cities");
+                Path path = Paths.get("out/artifacts/consoleBot_jar/cities");
                 try {
                     String content = Files.readString(path);
                     int startIdx = content.indexOf(chatId + " : ") + (chatId + " : ").length();
@@ -146,7 +144,7 @@ public class Process {
 
     private MessageContainer routeProcess(String chatId, Coordinates geolocation) {
         try {
-            String route = mapApiProcess.createRouteWithAddress(/*chatId,*/ geolocation);
+            String route = mapApiProcess.createRouteWithAddress(geolocation);
             return new MessageContainer(chatId, route);
         } catch (BotException e) {
             mapApiProcess.resetValues();
@@ -156,7 +154,7 @@ public class Process {
 
     private MessageContainer routeProcess(String chatId, String text) {
         try {
-            String route = mapApiProcess.createRouteWithAddress(/*chatId,*/ text);
+            String route = mapApiProcess.createRouteWithAddress(text);
             return new MessageContainer(chatId, route, true);
         } catch (BotException e) {
             mapApiProcess.resetValues();
